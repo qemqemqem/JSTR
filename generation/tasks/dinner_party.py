@@ -1,6 +1,7 @@
 import random
 from typing import List, Dict
 from generation.common.task_spec import TaskSpecification
+import os
 
 class Person:
     def __init__(self, name: str, interests: Dict[str, int]):
@@ -31,7 +32,20 @@ class DinnerParty(TaskSpecification):
 
     @classmethod
     def random_dinner_party(cls, num_people: int, possible_interests: List[str], set_size: int):
-        people = [Person.random_person(f"Person_{i}", possible_interests) for i in range(num_people)]
+        # Read names from the file
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        names_file = os.path.join(script_dir, 'dinner_party', 'names.txt')
+        with open(names_file, 'r') as f:
+            names = [line.strip() for line in f]
+        
+        # Ensure we have enough names
+        if len(names) < num_people:
+            raise ValueError(f"Not enough names in the file. Need {num_people}, but only have {len(names)}.")
+        
+        # Randomly select unique names
+        selected_names = random.sample(names, num_people)
+        
+        people = [Person.random_person(name, possible_interests) for name in selected_names]
         task_description = f"Select {set_size} people for a dinner party that will have the most engaging conversations."
         return cls(task_description, people, set_size)
 

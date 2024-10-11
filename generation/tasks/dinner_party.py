@@ -192,20 +192,38 @@ def produce_random_dinner_party(num_people: int = 20, num_interests: int = 8, se
     """
     return DinnerParty.random_dinner_party(num_people=num_people, num_interests=num_interests, set_size=set_size)
 
+from pathlib import Path
+
 def produce_and_save_dinner_parties(n: int, output_file: str):
     """
     Produce N dinner parties and append them to a .jsonl file.
 
     Args:
     n (int): The number of dinner parties to produce.
-    output_file (str): The path to the output .jsonl file.
+    output_file (str): The path to the output .jsonl file, relative to the project root.
     """
-    with open(output_file, 'w') as f:
+    project_root = Path(__file__).parent.parent.parent.absolute()
+    full_output_path = project_root / output_file
+    
+    # Ensure the directory exists
+    full_output_path.parent.mkdir(parents=True, exist_ok=True)
+
+    with open(full_output_path, 'a') as f:
         for _ in range(n):
             party = produce_random_dinner_party()
             json_obj = {
                 "question": party.to_prompt(),
-                "target_score": party.target_score
+                "target_score": party.target_score,
+                "scoring_guide": {
+                    "task_description": party.task_description,
+                    "people": [
+                        {
+                            "name": person.name,
+                            "interests": person.interests
+                        } for person in party.people.values()
+                    ],
+                    "set_size": party.set_size
+                }
             }
             f.write(json.dumps(json_obj) + '\n')
 

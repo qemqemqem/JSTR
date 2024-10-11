@@ -37,7 +37,7 @@ def score_answer(question, answer):
     scoring_guide = question['scoring_guide']
 
     # Create the DinnerParty object from the scoring guide
-    print(f"SCORING GUIDE: {scoring_guide}")
+    # print(f"SCORING GUIDE: {scoring_guide}")
     print(f"ANSWER: {answer_text}")
     dinner_party = DinnerParty.from_dict(scoring_guide)
 
@@ -46,7 +46,7 @@ def score_answer(question, answer):
     selected_set = names[:dinner_party.set_size]  # Take only the required number of names
 
     # Score the selected set
-    score = dinner_party.score_set(selected_set)
+    score = dinner_party.score_set(selected_set, debug=True)
 
     # Get the percentile ranking of the score
     ranking = dinner_party.get_score_ranking(score)

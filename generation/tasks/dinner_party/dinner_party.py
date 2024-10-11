@@ -45,7 +45,7 @@ class DinnerParty(TaskSpecification):
         self.options = [person.name for person in self.people]
         self.target_score = self._sample_high_score(kth=3)
 
-    def _sample_high_score(self, num_samples: int = 100, kth: int = 3) -> float:
+    def _sample_high_score(self, num_samples: int = 1000, kth: int = 3) -> float:
         """
         Sample random parties and return the kth highest score.
 

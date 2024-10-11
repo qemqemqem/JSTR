@@ -36,7 +36,6 @@ class DinnerParty(TaskSpecification):
     def __post_init__(self):
         super().__init__(self.task_description, [person.name for person in self.people], self.set_size)
         self.options = [person.name for person in self.people]
-        self.people = {person.name: person for person in self.people}
         self.target_score = self._sample_high_score(kth=3)
 
     def _sample_high_score(self, num_samples: int = 100, kth: int = 3) -> float:

@@ -147,7 +147,7 @@ class DinnerParty(TaskSpecification):
         return random.sample(list(self.people.keys()), self.set_size)
 
 if __name__ == "__main__":
-    random_party = DinnerParty.random_dinner_party(num_people=10, num_interests=8, set_size=5)
+    random_party = DinnerParty.random_dinner_party(num_people=20, num_interests=8, set_size=5)
     print(random_party.to_prompt())
     
     print("\nRandom set samples:")

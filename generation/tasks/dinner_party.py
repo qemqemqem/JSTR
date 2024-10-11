@@ -194,13 +194,13 @@ def produce_random_dinner_party(num_people: int = 20, num_interests: int = 8, se
 
 def produce_and_save_dinner_parties(n: int, output_file: str):
     """
-    Produce N dinner parties and save them to a .jsonl file.
+    Produce N dinner parties and append them to a .jsonl file.
 
     Args:
     n (int): The number of dinner parties to produce.
     output_file (str): The path to the output .jsonl file.
     """
-    with open(output_file, 'w') as f:
+    with open(output_file, 'a') as f:
         for _ in range(n):
             party = produce_random_dinner_party()
             json_obj = {

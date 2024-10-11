@@ -42,24 +42,26 @@ class DinnerParty(TaskSpecification):
         """
         super().__init__(task_description, [person.name for person in people], set_size)
         self.people = {person.name: person for person in people}
-        self.high_score = self._sample_high_score()
+        self.target_score = self._sample_high_score(kth=3)
 
-    def _sample_high_score(self, num_samples: int = 100) -> float:
+    def _sample_high_score(self, num_samples: int = 100, kth: int = 3) -> float:
         """
-        Sample random parties and return the highest score.
+        Sample random parties and return the kth highest score.
 
         Args:
         num_samples (int): The number of random samples to generate.
+        kth (int): The position of the score to return (e.g., 3 for the 3rd highest score).
 
         Returns:
-        float: The highest score seen among the samples.
+        float: The kth highest score seen among the samples.
         """
-        high_score = float('-inf')
+        scores = []
         for _ in range(num_samples):
             random_set = self.get_random_set()
             score = self.score_set(random_set)
-            high_score = max(high_score, score)
-        return high_score
+            scores.append(score)
+        scores.sort(reverse=True)
+        return scores[kth - 1] if kth <= len(scores) else min(scores)
 
     def score_set(self, selected_set: List[str], debug: bool = False) -> float:
         """
@@ -162,7 +164,7 @@ class DinnerParty(TaskSpecification):
         prompt += "3. The top 3 interests are selected.\n"
         prompt += "4. The final score is the sum of all interest levels for these top 3 interests.\n"
         prompt += "Your goal is to maximize this score by selecting a diverse group with strong, shared interests.\n"
-        prompt += f"\nThe highest score seen in 100 random samples is: {self.high_score:.2f}"
+        prompt += f"\nYour goal is to beat the 3rd highest score seen in 100 random samples: {self.target_score:.2f}"
         return prompt
 
     def get_random_set(self) -> List[str]:

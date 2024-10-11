@@ -2,18 +2,13 @@ import random
 from typing import List, Dict
 from generation.common.task_spec import TaskSpecification
 import os
+from dataclasses import dataclass, field
+from dataclasses import dataclass, field
 
+@dataclass
 class Person:
-    def __init__(self, name: str, interests: Dict[str, int]):
-        """
-        Initialize a Person object.
-
-        Args:
-        name (str): The name of the person.
-        interests (Dict[str, int]): A dictionary of interests and their levels.
-        """
-        self.name = name
-        self.interests = interests
+    name: str
+    interests: Dict[str, int]
 
     @classmethod
     def random_person(cls, name: str, possible_interests: List[str]):
@@ -30,18 +25,18 @@ class Person:
         interests = {interest: random.randint(1, 5) for interest in random.sample(possible_interests, random.randint(1, len(possible_interests)))}
         return cls(name, interests)
 
+@dataclass
 class DinnerParty(TaskSpecification):
-    def __init__(self, task_description: str, people: List[Person], set_size: int):
-        """
-        Initialize a DinnerParty object.
+    task_description: str
+    people: List[Person]
+    set_size: int
+    options: List[str] = field(init=False)
+    target_score: float = 0.0
 
-        Args:
-        task_description (str): The description of the dinner party task.
-        people (List[Person]): A list of Person objects representing potential dinner party attendees.
-        set_size (int): The number of people to be selected for the dinner party.
-        """
-        super().__init__(task_description, [person.name for person in people], set_size)
-        self.people = {person.name: person for person in people}
+    def __post_init__(self):
+        super().__init__(self.task_description, [person.name for person in self.people], self.set_size)
+        self.options = [person.name for person in self.people]
+        self.people = {person.name: person for person in self.people}
         self.target_score = self._sample_high_score(kth=3)
 
     def _sample_high_score(self, num_samples: int = 100, kth: int = 3) -> float:

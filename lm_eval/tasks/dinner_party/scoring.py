@@ -1,4 +1,5 @@
-from generation.tasks.dinner_party import DinnerParty, Person
+from dacite import from_dict
+from generation.tasks.dinner_party import DinnerParty
 import re
 
 def score_answer(scoring_guide, answer):
@@ -20,13 +21,8 @@ def score_answer(scoring_guide, answer):
     else:
         answer_text = str(answer)
 
-    # Recreate the DinnerParty object from the scoring guide
-    people = [Person(p['name'], p['interests']) for p in scoring_guide['people']]
-    dinner_party = DinnerParty(
-        task_description=scoring_guide['task_description'],
-        people=people,
-        set_size=scoring_guide['set_size']
-    )
+    # Create the DinnerParty object from the scoring guide
+    dinner_party = from_dict(data_class=DinnerParty, data=scoring_guide)
 
     # Extract names from the answer
     names = re.findall(r'\b[A-Z][a-z]*\b', answer_text)

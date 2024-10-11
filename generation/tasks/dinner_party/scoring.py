@@ -2,15 +2,10 @@ import re
 import os
 import sys
 
+# This is necessary because of the way that lm_eval runs this file
 sys.path.append(os.getcwd())
 
 from generation.tasks.dinner_party.dinner_party import DinnerParty
-
-def score_answer_2(scoring_guide, answer):
-    return {
-        "dinner_score": 0,
-        "ranking": 1
-    }
 
 def score_answer(question, answer):
     """

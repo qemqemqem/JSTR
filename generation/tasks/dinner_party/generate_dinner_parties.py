@@ -27,9 +27,10 @@ def produce_and_save_dinner_parties(n: int, output_file: str):
     n (int): The number of dinner parties to produce.
     output_file (str): The path to the output .jsonl file, relative to the project root.
     """
-    project_root = Path(__file__).parent.parent.parent.absolute()
-    full_output_path = project_root / output_file
-    
+    # project_root = Path(__file__).parent.parent.parent.absolute()
+    # full_output_path = project_root / output_file
+    full_output_path = Path(output_file)
+
     # Ensure the directory exists
     full_output_path.parent.mkdir(parents=True, exist_ok=True)
 
@@ -58,12 +59,12 @@ if __name__ == "__main__":
     print(random_party.to_prompt())
     
     print("\nRandom set samples:")
-    for i in range(3):
+    for i in range(2):
         random_set = random_party.get_random_set()
         print(f"\nSample {i+1}: {random_set}")
         score = random_party.score_set(random_set, debug=True)
         print(f"Final Score: {score}\n")
     
     # Produce and save 5 dinner parties to a file
-    produce_and_save_dinner_parties(5, "lm_eval/tasks/dinner_party/dinner_party.jsonl")
+    produce_and_save_dinner_parties(20, "lm_eval/tasks/dinner_party/dinner_party.jsonl")
     print("Dinner parties saved to dinner_parties.jsonl")

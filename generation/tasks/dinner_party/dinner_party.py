@@ -64,19 +64,25 @@ class DinnerParty(TaskSpecification):
         self.stored_scores.sort(reverse=True)
         return self.stored_scores[kth - 1] if kth <= len(self.stored_scores) else min(self.stored_scores)
 
-    def get_score_ranking(self, score: float) -> float:
+    def get_score_ranking(self, score: float) -> tuple[float, int]:
         """
-        Get the percentile ranking of a given score within the stored scores.
+        Get the percentile ranking and absolute ranking of a given score within the stored scores.
 
         Args:
         score (float): The score to rank.
 
         Returns:
-        float: The percentile ranking of the score (0.0 to 1.0).
+        tuple[float, int]: A tuple containing:
+            - The percentile ranking of the score (0.0 to 1.0)
+            - The absolute ranking of the score (1 being the highest)
         """
         if not self.stored_scores:
-            return 0.0
-        return sum(1 for s in self.stored_scores if s <= score) / len(self.stored_scores)
+            return 0.0, 1
+        
+        percentile = sum(1 for s in self.stored_scores if s <= score) / len(self.stored_scores)
+        ranking = sum(1 for s in self.stored_scores if s > score) + 1
+        
+        return percentile, ranking
 
     def score_set(self, selected_set: List[str], debug: bool = False) -> float:
         """

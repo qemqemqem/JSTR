@@ -1,6 +1,21 @@
 import re
+import os
+import sys
 
-from generation.tasks.dinner_party.dinner_party import DinnerParty
+print("Current working directory:", os.getcwd())
+print("Python path:", sys.path)
+
+try:
+    import generation
+    print("Successfully imported generation module")
+except ImportError as e:
+    print("Failed to import generation module:", str(e))
+
+try:
+    from generation.tasks.dinner_party.dinner_party import DinnerParty
+    print("Successfully imported DinnerParty")
+except ImportError as e:
+    print("Failed to import DinnerParty:", str(e))
 
 
 def score_answer(scoring_guide, answer):

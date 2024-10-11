@@ -71,6 +71,22 @@ class DinnerParty(TaskSpecification):
         prompt += f"\nPlease choose {self.set_size} people that would create the most engaging dinner party."
         return prompt
 
+    def get_random_set(self) -> List[str]:
+        """
+        Return a random set of people for the dinner party.
+
+        Returns:
+        List[str]: A list of randomly selected people's names.
+        """
+        return random.sample(list(self.people.keys()), self.set_size)
+
 if __name__ == "__main__":
     random_party = DinnerParty.random_dinner_party(num_people=10, num_interests=8, set_size=5)
     print(random_party.to_prompt())
+    
+    print("\nRandom set samples:")
+    for i in range(3):
+        random_set = random_party.get_random_set()
+        score = random_party.score_set(random_set)
+        print(f"Sample {i+1}: {random_set}")
+        print(f"Score: {score}\n")

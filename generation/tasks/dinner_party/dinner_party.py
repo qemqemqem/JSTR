@@ -38,6 +38,7 @@ class DinnerParty(TaskSpecification):
     set_size: int
     options: List[str] = field(init=False)
     target_score: float = 0.0
+    stored_scores: List[float] = field(default_factory=list)
 
     def __post_init__(self):
         super().__init__(self.task_description, [person.name for person in self.people], self.set_size)
@@ -55,13 +56,27 @@ class DinnerParty(TaskSpecification):
         Returns:
         float: The kth highest score seen among the samples.
         """
-        scores = []
+        self.stored_scores = []
         for _ in range(num_samples):
             random_set = self.get_random_set()
             score = self.score_set(random_set)
-            scores.append(score)
-        scores.sort(reverse=True)
-        return scores[kth - 1] if kth <= len(scores) else min(scores)
+            self.stored_scores.append(score)
+        self.stored_scores.sort(reverse=True)
+        return self.stored_scores[kth - 1] if kth <= len(self.stored_scores) else min(self.stored_scores)
+
+    def get_score_ranking(self, score: float) -> float:
+        """
+        Get the percentile ranking of a given score within the stored scores.
+
+        Args:
+        score (float): The score to rank.
+
+        Returns:
+        float: The percentile ranking of the score (0.0 to 1.0).
+        """
+        if not self.stored_scores:
+            return 0.0
+        return sum(1 for s in self.stored_scores if s <= score) / len(self.stored_scores)
 
     def score_set(self, selected_set: List[str], debug: bool = False) -> float:
         """

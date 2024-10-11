@@ -48,7 +48,10 @@ def score_answer(question, answer):
     # Score the selected set
     score = dinner_party.score_set(selected_set)
 
+    # Get the percentile ranking of the score
+    ranking = dinner_party.get_score_ranking(score)
+
     return {
         "dinner_score": score,
-        "ranking": 1,
+        "ranking": ranking,
     }

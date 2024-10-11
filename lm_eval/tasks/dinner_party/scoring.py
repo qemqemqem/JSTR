@@ -21,7 +21,7 @@ def score_answer(scoring_guide, answer):
         answer_text = str(answer)
 
     # Create the DinnerParty object from the scoring guide
-    dinner_party = from_dict(data_class=DinnerParty, data=scoring_guide)
+    dinner_party = DinnerParty.from_dict(scoring_guide)
 
     # Extract names from the answer
     names = re.findall(r'\b[A-Z][a-z]*\b', answer_text)

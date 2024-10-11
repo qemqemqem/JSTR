@@ -170,6 +170,24 @@ class DinnerParty(TaskSpecification):
         """
         return random.sample(list(self.people.keys()), self.set_size)
 
+    @classmethod
+    def from_dict(cls, data: Dict):
+        """
+        Create a DinnerParty instance from a dictionary.
+
+        Args:
+        data (Dict): A dictionary containing the DinnerParty data.
+
+        Returns:
+        DinnerParty: A new DinnerParty instance.
+        """
+        people = [Person(name=p['name'], interests=p['interests']) for p in data['people']]
+        return cls(
+            task_description=data['task_description'],
+            people=people,
+            set_size=data['set_size']
+        )
+
 import json
 
 def produce_random_dinner_party(num_people: int = 20, num_interests: int = 8, set_size: int = 5) -> DinnerParty:

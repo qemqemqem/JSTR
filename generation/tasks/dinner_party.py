@@ -27,17 +27,22 @@ class DinnerParty(TaskSpecification):
                     all_interests[interest] = []
                 all_interests[interest].append(level)
         
-        top_3_interests = sorted(all_interests.items(), key=lambda x: len(x[1]), reverse=True)[:3]
+        # Sort interests by count (descending), then by sum of levels (descending), then alphabetically
+        sorted_interests = sorted(
+            all_interests.items(),
+            key=lambda x: (-len(x[1]), -sum(x[1]), x[0])
+        )
+        top_3_interests = sorted_interests[:3]
         score = sum(sum(levels) for _, levels in top_3_interests)
 
         if debug:
             print(f"Debug information for set: {selected_set}")
             print("Interest breakdown:")
             for interest, levels in all_interests.items():
-                print(f"  {interest}: {levels} (sum: {sum(levels)})")
+                print(f"  {interest}: {levels} (count: {len(levels)}, sum: {sum(levels)})")
             print("Top 3 interests:")
             for interest, levels in top_3_interests:
-                print(f"  {interest}: {levels} (sum: {sum(levels)})")
+                print(f"  {interest}: {levels} (count: {len(levels)}, sum: {sum(levels)})")
             print(f"Total score: {score}")
 
         return score

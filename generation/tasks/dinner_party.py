@@ -164,7 +164,7 @@ class DinnerParty(TaskSpecification):
         prompt += "3. The top 3 interests are selected.\n"
         prompt += "4. The final score is the sum of all interest levels for these top 3 interests.\n"
         prompt += "Your goal is to maximize this score by selecting a diverse group with strong, shared interests.\n"
-        prompt += f"\nYour goal is to beat the 3rd highest score seen in 100 random samples: {self.target_score:.2f}"
+        prompt += f"\nYour score to beat is: {self.target_score}."
         return prompt
 
     def get_random_set(self) -> List[str]:

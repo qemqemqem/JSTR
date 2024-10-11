@@ -21,6 +21,9 @@ metric_list:
   - metric: percent_of_max
     aggregation: mean
     higher_is_better: true
+  - metric: percent_of_max
+    aggregation: mean
+    higher_is_better: true
 
 task: dinner_party_real
 

@@ -181,7 +181,7 @@ if __name__ == "__main__":
     print(random_party.to_prompt())
     
     print("\nRandom set samples:")
-    for i in range(3):
+    for i in range(10):
         random_set = random_party.get_random_set()
         print(f"\nSample {i+1}: {random_set}")
         score = random_party.score_set(random_set, debug=True)

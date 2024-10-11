@@ -176,13 +176,51 @@ class DinnerParty(TaskSpecification):
         """
         return random.sample(list(self.people.keys()), self.set_size)
 
+import json
+
+def produce_random_dinner_party(num_people: int = 20, num_interests: int = 8, set_size: int = 5) -> DinnerParty:
+    """
+    Produce a random DinnerParty instance.
+
+    Args:
+    num_people (int): The number of people to generate for the dinner party.
+    num_interests (int): The number of possible interests to choose from.
+    set_size (int): The number of people to be selected for the dinner party.
+
+    Returns:
+    DinnerParty: A randomly generated DinnerParty instance.
+    """
+    return DinnerParty.random_dinner_party(num_people=num_people, num_interests=num_interests, set_size=set_size)
+
+def produce_and_save_dinner_parties(n: int, output_file: str):
+    """
+    Produce N dinner parties and save them to a .jsonl file.
+
+    Args:
+    n (int): The number of dinner parties to produce.
+    output_file (str): The path to the output .jsonl file.
+    """
+    with open(output_file, 'w') as f:
+        for _ in range(n):
+            party = produce_random_dinner_party()
+            json_obj = {
+                "question": party.to_prompt(),
+                "target_score": party.target_score
+            }
+            f.write(json.dumps(json_obj) + '\n')
+
 if __name__ == "__main__":
-    random_party = DinnerParty.random_dinner_party(num_people=20, num_interests=8, set_size=5)
+    # Example usage
+    random_party = produce_random_dinner_party()
     print(random_party.to_prompt())
     
     print("\nRandom set samples:")
-    for i in range(10):
+    for i in range(3):
         random_set = random_party.get_random_set()
         print(f"\nSample {i+1}: {random_set}")
         score = random_party.score_set(random_set, debug=True)
         print(f"Final Score: {score}\n")
+    
+    # Produce and save 5 dinner parties to a file
+    produce_and_save_dinner_parties(5, "dinner_parties.jsonl")
+    print("Dinner parties saved to dinner_parties.jsonl")

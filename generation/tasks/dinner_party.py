@@ -219,7 +219,7 @@ def produce_and_save_dinner_parties(n: int, output_file: str):
                     "people": [
                         {
                             "name": person.name,
-                            "interests": person.interests
+                            "interests": {k: v for k, v in person.interests.items() if v is not None}
                         } for person in party.people.values()
                     ],
                     "set_size": party.set_size

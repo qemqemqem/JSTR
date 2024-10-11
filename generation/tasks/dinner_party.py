@@ -128,13 +128,22 @@ class DinnerParty(TaskSpecification):
         Generate a prompt string for the dinner party task.
 
         Returns:
-        str: A string containing the task description, people and their interests, and the question.
+        str: A string containing the task description, people and their interests, the question, and an explanation of the scoring method.
         """
         prompt = f"{self.task_description}\n\nPeople and their interests:\n"
         for i, (name, person) in enumerate(self.people.items(), 1):
             interests_str = ", ".join([f"{interest} (level {level})" for interest, level in person.interests.items()])
             prompt += f"{i}. {name}: {interests_str}\n"
         prompt += f"\nPlease choose {self.set_size} people that would create the most engaging dinner party."
+        prompt += "\n\nScoring Explanation:\n"
+        prompt += "The dinner party is scored based on the interests of the selected people. "
+        prompt += "The scoring process works as follows:\n"
+        prompt += "1. All interests of the selected people are collected.\n"
+        prompt += "2. Interests are sorted by: number of people sharing the interest (descending), "
+        prompt += "sum of interest levels (descending), and alphabetically.\n"
+        prompt += "3. The top 3 interests are selected.\n"
+        prompt += "4. The final score is the sum of all interest levels for these top 3 interests.\n"
+        prompt += "Your goal is to maximize this score by selecting a diverse group with strong, shared interests."
         return prompt
 
     def get_random_set(self) -> List[str]:

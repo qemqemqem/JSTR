@@ -18,7 +18,7 @@ class DinnerParty(TaskSpecification):
         super().__init__(task_description, [person.name for person in people], set_size)
         self.people = {person.name: person for person in people}
 
-    def score_set(self, selected_set: List[str]) -> float:
+    def score_set(self, selected_set: List[str], debug: bool = False) -> float:
         selected_people = [self.people[name] for name in selected_set]
         all_interests = {}
         for person in selected_people:
@@ -28,7 +28,19 @@ class DinnerParty(TaskSpecification):
                 all_interests[interest].append(level)
         
         top_3_interests = sorted(all_interests.items(), key=lambda x: len(x[1]), reverse=True)[:3]
-        return sum(sum(levels) for _, levels in top_3_interests)
+        score = sum(sum(levels) for _, levels in top_3_interests)
+
+        if debug:
+            print(f"Debug information for set: {selected_set}")
+            print("Interest breakdown:")
+            for interest, levels in all_interests.items():
+                print(f"  {interest}: {levels} (sum: {sum(levels)})")
+            print("Top 3 interests:")
+            for interest, levels in top_3_interests:
+                print(f"  {interest}: {levels} (sum: {sum(levels)})")
+            print(f"Total score: {score}")
+
+        return score
 
     @classmethod
     def random_dinner_party(cls, num_people: int, num_interests: int, set_size: int):
@@ -87,6 +99,6 @@ if __name__ == "__main__":
     print("\nRandom set samples:")
     for i in range(3):
         random_set = random_party.get_random_set()
-        score = random_party.score_set(random_set)
-        print(f"Sample {i+1}: {random_set}")
-        print(f"Score: {score}\n")
+        print(f"\nSample {i+1}: {random_set}")
+        score = random_party.score_set(random_set, debug=True)
+        print(f"Final Score: {score}\n")

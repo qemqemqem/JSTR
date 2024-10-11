@@ -5,20 +5,55 @@ import os
 
 class Person:
     def __init__(self, name: str, interests: Dict[str, int]):
+        """
+        Initialize a Person object.
+
+        Args:
+        name (str): The name of the person.
+        interests (Dict[str, int]): A dictionary of interests and their levels.
+        """
         self.name = name
         self.interests = interests
 
     @classmethod
     def random_person(cls, name: str, possible_interests: List[str]):
+        """
+        Create a random Person object with random interests.
+
+        Args:
+        name (str): The name of the person.
+        possible_interests (List[str]): A list of possible interests to choose from.
+
+        Returns:
+        Person: A new Person object with randomly selected interests and levels.
+        """
         interests = {interest: random.randint(1, 5) for interest in random.sample(possible_interests, random.randint(1, len(possible_interests)))}
         return cls(name, interests)
 
 class DinnerParty(TaskSpecification):
     def __init__(self, task_description: str, people: List[Person], set_size: int):
+        """
+        Initialize a DinnerParty object.
+
+        Args:
+        task_description (str): The description of the dinner party task.
+        people (List[Person]): A list of Person objects representing potential dinner party attendees.
+        set_size (int): The number of people to be selected for the dinner party.
+        """
         super().__init__(task_description, [person.name for person in people], set_size)
         self.people = {person.name: person for person in people}
 
     def score_set(self, selected_set: List[str], debug: bool = False) -> float:
+        """
+        Score a selected set of people for the dinner party.
+
+        Args:
+        selected_set (List[str]): A list of names of selected people.
+        debug (bool): If True, print debug information about the scoring process.
+
+        Returns:
+        float: The score for the selected set of people.
+        """
         selected_people = [self.people[name] for name in selected_set]
         all_interests = {}
         for person in selected_people:
@@ -49,6 +84,20 @@ class DinnerParty(TaskSpecification):
 
     @classmethod
     def random_dinner_party(cls, num_people: int, num_interests: int, set_size: int):
+        """
+        Create a random DinnerParty object.
+
+        Args:
+        num_people (int): The number of people to generate for the dinner party.
+        num_interests (int): The number of possible interests to choose from.
+        set_size (int): The number of people to be selected for the dinner party.
+
+        Returns:
+        DinnerParty: A new DinnerParty object with randomly generated people and interests.
+
+        Raises:
+        ValueError: If there are not enough names or interests in the respective files.
+        """
         # Read names from the file
         script_dir = os.path.dirname(os.path.abspath(__file__))
         names_file = os.path.join(script_dir, 'dinner_party', 'names.txt')

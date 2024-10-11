@@ -11,6 +11,10 @@ class Person:
     name: str
     interests: Dict[str, int]
 
+    def __post_init__(self):
+        # Remove any interests with a value of None
+        self.interests = {k: v for k, v in self.interests.items() if v is not None}
+
     @classmethod
     def random_person(cls, name: str, possible_interests: List[str]):
         """

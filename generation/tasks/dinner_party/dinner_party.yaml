@@ -28,7 +28,7 @@ generation_kwargs:
   temperature: 0.0
   max_gen_toks: 300
 
-process_results: !function scoring.score_answer_2
+process_results: !function scoring.score_answer
 
 metadata:
   version: 1.0

@@ -12,7 +12,7 @@ def score_answer_2(scoring_guide, answer):
         "ranking": 1
     }
 
-def score_answer(scoring_guide, answer):
+def score_answer(question, answer):
     """
     Score the given answer based on the scoring guide using the DinnerParty class.
 
@@ -31,7 +31,14 @@ def score_answer(scoring_guide, answer):
     else:
         answer_text = str(answer)
 
+    # Remove "Answer:" from the beginning of the answer text
+    answer_text = re.sub(r'^Answer:', '', answer_text).strip()
+
+    scoring_guide = question['scoring_guide']
+
     # Create the DinnerParty object from the scoring guide
+    print(f"SCORING GUIDE: {scoring_guide}")
+    print(f"ANSWER: {answer_text}")
     dinner_party = DinnerParty.from_dict(scoring_guide)
 
     # Extract names from the answer
@@ -42,7 +49,6 @@ def score_answer(scoring_guide, answer):
     score = dinner_party.score_set(selected_set)
 
     return {
-        "score": score,
-        "selected_set": selected_set,
-        "target_score": scoring_guide.get('target_score', None)
+        "dinner_score": score,
+        "ranking": 1,
     }

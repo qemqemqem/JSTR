@@ -200,7 +200,7 @@ def produce_and_save_dinner_parties(n: int, output_file: str):
     n (int): The number of dinner parties to produce.
     output_file (str): The path to the output .jsonl file.
     """
-    with open(output_file, 'a') as f:
+    with open(output_file, 'w') as f:
         for _ in range(n):
             party = produce_random_dinner_party()
             json_obj = {
@@ -222,5 +222,5 @@ if __name__ == "__main__":
         print(f"Final Score: {score}\n")
     
     # Produce and save 5 dinner parties to a file
-    produce_and_save_dinner_parties(5, "dinner_parties.jsonl")
+    produce_and_save_dinner_parties(5, "lm_eval/tasks/dinner_party/dinner_party.jsonl")
     print("Dinner parties saved to dinner_parties.jsonl")

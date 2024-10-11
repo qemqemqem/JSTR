@@ -208,7 +208,7 @@ def produce_and_save_dinner_parties(n: int, output_file: str):
     # Ensure the directory exists
     full_output_path.parent.mkdir(parents=True, exist_ok=True)
 
-    with open(full_output_path, 'a') as f:
+    with open(full_output_path, 'w') as f:
         for _ in range(n):
             party = produce_random_dinner_party()
             json_obj = {

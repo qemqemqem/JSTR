@@ -3,27 +3,23 @@ dataset_name: null
 dataset_kwargs:
   data_files: lm_eval/tasks/dinner_party/dinner_party.jsonl
 
-doc_to_text: "{{question}}"
+doc_to_text: "{{question}}\n\nAnswer with \"Answer: <person1>, <person2>, ...\"."
 doc_to_target: "{{scoring_guide}}"
 
 output_type: generate_until
 
 metric_list:
-  - metric: answer_quality
+  - metric: dinner_score
     aggregation: mean
     higher_is_better: true
-  - metric: creativity
+  - metric: ranking
     aggregation: mean
-    higher_is_better: true
-  - metric: appropriateness
-    aggregation: mean
-    higher_is_better: true
+    higher_is_better: false
 
-task: dinner_party
+task: dinner_party_real
 
 test_split: train
 fewshot_split: train
-
 
 generation_kwargs:
   until:
@@ -32,7 +28,7 @@ generation_kwargs:
   temperature: 0.0
   max_gen_toks: 300
 
-process_results: !function scoring.score_answer
+process_results: !function scoring.score_answer_2
 
 metadata:
   version: 1.0

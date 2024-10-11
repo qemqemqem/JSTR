@@ -2,30 +2,15 @@ import re
 import os
 import sys
 
-print("Current working directory:", os.getcwd())
-print("Python path:", sys.path)
-print("Contents of current directory:", os.listdir())
-print("Is 'generation' in current directory?", 'generation' in os.listdir())
-print("Is current directory in sys.path?", os.getcwd() in sys.path)
+sys.path.append(os.getcwd())
 
-if os.getcwd() not in sys.path:
-    print("Adding current directory to sys.path")
-    sys.path.append(os.getcwd())
-    print("Updated Python path:", sys.path)
+from generation.tasks.dinner_party.dinner_party import DinnerParty
 
-try:
-    import generation
-    print("Successfully imported generation module")
-    print("generation module path:", generation.__file__)
-except ImportError as e:
-    print("Failed to import generation module:", str(e))
-
-try:
-    from generation.tasks.dinner_party.dinner_party import DinnerParty
-    print("Successfully imported DinnerParty")
-except ImportError as e:
-    print("Failed to import DinnerParty:", str(e))
-
+def score_answer_2(scoring_guide, answer):
+    return {
+        "dinner_score": 0,
+        "ranking": 1
+    }
 
 def score_answer(scoring_guide, answer):
     """

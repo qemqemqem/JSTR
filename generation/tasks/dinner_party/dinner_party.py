@@ -70,7 +70,7 @@ class DinnerParty(TaskSpecification):
         Returns:
         float: The score for the selected set of people.
         """
-        selected_people = [self.people[name] for name in selected_set]
+        selected_people = [person for person in self.people if person.name in selected_set]
         all_interests = {}
         for person in selected_people:
             for interest, level in person.interests.items():
@@ -147,9 +147,9 @@ class DinnerParty(TaskSpecification):
         str: A string containing the task description, people and their interests, the question, and an explanation of the scoring method.
         """
         prompt = f"{self.task_description}\n\nPeople and their interests:\n"
-        for i, (name, person) in enumerate(self.people.items(), 1):
+        for i, person in enumerate(self.people, 1):
             interests_str = ", ".join([f"{interest} (level {level})" for interest, level in person.interests.items()])
-            prompt += f"{i}. {name}: {interests_str}\n"
+            prompt += f"{i}. {person.name}: {interests_str}\n"
         prompt += f"\nPlease choose {self.set_size} people that would create the most engaging dinner party."
         prompt += "\n\nScoring Explanation:\n"
         prompt += "The dinner party is scored based on the interests of the selected people. "
@@ -170,7 +170,7 @@ class DinnerParty(TaskSpecification):
         Returns:
         List[str]: A list of randomly selected people's names.
         """
-        return random.sample(list(self.people.keys()), self.set_size)
+        return random.sample([person.name for person in self.people], self.set_size)
 
     @classmethod
     def from_dict(cls, data: Dict):

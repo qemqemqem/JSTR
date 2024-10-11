@@ -48,3 +48,8 @@ class DinnerParty(TaskSpecification):
             prompt += f"{i}. {name}: {interests_str}\n"
         prompt += f"\nPlease choose {self.set_size} people that would create the most engaging dinner party."
         return prompt
+
+if __name__ == "__main__":
+    possible_interests = ["Music", "Art", "Sports", "Cooking", "Travel", "Literature", "Science", "Technology", "History", "Philosophy"]
+    random_party = DinnerParty.random_dinner_party(num_people=10, possible_interests=possible_interests, set_size=5)
+    print(random_party.to_prompt())

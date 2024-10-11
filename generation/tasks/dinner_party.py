@@ -34,3 +34,17 @@ class DinnerParty(TaskSpecification):
         people = [Person.random_person(f"Person_{i}", possible_interests) for i in range(num_people)]
         task_description = f"Select {set_size} people for a dinner party that will have the most engaging conversations."
         return cls(task_description, people, set_size)
+
+    def to_prompt(self) -> str:
+        """
+        Generate a prompt string for the dinner party task.
+
+        Returns:
+        str: A string containing the task description, people and their interests, and the question.
+        """
+        prompt = f"{self.task_description}\n\nPeople and their interests:\n"
+        for i, (name, person) in enumerate(self.people.items(), 1):
+            interests_str = ", ".join([f"{interest} (level {level})" for interest, level in person.interests.items()])
+            prompt += f"{i}. {name}: {interests_str}\n"
+        prompt += f"\nPlease choose {self.set_size} people that would create the most engaging dinner party."
+        return prompt

@@ -1,4 +1,3 @@
-from dacite import from_dict
 from generation.tasks.dinner_party import DinnerParty
 import re
 

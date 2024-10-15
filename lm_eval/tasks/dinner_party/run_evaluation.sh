@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# TODO Try `--include_path .` instead
+
 lm_eval --model openai-chat-completions \
     --model_args model=gpt-4 \
     --include_path /home/keenan/Dev/JSTR/ \

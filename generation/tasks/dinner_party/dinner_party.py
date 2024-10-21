@@ -199,8 +199,14 @@ class DinnerParty(TaskSpecification):
             for idx in discounted_indices:
                 points_per_person[idx] = max(1, points_per_person[idx] - bimodal_discount)
         
-        # Adjust the last person's points to make the total sum up to total_points
-        points_per_person[-1] = max(1, total_points - sum(points_per_person[:-1]))
+        # Adjust all points proportionally to sum up to total_points
+        current_total = sum(points_per_person)
+        if current_total != total_points:
+            scaling_factor = total_points / current_total
+            points_per_person = [max(1, int(points * scaling_factor)) for points in points_per_person]
+
+        # Adjust the last person's points to make the total exactly match total_points
+        points_per_person[-1] += total_points - sum(points_per_person)
         
         people = [Person.random_person(name, selected_interests, points, min_interests, max_interests) 
                   for name, points in zip(selected_names, points_per_person)]

@@ -37,6 +37,9 @@ def produce_and_save_dinner_parties(n: int, output_file: str, num_people: int = 
     set_size (int): The number of people to be selected for each dinner party.
     avg_points (int): The average interest points for a person.
     points_spread (int): The plus or minus on a person's total point value.
+    min_interests (int): The minimum number of interests a person can have.
+    max_interests (int): The maximum number of interests a person can have.
+    bimodal_discount (int): The discount to apply to 50% of people's points total.
     """
     full_output_path = Path(output_file)
 
@@ -45,7 +48,7 @@ def produce_and_save_dinner_parties(n: int, output_file: str, num_people: int = 
 
     with open(full_output_path, 'w') as f:
         for _ in range(n):
-            party = produce_random_dinner_party(num_people, num_interests, set_size, avg_points, points_spread)
+            party = produce_random_dinner_party(num_people, num_interests, set_size, avg_points, points_spread, min_interests, max_interests, bimodal_discount)
             json_obj = {
                 "question": party.to_prompt(),
                 "target_score": party.target_score,
@@ -57,7 +60,17 @@ def produce_and_save_dinner_parties(n: int, output_file: str, num_people: int = 
                             "interests": {k: v for k, v in person.interests.items() if v is not None}
                         } for person in party.people
                     ],
-                    "set_size": party.set_size
+                    "set_size": party.set_size,
+                    "parameters": {
+                        "num_people": num_people,
+                        "num_interests": num_interests,
+                        "set_size": set_size,
+                        "avg_points": avg_points,
+                        "points_spread": points_spread,
+                        "min_interests": min_interests,
+                        "max_interests": max_interests,
+                        "bimodal_discount": bimodal_discount
+                    }
                 }
             }
             f.write(json.dumps(json_obj) + '\n')

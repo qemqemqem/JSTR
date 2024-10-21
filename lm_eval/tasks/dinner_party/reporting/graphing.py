@@ -50,7 +50,7 @@ def create_graph(results, param, y_value, args):
     plt.xlabel(param.replace('_', ' ').title(), fontsize=12, fontweight='bold')
     plt.ylabel(f'Average {y_value.replace("_", " ").title()}', fontsize=12, fontweight='bold')
     plt.title(f'Impact of {param.replace("_", " ").title()} on {y_value.replace("_", " ").title()}', fontsize=14, fontweight='bold')
-    plt.suptitle('With 95% Confidence Intervals', fontsize=10, y=0.95)
+    plt.suptitle('With 95% Confidence Intervals', fontsize=10)
     
     plt.xticks(range(len(x_data)), x_data, rotation=45, ha='right', fontsize=10)
     plt.yticks(fontsize=10)

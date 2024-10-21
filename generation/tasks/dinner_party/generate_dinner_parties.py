@@ -1,5 +1,7 @@
 import json
 
+from pathlib import Path
+
 from generation.tasks.dinner_party.dinner_party import DinnerParty
 
 
@@ -16,8 +18,6 @@ def produce_random_dinner_party(num_people: int = 20, num_interests: int = 8, se
     DinnerParty: A randomly generated DinnerParty instance.
     """
     return DinnerParty.random_dinner_party(num_people=num_people, num_interests=num_interests, set_size=set_size)
-
-from pathlib import Path
 
 def produce_and_save_dinner_parties(n: int, output_file: str):
     """
@@ -66,5 +66,6 @@ if __name__ == "__main__":
         print(f"Final Score: {score}\n")
     
     # Produce and save 5 dinner parties to a file
-    produce_and_save_dinner_parties(20, "lm_eval/tasks/dinner_party/dinner_party.jsonl")
-    print("Dinner parties saved to dinner_parties.jsonl")
+    ofile = "generation/tasks/dinner_party/dinner_party.jsonl"
+    produce_and_save_dinner_parties(20, ofile)
+    print(f"Dinner parties saved to `{ofile}`")

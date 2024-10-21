@@ -98,7 +98,7 @@ class DinnerParty(TaskSpecification):
             - 'percent_of_max': The percent of the maximum known score (0.0 to 1.0)
         """
         if not self.stored_scores:
-            return {'percentile': 0.0, 'ranking': 1, 'percent_of_max': 1.0}
+            raise ValueError("No stored scores to compare against.")
         
         percentile = sum(1 for s in self.stored_scores if s <= score) / len(self.stored_scores)
         ranking = sum(1 for s in self.stored_scores if s > score) + 1

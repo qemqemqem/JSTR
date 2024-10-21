@@ -22,40 +22,48 @@ def load_results(file_path):
         print("First result keys:", results[0].keys())
     return results
 
+import seaborn as sns
+
 def create_graph(results, param, y_value):
     print(f"Creating graph with param: {param}, y_value: {y_value}")
     param_values = defaultdict(list)
     for i, result in enumerate(results):
-        print(f"Processing result {i}:")
-        if 'scoring_guide' in result['doc']:
-            if 'parameters' in result['doc']['scoring_guide']:
-                print("Parameters:", result['doc']['scoring_guide']['parameters'])
-        
         try:
             param_value = result['doc']['scoring_guide']['parameters'][param]
             param_values[param_value].append(result[y_value])
         except KeyError as e:
             print(f"  KeyError: {e}")
-            print(f"  Result: {result.keys()}")
 
     x_data = list(param_values.keys())
     y_data = [np.mean(param_values[x]) for x in x_data]
     
-    # Calculate confidence intervals
     confidence_intervals = [stats.sem(param_values[x]) * stats.t.ppf((1 + 0.95) / 2, len(param_values[x])-1)
                             for x in x_data]
 
-    plt.figure(figsize=(12, 6))
-    x_positions = range(len(x_data))
-    plt.bar(x_positions, y_data, yerr=confidence_intervals, capsize=5, alpha=0.7)
-    plt.errorbar(x_positions, y_data, yerr=confidence_intervals, fmt='none', color='black', capsize=5)
+    plt.figure(figsize=(12, 7))  # 16:9 aspect ratio
     
-    plt.xlabel(param.replace('_', ' ').title())
-    plt.ylabel(f'Average {y_value.replace("_", " ").title()}')
-    plt.title(f'{param.replace("_", " ").title()} vs Average {y_value.replace("_", " ").title()} with 95% CI')
-    plt.xticks(x_positions, x_data, rotation=45, ha='right')  # Set x-ticks to categorical values
-    plt.tight_layout()  # Adjust layout to prevent cutting off labels
-    plt.grid(axis='y', linestyle='--', alpha=0.7)
+    # Create the point plot
+    sns.pointplot(x=x_data, y=y_data, capsize=0.2, join=False, color='darkblue', scale=1.5)
+    
+    # Add error bars
+    plt.errorbar(range(len(x_data)), y_data, yerr=confidence_intervals, fmt='none', color='darkblue', capsize=5, linewidth=1.5, alpha=0.7)
+    
+    plt.xlabel(param.replace('_', ' ').title(), fontsize=12, fontweight='bold')
+    plt.ylabel(f'Average {y_value.replace("_", " ").title()}', fontsize=12, fontweight='bold')
+    plt.title(f'Impact of {param.replace("_", " ").title()} on {y_value.replace("_", " ").title()}', fontsize=14, fontweight='bold')
+    plt.suptitle('With 95% Confidence Intervals', fontsize=10, y=0.95)
+    
+    plt.xticks(range(len(x_data)), x_data, rotation=45, ha='right', fontsize=10)
+    plt.yticks(fontsize=10)
+    
+    # Add value labels
+    for i, v in enumerate(y_data):
+        plt.text(i, v, f'{v:.2f}', ha='center', va='bottom', fontsize=9)
+    
+    plt.tight_layout()
+    plt.grid(axis='y', linestyle=':', alpha=0.7)
+    plt.gca().set_facecolor('#f8f8f8')  # Light gray background
+    
     plt.show()
 
 def main():

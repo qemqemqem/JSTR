@@ -115,7 +115,14 @@ def main():
     print(f"Display graph: {args.display_graph}")
 
     results = load_results(args.input_file)
-    create_graph(results, args.param, args.y_value, args)
+
+    if args.param == 'all':
+        params = ['bimodal_discount', 'set_size', 'num_people', 'num_interests', 'avg_points']
+        for param in params:
+            print(f"Creating graph for parameter: {param}")
+            create_graph(results, param, args.y_value, args)
+    else:
+        create_graph(results, args.param, args.y_value, args)
 
 if __name__ == "__main__":
     main()

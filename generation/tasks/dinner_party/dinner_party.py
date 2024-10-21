@@ -16,7 +16,7 @@ class Person:
         self.interests = {k: v for k, v in self.interests.items() if v is not None}
 
     @classmethod
-    def random_person(cls, name: str, possible_interests: List[str], total_points: int):
+    def random_person(cls, name: str, possible_interests: List[str], total_points: int, min_interests: int, max_interests: int):
         """
         Create a random Person object with random interests and a specified total number of points.
 
@@ -24,6 +24,8 @@ class Person:
         name (str): The name of the person.
         possible_interests (List[str]): A list of possible interests to choose from.
         total_points (int): The total number of points to distribute among interests.
+        min_interests (int): The minimum number of interests a person can have.
+        max_interests (int): The maximum number of interests a person can have.
 
         Returns:
         Person: A new Person object with randomly selected interests and levels.
@@ -31,7 +33,7 @@ class Person:
         if total_points < 1:
             return cls(name, {})
 
-        num_interests = random.randint(1, min(len(possible_interests), total_points))
+        num_interests = random.randint(min_interests, min(max_interests, len(possible_interests), total_points))
         selected_interests = random.sample(possible_interests, num_interests)
         
         interests = {}
@@ -144,7 +146,7 @@ class DinnerParty(TaskSpecification):
         return score
 
     @classmethod
-    def random_dinner_party(cls, num_people: int, num_interests: int, set_size: int, total_points: int, points_spread: int):
+    def random_dinner_party(cls, num_people: int, num_interests: int, set_size: int, total_points: int, points_spread: int, min_interests: int, max_interests: int):
         """
         Create a random DinnerParty object.
 
@@ -154,6 +156,8 @@ class DinnerParty(TaskSpecification):
         set_size (int): The number of people to be selected for the dinner party.
         total_points (int): The total number of interest points to distribute among all people.
         points_spread (int): The plus or minus on a person's total point value.
+        min_interests (int): The minimum number of interests a person can have.
+        max_interests (int): The maximum number of interests a person can have.
 
         Returns:
         DinnerParty: A new DinnerParty object with randomly generated people and interests.
@@ -191,7 +195,7 @@ class DinnerParty(TaskSpecification):
         # Adjust the last person's points to make the total sum up to total_points
         points_per_person[-1] = max(1, total_points - sum(points_per_person[:-1]))
         
-        people = [Person.random_person(name, selected_interests, points) 
+        people = [Person.random_person(name, selected_interests, points, min_interests, max_interests) 
                   for name, points in zip(selected_names, points_per_person)]
         task_description = f"Select {set_size} people for a dinner party that will have the most engaging conversations."
         return cls(task_description, people, set_size)

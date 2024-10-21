@@ -23,7 +23,7 @@ def load_results(file_path):
         print("First result keys:", results[0].keys())
     return results
 
-def create_graph(results, param, y_value):
+def create_graph(results, param, y_value, args):
     print(f"Creating graph with param: {param}, y_value: {y_value}")
     param_values = defaultdict(list)
     for i, result in enumerate(results):
@@ -90,7 +90,7 @@ def main():
     print(f"Y-value: {args.y_value}")
 
     results = load_results(args.input_file)
-    create_graph(results, args.param, args.y_value)
+    create_graph(results, args.param, args.y_value, args)
 
 if __name__ == "__main__":
     main()

@@ -181,7 +181,7 @@ class DinnerParty(TaskSpecification):
         selected_interests = random.sample(all_interests, num_interests)
 
         # Randomly assign total points to each person, ensuring at least 1 point per person
-        total_points = num_interests * 5  # Assuming maximum 5 points per interest
+        total_points = num_interests * 20  # Assuming maximum 5 points per interest
         points_per_person = [random.randint(1, total_points // num_people * 2) for _ in range(num_people)]
         
         # Adjust the last person's points to make the total sum up to total_points

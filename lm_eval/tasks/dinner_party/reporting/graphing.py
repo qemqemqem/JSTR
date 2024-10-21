@@ -6,6 +6,7 @@ import os
 from pathlib import Path
 import numpy as np
 import seaborn as sns
+from scipy import stats
 
 def get_latest_file(directory):
     return max(
@@ -34,7 +35,7 @@ def create_graph(results, param, y_value, args):
 
     x_data = list(param_values.keys())
     
-    plt.figure(figsize=(12, 7))  # Slightly larger figure to accommodate legend
+    plt.figure(figsize=(14, 8))  # Larger figure to accommodate additional legend
     
     # Create box plot
     box_plot = plt.boxplot([param_values[x] for x in x_data], patch_artist=True, medianprops={'color': "#D81B60"})
@@ -44,10 +45,19 @@ def create_graph(results, param, y_value, args):
         box.set(facecolor='#1E88E5', alpha=0.6)
     
     # Plot individual data points with jitter
+    all_x = []
+    all_y = []
     for i, x in enumerate(x_data):
         y = param_values[x]
         jitter = np.random.normal(0, 0.1, len(y))
         plt.scatter(np.array([i+1] * len(y)) + jitter, y, color='#888888', alpha=0.3, s=30, zorder=2)
+        all_x.extend([x] * len(y))
+        all_y.extend(y)
+    
+    # Compute best fit line
+    slope, intercept, r_value, p_value, std_err = stats.linregress(all_x, all_y)
+    line = slope * np.array(x_data) + intercept
+    plt.plot(range(1, len(x_data) + 1), line, color='red', linestyle='--', label=f'Best Fit Line (R² = {r_value**2:.3f})')
     
     plt.xlabel(param.replace('_', ' ').title(), fontsize=11, fontweight='bold')
     plt.ylabel(f'{y_value.replace("_", " ").title()}', fontsize=11, fontweight='bold')
@@ -63,9 +73,11 @@ def create_graph(results, param, y_value, args):
     for spine in plt.gca().spines.values():
         spine.set_edgecolor('#e0e0e0')
     
-    # Add legend to show N for each bin
+    # Add legend to show N for each bin and best fit line info
     legend_labels = [f'{x}: N={len(param_values[x])}' for x in x_data]
-    plt.legend(legend_labels, title="Bin Sizes", title_fontsize=10, fontsize=8, loc='center left', bbox_to_anchor=(1, 0.5))
+    plt.legend(legend_labels + [f'Best Fit Line (R² = {r_value**2:.3f})'], 
+               title="Bin Sizes and Fit", title_fontsize=10, fontsize=8, 
+               loc='center left', bbox_to_anchor=(1, 0.5))
     
     plt.tight_layout()
     

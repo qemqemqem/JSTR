@@ -66,18 +66,15 @@ class DinnerParty(TaskSpecification):
     def __post_init__(self):
         super().__init__(self.task_description, [person.name for person in self.people], self.set_size)
         self.options = [person.name for person in self.people]
-        self.target_score = self._sample_high_score(kth=3)
+        self._calculate_target_score()
 
-    def _sample_high_score(self, num_samples: int = 1000, kth: int = 3) -> float:
+    def _calculate_target_score(self, num_samples: int = 1000, kth: int = 3) -> None:
         """
-        Sample random parties and return the kth highest score.
+        Calculate the target score by sampling random parties.
 
         Args:
         num_samples (int): The number of random samples to generate.
-        kth (int): The position of the score to return (e.g., 3 for the 3rd highest score).
-
-        Returns:
-        float: The kth highest score seen among the samples.
+        kth (int): The position of the score to set as the target (e.g., 3 for the 3rd highest score).
         """
         self.stored_scores = []
         for _ in range(num_samples):
@@ -85,9 +82,9 @@ class DinnerParty(TaskSpecification):
             score = self.score_set(random_set)
             self.stored_scores.append(score)
         self.stored_scores.sort(reverse=True)
-        return self.stored_scores[kth - 1] if kth <= len(self.stored_scores) else min(self.stored_scores)
+        self.target_score = self.stored_scores[kth - 1] if kth <= len(self.stored_scores) else min(self.stored_scores)
 
-    def get_score_ranking(self, score: float) -> tuple[float, int, float]:
+    def get_score_statistics(self) -> Dict[str, float]:
         """
         Get the percentile ranking, absolute ranking, and percent of max score for a given score within the stored scores.
 

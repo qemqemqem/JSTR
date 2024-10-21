@@ -70,7 +70,8 @@ def produce_and_save_dinner_parties(n: int, output_file: str, num_people: int = 
                         "min_interests": min_interests,
                         "max_interests": max_interests,
                         "bimodal_discount": bimodal_discount
-                    }
+                    },
+                    "stored_scores": party.stored_scores
                 }
             }
             f.write(json.dumps(json_obj) + '\n')

@@ -42,22 +42,22 @@ def create_graph(results, param, y_value, args):
     plt.figure(figsize=(10, 6))  # Slightly smaller, more compact figure
     
     # Create the point plot with a softer color
-    sns.pointplot(x=x_data, y=y_data, capsize=0.1, join=True, color='#4e79a7', scale=1.2)
+    sns.pointplot(x=x_data, y=y_data, capsize=0.1, linestyles='dashed', color='#222222')
     
     # Add error bars with improved visibility
-    plt.errorbar(range(len(x_data)), y_data, yerr=confidence_intervals, fmt='none', color='#4e79a7', capsize=4, linewidth=1.2, alpha=0.8)
+    plt.errorbar(range(len(x_data)), y_data, yerr=confidence_intervals, fmt='none', color='#4444BB', capsize=10, linewidth=2.8, alpha=1.0, capthick=2.0)
     
     plt.xlabel(param.replace('_', ' ').title(), fontsize=11, fontweight='bold')
     plt.ylabel(f'Average {y_value.replace("_", " ").title()}', fontsize=11, fontweight='bold')
     plt.title(f'Impact of {param.replace("_", " ").title()} on {y_value.replace("_", " ").title()}', fontsize=13, fontweight='bold')
-    plt.suptitle('95% Confidence Intervals', fontsize=9, y=0.95)
+    # plt.suptitle('95% Confidence Intervals', fontsize=9, y=0.0)
     
     plt.xticks(range(len(x_data)), x_data, rotation=0, ha='center', fontsize=9)
     plt.yticks(fontsize=9)
     
     # Add value labels with improved positioning
-    for i, v in enumerate(y_data):
-        plt.text(i, v, f'{v:.2f}', ha='center', va='bottom', fontsize=8, color='#4e79a7')
+    # for i, v in enumerate(y_data):
+    #     plt.text(i, v+5, f'{v:.2f}', ha='center', va='bottom', fontsize=8, color='#4e79a7')
     
     plt.tight_layout()
     plt.grid(axis='y', linestyle='--', alpha=0.3)
@@ -90,8 +90,8 @@ def main():
     parser.add_argument("--param", choices=['bimodal_discount', 'set_size', 'num_people', 'num_interests', 'avg_points'], 
                         default='set_size', help="Parameter to use for x-axis")
     parser.add_argument("--y_value", choices=['dinner_score', 'percentile', 'ranking'], 
-                        default='dinner_score', help="Value to use for y-axis")
-    parser.add_argument("--display_graph", action="store_true", default=True,
+                        default='ranking', help="Value to use for y-axis")
+    parser.add_argument("--display_graph", action="store_true", default=False,
                         help="Whether to display the graph (default: True)")
     args = parser.parse_args()
 

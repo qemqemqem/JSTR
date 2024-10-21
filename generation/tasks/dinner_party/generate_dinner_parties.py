@@ -5,7 +5,7 @@ from pathlib import Path
 from generation.tasks.dinner_party.dinner_party import DinnerParty
 
 
-def produce_random_dinner_party(num_people: int = 20, num_interests: int = 8, set_size: int = 5) -> DinnerParty:
+def produce_random_dinner_party(num_people: int = 20, num_interests: int = 8, set_size: int = 5, avg_points: int = 20, points_spread: int = 10) -> DinnerParty:
     """
     Produce a random DinnerParty instance.
 
@@ -13,13 +13,15 @@ def produce_random_dinner_party(num_people: int = 20, num_interests: int = 8, se
     num_people (int): The number of people to generate for the dinner party.
     num_interests (int): The number of possible interests to choose from.
     set_size (int): The number of people to be selected for the dinner party.
+    avg_points (int): The average interest points for a person.
+    points_spread (int): The plus or minus on a person's total point value.
 
     Returns:
     DinnerParty: A randomly generated DinnerParty instance.
     """
-    return DinnerParty.random_dinner_party(num_people=num_people, num_interests=num_interests, set_size=set_size)
+    return DinnerParty.random_dinner_party(num_people=num_people, num_interests=num_interests, set_size=set_size, avg_points=avg_points, points_spread=points_spread)
 
-def produce_and_save_dinner_parties(n: int, output_file: str, num_people: int = 20, num_interests: int = 8, set_size: int = 5):
+def produce_and_save_dinner_parties(n: int, output_file: str, num_people: int = 20, num_interests: int = 8, set_size: int = 5, avg_points: int = 20, points_spread: int = 10):
     """
     Produce N dinner parties and append them to a .jsonl file.
 
@@ -29,6 +31,8 @@ def produce_and_save_dinner_parties(n: int, output_file: str, num_people: int = 
     num_people (int): The number of people to generate for each dinner party.
     num_interests (int): The number of possible interests to choose from for each dinner party.
     set_size (int): The number of people to be selected for each dinner party.
+    avg_points (int): The average interest points for a person.
+    points_spread (int): The plus or minus on a person's total point value.
     """
     full_output_path = Path(output_file)
 
@@ -37,7 +41,7 @@ def produce_and_save_dinner_parties(n: int, output_file: str, num_people: int = 
 
     with open(full_output_path, 'w') as f:
         for _ in range(n):
-            party = produce_random_dinner_party(num_people, num_interests, set_size)
+            party = produce_random_dinner_party(num_people, num_interests, set_size, avg_points, points_spread)
             json_obj = {
                 "question": party.to_prompt(),
                 "target_score": party.target_score,
@@ -61,15 +65,17 @@ def main():
     parser.add_argument("--num_people", type=int, default=20, help="Number of people per dinner party")
     parser.add_argument("--num_interests", type=int, default=8, help="Number of interests to choose from")
     parser.add_argument("--set_size", type=int, default=5, help="Number of people to select for each dinner party")
+    parser.add_argument("--avg_points", type=int, default=20, help="Average interest points for a person")
+    parser.add_argument("--points_spread", type=int, default=10, help="Plus or minus on a person's total point value")
     args = parser.parse_args()
 
     # Generate and print one random dinner party
-    random_party = produce_random_dinner_party(args.num_people, args.num_interests, args.set_size)
+    random_party = produce_random_dinner_party(args.num_people, args.num_interests, args.set_size, args.avg_points, args.points_spread)
     print("Random Dinner Party:")
     print(random_party.to_prompt())
     print("\nTarget Score:", random_party.target_score)
 
-    produce_and_save_dinner_parties(args.num_parties, args.output, args.num_people, args.num_interests, args.set_size)
+    produce_and_save_dinner_parties(args.num_parties, args.output, args.num_people, args.num_interests, args.set_size, args.avg_points, args.points_spread)
     print(f"\nDinner parties saved to `{args.output}`")
 
 if __name__ == "__main__":

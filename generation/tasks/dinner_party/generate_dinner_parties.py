@@ -92,7 +92,7 @@ def main():
     parser.add_argument("--points_spread", type=int, default=5, help="Plus or minus on a person's total point value")
     parser.add_argument("--min_interests", type=int, default=2, help="Minimum number of interests a person can have")
     parser.add_argument("--max_interests", type=int, default=6, help="Maximum number of interests a person can have")
-    parser.add_argument("--bimodal_discount", type=parse_range, default="15", help="Discount to apply to 50% of people's points total (can be a range)")
+    parser.add_argument("--bimodal_discount", type=parse_range, default="0", help="Discount to apply to 50% of people's points total (can be a range)")
     args = parser.parse_args()
 
     # Convert args to a dictionary, removing 'num_parties' and 'output'

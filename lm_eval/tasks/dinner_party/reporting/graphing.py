@@ -70,8 +70,9 @@ def create_graph(results, param, y_value, args):
     plt.savefig(output_file, dpi=300, bbox_inches='tight')
     print(f"Graph saved as: {output_file}")
 
-    # Show it to the user
-    plt.show()
+    # Show it to the user if display_graph is True
+    if args.display_graph:
+        plt.show()
     
     plt.close()
 
@@ -86,11 +87,14 @@ def main():
                         default='set_size', help="Parameter to use for x-axis")
     parser.add_argument("--y_value", choices=['dinner_score', 'percentile', 'ranking'], 
                         default='dinner_score', help="Value to use for y-axis")
+    parser.add_argument("--display_graph", action="store_true", default=True,
+                        help="Whether to display the graph (default: True)")
     args = parser.parse_args()
 
     print(f"Input file: {args.input_file}")
     print(f"Param: {args.param}")
     print(f"Y-value: {args.y_value}")
+    print(f"Display graph: {args.display_graph}")
 
     results = load_results(args.input_file)
     create_graph(results, args.param, args.y_value, args)

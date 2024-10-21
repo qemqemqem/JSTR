@@ -43,12 +43,12 @@ def score_answer(question, answer):
     # Score the selected set
     score = dinner_party.score_set(selected_set, debug=True)
 
-    # Get the percentile ranking, absolute ranking, and percent of max score
-    percentile, ranking, percent_of_max = dinner_party.get_score_ranking(score)
+    # Get the score statistics
+    score_stats = dinner_party.get_score_statistics(score)
 
     return {
         "dinner_score": score,
-        "percentile": percentile,
-        "ranking": ranking,
-        "percent_of_max": percent_of_max,
+        "percentile": score_stats['percentile'],
+        "ranking": score_stats['ranking'],
+        "percent_of_max": score_stats['percent_of_max'],
     }

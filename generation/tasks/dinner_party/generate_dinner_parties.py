@@ -19,7 +19,8 @@ def produce_random_dinner_party(num_people: int = 20, num_interests: int = 8, se
     Returns:
     DinnerParty: A randomly generated DinnerParty instance.
     """
-    return DinnerParty.random_dinner_party(num_people=num_people, num_interests=num_interests, set_size=set_size, avg_points=avg_points, points_spread=points_spread)
+    total_points = num_people * avg_points
+    return DinnerParty.random_dinner_party(num_people=num_people, num_interests=num_interests, set_size=set_size, total_points=total_points, points_spread=points_spread)
 
 def produce_and_save_dinner_parties(n: int, output_file: str, num_people: int = 20, num_interests: int = 8, set_size: int = 5, avg_points: int = 20, points_spread: int = 10):
     """

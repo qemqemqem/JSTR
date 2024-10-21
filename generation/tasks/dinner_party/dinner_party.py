@@ -144,7 +144,7 @@ class DinnerParty(TaskSpecification):
         return score
 
     @classmethod
-    def random_dinner_party(cls, num_people: int, num_interests: int, set_size: int):
+    def random_dinner_party(cls, num_people: int, num_interests: int, set_size: int, total_points: int, points_spread: int):
         """
         Create a random DinnerParty object.
 
@@ -152,6 +152,8 @@ class DinnerParty(TaskSpecification):
         num_people (int): The number of people to generate for the dinner party.
         num_interests (int): The number of possible interests to choose from.
         set_size (int): The number of people to be selected for the dinner party.
+        total_points (int): The total number of interest points to distribute among all people.
+        points_spread (int): The plus or minus on a person's total point value.
 
         Returns:
         DinnerParty: A new DinnerParty object with randomly generated people and interests.
@@ -180,12 +182,14 @@ class DinnerParty(TaskSpecification):
         selected_names = random.sample(names, num_people)
         selected_interests = random.sample(all_interests, num_interests)
 
-        # Randomly assign total points to each person, ensuring at least 1 point per person
-        total_points = num_interests * 20  # Assuming maximum 5 points per interest
-        points_per_person = [random.randint(1, total_points // num_people * 2) for _ in range(num_people)]
+        # Calculate average points per person
+        avg_points = total_points // num_people
+
+        # Randomly assign points to each person, ensuring at least 1 point per person
+        points_per_person = [max(1, random.randint(avg_points - points_spread, avg_points + points_spread)) for _ in range(num_people)]
         
         # Adjust the last person's points to make the total sum up to total_points
-        points_per_person[-1] = total_points - sum(points_per_person[:-1])
+        points_per_person[-1] = max(1, total_points - sum(points_per_person[:-1]))
         
         people = [Person.random_person(name, selected_interests, points) 
                   for name, points in zip(selected_names, points_per_person)]

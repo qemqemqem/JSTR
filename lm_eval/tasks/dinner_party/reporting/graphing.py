@@ -4,6 +4,8 @@ import matplotlib.pyplot as plt
 from collections import defaultdict
 import os
 from pathlib import Path
+import numpy as np
+from scipy import stats
 
 def get_latest_file(directory):
     return max(
@@ -25,9 +27,7 @@ def create_graph(results, param, y_value):
     param_values = defaultdict(list)
     for i, result in enumerate(results):
         print(f"Processing result {i}:")
-        # print("  Keys:", result.keys())
         if 'scoring_guide' in result['doc']:
-            # print("  Scoring guide keys:", result['doc']['scoring_guide'].keys())
             if 'parameters' in result['doc']['scoring_guide']:
                 print("Parameters:", result['doc']['scoring_guide']['parameters'])
         
@@ -39,13 +39,19 @@ def create_graph(results, param, y_value):
             print(f"  Result: {result.keys()}")
 
     x_data = sorted(param_values.keys())
-    y_data = [sum(param_values[x]) / len(param_values[x]) for x in x_data]
+    y_data = [np.mean(param_values[x]) for x in x_data]
+    
+    # Calculate confidence intervals
+    confidence_intervals = [stats.sem(param_values[x]) * stats.t.ppf((1 + 0.95) / 2, len(param_values[x])-1)
+                            for x in x_data]
 
     plt.figure(figsize=(12, 6))
-    plt.bar(x_data, y_data)
+    plt.bar(x_data, y_data, yerr=confidence_intervals, capsize=5, alpha=0.7)
+    plt.errorbar(x_data, y_data, yerr=confidence_intervals, fmt='none', color='black', capsize=5)
+    
     plt.xlabel(param.replace('_', ' ').title())
     plt.ylabel(f'Average {y_value.replace("_", " ").title()}')
-    plt.title(f'{param.replace("_", " ").title()} vs Average {y_value.replace("_", " ").title()}')
+    plt.title(f'{param.replace("_", " ").title()} vs Average {y_value.replace("_", " ").title()} with 95% CI')
     plt.xticks(x_data, rotation=45, ha='right')  # Rotate x-axis labels for better readability
     plt.tight_layout()  # Adjust layout to prevent cutting off labels
     plt.grid(axis='y', linestyle='--', alpha=0.7)

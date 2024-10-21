@@ -41,11 +41,16 @@ def create_graph(results, param, y_value, args):
 
     plt.figure(figsize=(12, 7))  # Slightly larger figure to accommodate legend
     
+    # Plot individual data points
+    for i, x in enumerate(x_data):
+        y = param_values[x]
+        plt.scatter([i] * len(y), y, color='#888888', alpha=0.5, s=20, zorder=2)
+    
     # Create the point plot with a softer color
-    sns.pointplot(x=x_data, y=y_data, capsize=0.1, linestyles='dashed', color='#222222')
+    sns.pointplot(x=x_data, y=y_data, capsize=0.1, linestyles='dashed', color='#222222', zorder=3)
     
     # Add error bars with improved visibility
-    plt.errorbar(range(len(x_data)), y_data, yerr=confidence_intervals, fmt='none', color='#4444BB', capsize=10, linewidth=2.8, alpha=1.0, capthick=2.0)
+    plt.errorbar(range(len(x_data)), y_data, yerr=confidence_intervals, fmt='none', color='#4444BB', capsize=10, linewidth=2.8, alpha=1.0, capthick=2.0, zorder=4)
     
     plt.xlabel(param.replace('_', ' ').title(), fontsize=11, fontweight='bold')
     plt.ylabel(f'Average {y_value.replace("_", " ").title()}', fontsize=11, fontweight='bold')

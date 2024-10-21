@@ -41,13 +41,14 @@ def create_graph(results, param, y_value):
     x_data = sorted(param_values.keys())
     y_data = [sum(param_values[x]) / len(param_values[x]) for x in x_data]
 
-    plt.figure(figsize=(10, 6))
-    plt.plot(x_data, y_data, marker='o')
+    plt.figure(figsize=(12, 6))
+    plt.bar(x_data, y_data)
     plt.xlabel(param.replace('_', ' ').title())
     plt.ylabel(f'Average {y_value.replace("_", " ").title()}')
     plt.title(f'{param.replace("_", " ").title()} vs Average {y_value.replace("_", " ").title()}')
-    plt.xticks(x_data)  # Set x-ticks to only the values present in the data
-    plt.grid(True)
+    plt.xticks(x_data, rotation=45, ha='right')  # Rotate x-axis labels for better readability
+    plt.tight_layout()  # Adjust layout to prevent cutting off labels
+    plt.grid(axis='y', linestyle='--', alpha=0.7)
     plt.show()
 
 def main():

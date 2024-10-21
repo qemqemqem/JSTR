@@ -37,8 +37,6 @@ lm_eval/tasks/dinner_party/run_evaluation.sh
 
 Now, the results will be in the `lm_eval/tasks/dinner_party/results` directory. The `graphing.py` utility will default to using the most recent result there. 
 
-- [ ] Make sure it's using the most recent result and not just looking in gpt4
-
 You can make some graphs of your most recent run like this:
 
 ```bash

@@ -63,7 +63,7 @@ def create_graph(results, param, y_value, args):
     
     # Add legend to show N for each bin
     legend_labels = [f'{x}: N={len(param_values[x])}' for x in x_data]
-    plt.legend(legend_labels, title=param.replace('_', ' ').title(), title_fontsize=10, fontsize=8, loc='center left', bbox_to_anchor=(1, 0.5))
+    plt.legend(legend_labels, title="Bin Sizes", title_fontsize=10, fontsize=8, loc='center left', bbox_to_anchor=(1, 0.5))
     
     plt.tight_layout()
     

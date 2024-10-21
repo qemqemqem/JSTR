@@ -39,7 +39,7 @@ def produce_random_dinner_party(num_people: Union[int, List[int]] = 20, num_inte
 
 def produce_and_save_dinner_parties(n: int, output_file: str, **kwargs):
     """
-    Produce N dinner parties for each combination of parameters and append them to a .jsonl file.
+    Produce N dinner parties for each combination of parameters and save them to a .jsonl file.
 
     Args:
     n (int): The number of dinner parties to produce for each combination of parameters.
@@ -56,8 +56,8 @@ def produce_and_save_dinner_parties(n: int, output_file: str, **kwargs):
     param_values = [kwargs[name] if isinstance(kwargs[name], list) else [kwargs[name]] for name in param_names]
     combinations = list(itertools.product(*param_values))
 
-    # Open the file in append mode
-    with open(full_output_path, 'a') as f:
+    # Open the file in write mode to start with an empty file
+    with open(full_output_path, 'w') as f:
         for combo in combinations:
             params = dict(zip(param_names, combo))
             for _ in range(n):

@@ -69,6 +69,9 @@ def create_graph(results, param, y_value, args):
     output_file = output_dir / f"{param}_{y_value}.png"
     plt.savefig(output_file, dpi=300, bbox_inches='tight')
     print(f"Graph saved as: {output_file}")
+
+    # Show it to the user
+    plt.show()
     
     plt.close()
 

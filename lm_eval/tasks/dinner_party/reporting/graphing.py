@@ -35,14 +35,15 @@ def create_graph(results, param, y_value, args):
     x_data = list(param_values.keys())
     y_data = [np.median(param_values[x]) for x in x_data]
     
-    # Calculate IQR for each x value
-    iqrs = [np.percentile(param_values[x], 75) - np.percentile(param_values[x], 25) for x in x_data]
+    # Calculate lower and upper bounds for 90% confidence interval
+    lower_bounds = [np.percentile(param_values[x], 5) for x in x_data]
+    upper_bounds = [np.percentile(param_values[x], 95) for x in x_data]
+
+    # Calculate asymmetric error bars
+    yerr = [np.array(y_data) - np.array(lower_bounds), 
+            np.array(upper_bounds) - np.array(y_data)]
 
     plt.figure(figsize=(12, 7))  # Slightly larger figure to accommodate legend
-    
-    # Find the overall min and max values
-    all_values = [value for values in param_values.values() for value in values]
-    y_min, y_max = min(all_values), max(all_values)
     
     # Plot individual data points with jitter
     for i, x in enumerate(x_data):
@@ -53,8 +54,8 @@ def create_graph(results, param, y_value, args):
     # Create the point plot for median values
     sns.pointplot(x=x_data, y=y_data, capsize=0.1, linestyles="none", color='#D81B60', zorder=4)
     
-    # Add error bars representing IQR
-    plt.errorbar(range(len(x_data)), y_data, yerr=iqrs, fmt='none', color='#1E88E5', capsize=5, linewidth=1.5, alpha=0.8, capthick=1.5, zorder=3)
+    # Add asymmetric error bars
+    plt.errorbar(range(len(x_data)), y_data, yerr=yerr, fmt='none', color='#1E88E5', capsize=5, linewidth=1.5, alpha=0.8, capthick=1.5, zorder=3)
     
     plt.xlabel(param.replace('_', ' ').title(), fontsize=11, fontweight='bold')
     plt.ylabel(f'Median {y_value.replace("_", " ").title()}', fontsize=11, fontweight='bold')
@@ -63,7 +64,8 @@ def create_graph(results, param, y_value, args):
     plt.xticks(range(len(x_data)), x_data, rotation=0, ha='center', fontsize=9)
     plt.yticks(fontsize=9)
     
-    # Set y-axis limits to reflect min and max values
+    # Set y-axis limits to reflect min and max values of the confidence intervals
+    y_min, y_max = min(lower_bounds), max(upper_bounds)
     plt.ylim(y_min, y_max)
     
     plt.grid(axis='y', linestyle='--', alpha=0.3)

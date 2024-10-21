@@ -12,7 +12,7 @@ def parse_range(arg: str) -> List[int]:
     """Parse a comma-separated string into a list of integers."""
     return [int(x) for x in arg.split(',')]
 
-def produce_random_dinner_party(num_people: Union[int, List[int]] = 20, num_interests: Union[int, List[int]] = 8, set_size: Union[int, List[int]] = 5, avg_points: Union[int, List[int]] = 20, points_spread: int = 10, min_interests: int = 1, max_interests: int = 5, bimodal_discount: int = 0) -> DinnerParty:
+def produce_random_dinner_party(num_people: Union[int, List[int]] = 20, num_interests: Union[int, List[int]] = 8, set_size: Union[int, List[int]] = 5, avg_points: Union[int, List[int]] = 20, points_spread: int = 10, min_interests: int = 1, max_interests: int = 5, bimodal_discount: Union[int, List[int]] = 0) -> DinnerParty:
     """
     Produce a random DinnerParty instance.
 
@@ -24,7 +24,7 @@ def produce_random_dinner_party(num_people: Union[int, List[int]] = 20, num_inte
     points_spread (int): The plus or minus on a person's total point value.
     min_interests (int): The minimum number of interests a person can have.
     max_interests (int): The maximum number of interests a person can have.
-    bimodal_discount (int): The discount to apply to 50% of people's points total.
+    bimodal_discount (int or List[int]): The discount to apply to 50% of people's points total.
 
     Returns:
     DinnerParty: A randomly generated DinnerParty instance.
@@ -33,6 +33,7 @@ def produce_random_dinner_party(num_people: Union[int, List[int]] = 20, num_inte
     num_interests = random.choice(num_interests) if isinstance(num_interests, list) else num_interests
     set_size = random.choice(set_size) if isinstance(set_size, list) else set_size
     avg_points = random.choice(avg_points) if isinstance(avg_points, list) else avg_points
+    bimodal_discount = random.choice(bimodal_discount) if isinstance(bimodal_discount, list) else bimodal_discount
 
     total_points = num_people * avg_points
     return DinnerParty.random_dinner_party(num_people=num_people, num_interests=num_interests, set_size=set_size, total_points=total_points, points_spread=points_spread, min_interests=min_interests, max_interests=max_interests, bimodal_discount=bimodal_discount)
@@ -91,7 +92,7 @@ def main():
     parser.add_argument("--points_spread", type=int, default=5, help="Plus or minus on a person's total point value")
     parser.add_argument("--min_interests", type=int, default=2, help="Minimum number of interests a person can have")
     parser.add_argument("--max_interests", type=int, default=6, help="Maximum number of interests a person can have")
-    parser.add_argument("--bimodal_discount", type=int, default=15, help="Discount to apply to 50% of people's points total")
+    parser.add_argument("--bimodal_discount", type=parse_range, default="15", help="Discount to apply to 50% of people's points total (can be a range)")
     args = parser.parse_args()
 
     # Convert args to a dictionary, removing 'num_parties' and 'output'

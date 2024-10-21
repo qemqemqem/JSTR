@@ -146,7 +146,7 @@ class DinnerParty(TaskSpecification):
         return score
 
     @classmethod
-    def random_dinner_party(cls, num_people: int, num_interests: int, set_size: int, total_points: int, points_spread: int, min_interests: int, max_interests: int):
+    def random_dinner_party(cls, num_people: int, num_interests: int, set_size: int, total_points: int, points_spread: int, min_interests: int, max_interests: int, bimodal_discount: int = 0):
         """
         Create a random DinnerParty object.
 
@@ -158,6 +158,7 @@ class DinnerParty(TaskSpecification):
         points_spread (int): The plus or minus on a person's total point value.
         min_interests (int): The minimum number of interests a person can have.
         max_interests (int): The maximum number of interests a person can have.
+        bimodal_discount (int): The discount to apply to 50% of people's points total.
 
         Returns:
         DinnerParty: A new DinnerParty object with randomly generated people and interests.
@@ -191,6 +192,12 @@ class DinnerParty(TaskSpecification):
 
         # Randomly assign points to each person, ensuring at least 1 point per person
         points_per_person = [max(1, random.randint(avg_points - points_spread, avg_points + points_spread)) for _ in range(num_people)]
+        
+        # Apply bimodal discount to 50% of people
+        if bimodal_discount > 0:
+            discounted_indices = random.sample(range(num_people), num_people // 2)
+            for idx in discounted_indices:
+                points_per_person[idx] = max(1, points_per_person[idx] - bimodal_discount)
         
         # Adjust the last person's points to make the total sum up to total_points
         points_per_person[-1] = max(1, total_points - sum(points_per_person[:-1]))

@@ -36,8 +36,8 @@ def create_graph(results, param, y_value, args):
     y_data = [np.median(param_values[x]) for x in x_data]
     
     # Calculate lower and upper bounds for 90% confidence interval
-    lower_bounds = [np.percentile(param_values[x], 5) for x in x_data]
-    upper_bounds = [np.percentile(param_values[x], 95) for x in x_data]
+    lower_bounds = [np.percentile(param_values[x], 25) for x in x_data]
+    upper_bounds = [np.percentile(param_values[x], 75) for x in x_data]
 
     # Calculate asymmetric error bars
     yerr = [np.array(y_data) - np.array(lower_bounds), 

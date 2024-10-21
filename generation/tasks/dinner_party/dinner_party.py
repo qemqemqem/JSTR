@@ -28,6 +28,9 @@ class Person:
         Returns:
         Person: A new Person object with randomly selected interests and levels.
         """
+        if total_points < 1:
+            return cls(name, {})
+
         num_interests = random.randint(1, min(len(possible_interests), total_points))
         selected_interests = random.sample(possible_interests, num_interests)
         
@@ -38,7 +41,7 @@ class Person:
             if i == len(selected_interests) - 1:
                 interests[interest] = remaining_points
             else:
-                points = random.randint(1, remaining_points - (len(selected_interests) - i - 1))
+                points = random.randint(1, max(1, remaining_points - (len(selected_interests) - i - 1)))
                 interests[interest] = points
                 remaining_points -= points
         

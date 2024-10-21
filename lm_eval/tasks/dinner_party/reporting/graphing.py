@@ -5,7 +5,6 @@ from collections import defaultdict
 import os
 from pathlib import Path
 import numpy as np
-from scipy import stats
 import seaborn as sns
 
 def get_latest_file(directory):
@@ -34,10 +33,10 @@ def create_graph(results, param, y_value, args):
             print(f"  KeyError: {e}")
 
     x_data = list(param_values.keys())
-    y_data = [np.mean(param_values[x]) for x in x_data]
+    y_data = [np.median(param_values[x]) for x in x_data]
     
-    confidence_intervals = [stats.sem(param_values[x]) * stats.t.ppf((1 + 0.95) / 2, len(param_values[x])-1)
-                            for x in x_data]
+    # Calculate IQR for each x value
+    iqrs = [np.percentile(param_values[x], 75) - np.percentile(param_values[x], 25) for x in x_data]
 
     plt.figure(figsize=(12, 7))  # Slightly larger figure to accommodate legend
     
@@ -51,15 +50,15 @@ def create_graph(results, param, y_value, args):
         jitter = np.random.normal(0, 0.1, len(y))
         plt.scatter(np.array([i] * len(y)) + jitter, y, color='#888888', alpha=0.3, s=30, zorder=2)
     
-    # Create the point plot for mean values
+    # Create the point plot for median values
     sns.pointplot(x=x_data, y=y_data, capsize=0.1, linestyles="none", color='#D81B60', zorder=4)
     
-    # Add error bars with improved visibility
-    plt.errorbar(range(len(x_data)), y_data, yerr=confidence_intervals, fmt='none', color='#1E88E5', capsize=5, linewidth=1.5, alpha=0.8, capthick=1.5, zorder=3)
+    # Add error bars representing IQR
+    plt.errorbar(range(len(x_data)), y_data, yerr=[(iqr/2, iqr/2) for iqr in iqrs], fmt='none', color='#1E88E5', capsize=5, linewidth=1.5, alpha=0.8, capthick=1.5, zorder=3)
     
     plt.xlabel(param.replace('_', ' ').title(), fontsize=11, fontweight='bold')
-    plt.ylabel(f'{y_value.replace("_", " ").title()}', fontsize=11, fontweight='bold')
-    plt.title(f'Impact of {param.replace("_", " ").title()} on {y_value.replace("_", " ").title()}', fontsize=13, fontweight='bold')
+    plt.ylabel(f'Median {y_value.replace("_", " ").title()}', fontsize=11, fontweight='bold')
+    plt.title(f'Impact of {param.replace("_", " ").title()} on Median {y_value.replace("_", " ").title()}', fontsize=13, fontweight='bold')
     
     plt.xticks(range(len(x_data)), x_data, rotation=0, ha='center', fontsize=9)
     plt.yticks(fontsize=9)

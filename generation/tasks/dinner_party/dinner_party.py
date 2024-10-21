@@ -213,7 +213,7 @@ class DinnerParty(TaskSpecification):
             discounted_indices = random.sample(range(num_people), num_people // 2)
             for idx in discounted_indices:
                 points_per_person[idx] = max(1, points_per_person[idx] - bimodal_discount)
-        
+
         people = [Person.random_person(name, selected_interests, points, min_interests, max_interests) 
                   for name, points in zip(selected_names, points_per_person)]
         task_description = f"Select {set_size} people for a dinner party that will have the most engaging conversations."

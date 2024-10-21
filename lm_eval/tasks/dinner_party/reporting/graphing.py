@@ -25,18 +25,18 @@ def create_graph(results, param, y_value):
     param_values = defaultdict(list)
     for i, result in enumerate(results):
         print(f"Processing result {i}:")
-        print("  Keys:", result.keys())
-        if 'scoring_guide' in result:
-            print("  Scoring guide keys:", result['scoring_guide'].keys())
-            if 'parameters' in result['scoring_guide']:
-                print("  Parameters:", result['scoring_guide']['parameters'])
+        # print("  Keys:", result.keys())
+        if 'scoring_guide' in result['doc']:
+            # print("  Scoring guide keys:", result['doc']['scoring_guide'].keys())
+            if 'parameters' in result['doc']['scoring_guide']:
+                print("Parameters:", result['doc']['scoring_guide']['parameters'])
         
         try:
-            param_value = result['scoring_guide']['parameters'][param]
+            param_value = result['doc']['scoring_guide']['parameters'][param]
             param_values[param_value].append(result[y_value])
         except KeyError as e:
             print(f"  KeyError: {e}")
-            print(f"  Result: {result}")
+            print(f"  Result: {result.keys()}")
 
     x_data = sorted(param_values.keys())
     y_data = [sum(param_values[x]) / len(param_values[x]) for x in x_data]

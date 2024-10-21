@@ -84,7 +84,7 @@ def produce_and_save_dinner_parties(n: int, output_file: str, **kwargs):
 def main():
     parser = argparse.ArgumentParser(description="Generate dinner party scenarios")
     parser.add_argument("-n", "--num_parties", type=int, default=5, help="Number of dinner parties to generate for each combination of parameters")
-    parser.add_argument("-o", "--output", type=str, default="generation/tasks/dinner_party/dinner_party.jsonl", help="Output file path")
+    parser.add_argument("-o", "--output", type=str, default="lm_eval/tasks/dinner_party/dinner_party.jsonl", help="Output file path")
     parser.add_argument("--num_people", type=parse_range, default="20", help="Number of people per dinner party (can be a range, e.g., '18,20,22')")
     parser.add_argument("--num_interests", type=parse_range, default="12", help="Number of interests to choose from (can be a range)")
     parser.add_argument("--set_size", type=parse_range, default="5", help="Number of people to select for each dinner party (can be a range, e.g., '3,4,5,7')")

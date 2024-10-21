@@ -12,14 +12,31 @@ def get_latest_file(directory):
     )
 
 def load_results(file_path):
+    print(f"Loading results from: {file_path}")
     with open(file_path, 'r') as f:
-        return [json.loads(line) for line in f]
+        results = [json.loads(line) for line in f]
+    print(f"Loaded {len(results)} results")
+    if results:
+        print("First result keys:", results[0].keys())
+    return results
 
 def create_graph(results, param, y_value):
+    print(f"Creating graph with param: {param}, y_value: {y_value}")
     param_values = defaultdict(list)
-    for result in results:
-        param_value = result['scoring_guide']['parameters'][param]
-        param_values[param_value].append(result[y_value])
+    for i, result in enumerate(results):
+        print(f"Processing result {i}:")
+        print("  Keys:", result.keys())
+        if 'scoring_guide' in result:
+            print("  Scoring guide keys:", result['scoring_guide'].keys())
+            if 'parameters' in result['scoring_guide']:
+                print("  Parameters:", result['scoring_guide']['parameters'])
+        
+        try:
+            param_value = result['scoring_guide']['parameters'][param]
+            param_values[param_value].append(result[y_value])
+        except KeyError as e:
+            print(f"  KeyError: {e}")
+            print(f"  Result: {result}")
 
     x_data = sorted(param_values.keys())
     y_data = [sum(param_values[x]) / len(param_values[x]) for x in x_data]
@@ -44,6 +61,10 @@ def main():
     parser.add_argument("--y_value", choices=['dinner_score', 'percentile', 'ranking'], 
                         default='dinner_score', help="Value to use for y-axis")
     args = parser.parse_args()
+
+    print(f"Input file: {args.input_file}")
+    print(f"Param: {args.param}")
+    print(f"Y-value: {args.y_value}")
 
     results = load_results(args.input_file)
     create_graph(results, args.param, args.y_value)

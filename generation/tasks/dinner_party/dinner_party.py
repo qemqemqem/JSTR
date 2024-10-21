@@ -84,7 +84,7 @@ class DinnerParty(TaskSpecification):
         self.stored_scores.sort(reverse=True)
         self.target_score = self.stored_scores[kth - 1] if kth <= len(self.stored_scores) else min(self.stored_scores)
 
-    def get_score_statistics(self) -> Dict[str, float]:
+    def get_score_statistics(self, score: float) -> Dict[str, float]:
         """
         Get the percentile ranking, absolute ranking, and percent of max score for a given score within the stored scores.
 
@@ -92,20 +92,24 @@ class DinnerParty(TaskSpecification):
         score (float): The score to rank.
 
         Returns:
-        tuple[float, int, float]: A tuple containing:
-            - The percentile ranking of the score (0.0 to 1.0)
-            - The absolute ranking of the score (1 being the highest)
-            - The percent of the maximum known score (0.0 to 1.0)
+        Dict[str, float]: A dictionary containing:
+            - 'percentile': The percentile ranking of the score (0.0 to 1.0)
+            - 'ranking': The absolute ranking of the score (1 being the highest)
+            - 'percent_of_max': The percent of the maximum known score (0.0 to 1.0)
         """
         if not self.stored_scores:
-            return 0.0, 1, 1.0
+            return {'percentile': 0.0, 'ranking': 1, 'percent_of_max': 1.0}
         
         percentile = sum(1 for s in self.stored_scores if s <= score) / len(self.stored_scores)
         ranking = sum(1 for s in self.stored_scores if s > score) + 1
         max_score = max(self.stored_scores)
         percent_of_max = score / max_score if max_score > 0 else 1.0
         
-        return percentile, ranking, percent_of_max
+        return {
+            'percentile': percentile,
+            'ranking': ranking,
+            'percent_of_max': percent_of_max
+        }
 
     def score_set(self, selected_set: List[str], debug: bool = False) -> float:
         """

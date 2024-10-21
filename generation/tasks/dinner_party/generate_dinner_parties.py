@@ -1,5 +1,5 @@
 import json
-
+import argparse
 from pathlib import Path
 
 from generation.tasks.dinner_party.dinner_party import DinnerParty
@@ -19,16 +19,17 @@ def produce_random_dinner_party(num_people: int = 20, num_interests: int = 8, se
     """
     return DinnerParty.random_dinner_party(num_people=num_people, num_interests=num_interests, set_size=set_size)
 
-def produce_and_save_dinner_parties(n: int, output_file: str):
+def produce_and_save_dinner_parties(n: int, output_file: str, num_people: int = 20, num_interests: int = 8, set_size: int = 5):
     """
     Produce N dinner parties and append them to a .jsonl file.
 
     Args:
     n (int): The number of dinner parties to produce.
     output_file (str): The path to the output .jsonl file, relative to the project root.
+    num_people (int): The number of people to generate for each dinner party.
+    num_interests (int): The number of possible interests to choose from for each dinner party.
+    set_size (int): The number of people to be selected for each dinner party.
     """
-    # project_root = Path(__file__).parent.parent.parent.absolute()
-    # full_output_path = project_root / output_file
     full_output_path = Path(output_file)
 
     # Ensure the directory exists
@@ -36,7 +37,7 @@ def produce_and_save_dinner_parties(n: int, output_file: str):
 
     with open(full_output_path, 'w') as f:
         for _ in range(n):
-            party = produce_random_dinner_party()
+            party = produce_random_dinner_party(num_people, num_interests, set_size)
             json_obj = {
                 "question": party.to_prompt(),
                 "target_score": party.target_score,
@@ -53,19 +54,17 @@ def produce_and_save_dinner_parties(n: int, output_file: str):
             }
             f.write(json.dumps(json_obj) + '\n')
 
+def main():
+    parser = argparse.ArgumentParser(description="Generate dinner party scenarios")
+    parser.add_argument("-n", "--num_parties", type=int, default=20, help="Number of dinner parties to generate")
+    parser.add_argument("-o", "--output", type=str, default="generation/tasks/dinner_party/dinner_party.jsonl", help="Output file path")
+    parser.add_argument("--num_people", type=int, default=20, help="Number of people per dinner party")
+    parser.add_argument("--num_interests", type=int, default=8, help="Number of interests to choose from")
+    parser.add_argument("--set_size", type=int, default=5, help="Number of people to select for each dinner party")
+    args = parser.parse_args()
+
+    produce_and_save_dinner_parties(args.num_parties, args.output, args.num_people, args.num_interests, args.set_size)
+    print(f"Dinner parties saved to `{args.output}`")
+
 if __name__ == "__main__":
-    # Example usage
-    random_party = produce_random_dinner_party()
-    print(random_party.to_prompt())
-    
-    print("\nRandom set samples:")
-    for i in range(2):
-        random_set = random_party.get_random_set()
-        print(f"\nSample {i+1}: {random_set}")
-        score = random_party.score_set(random_set, debug=True)
-        print(f"Final Score: {score}\n")
-    
-    # Produce and save 5 dinner parties to a file
-    ofile = "generation/tasks/dinner_party/dinner_party.jsonl"
-    produce_and_save_dinner_parties(20, ofile)
-    print(f"Dinner parties saved to `{ofile}`")
+    main()

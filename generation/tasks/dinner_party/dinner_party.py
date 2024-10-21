@@ -265,10 +265,22 @@ class DinnerParty(TaskSpecification):
         DinnerParty: A new DinnerParty instance.
         """
         people = [Person(name=p['name'], interests=p['interests']) for p in data['people']]
-        return cls(
+        dinner_party = cls(
             task_description=data['task_description'],
             people=people,
             set_size=data['set_size']
         )
+        
+        # Set additional attributes if they exist in the data
+        if 'stored_scores' in data:
+            dinner_party.stored_scores = data['stored_scores']
+        if 'target_score' in data:
+            dinner_party.target_score = data['target_score']
+        
+        # If parameters are provided, store them as an attribute
+        if 'parameters' in data:
+            dinner_party.parameters = data['parameters']
+        
+        return dinner_party
 
 

@@ -6,6 +6,7 @@ import os
 from pathlib import Path
 import numpy as np
 from scipy import stats
+import seaborn as sns
 
 def get_latest_file(directory):
     return max(
@@ -21,8 +22,6 @@ def load_results(file_path):
     if results:
         print("First result keys:", results[0].keys())
     return results
-
-import seaborn as sns
 
 def create_graph(results, param, y_value):
     print(f"Creating graph with param: {param}, y_value: {y_value}")

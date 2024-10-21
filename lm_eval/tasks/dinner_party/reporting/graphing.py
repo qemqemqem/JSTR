@@ -54,7 +54,7 @@ def create_graph(results, param, y_value, args):
     sns.pointplot(x=x_data, y=y_data, capsize=0.1, linestyles="none", color='#D81B60', zorder=4)
     
     # Add error bars representing IQR
-    plt.errorbar(range(len(x_data)), y_data, yerr=[(iqr/2, iqr/2) for iqr in iqrs], fmt='none', color='#1E88E5', capsize=5, linewidth=1.5, alpha=0.8, capthick=1.5, zorder=3)
+    plt.errorbar(range(len(x_data)), y_data, yerr=iqrs, fmt='none', color='#1E88E5', capsize=5, linewidth=1.5, alpha=0.8, capthick=1.5, zorder=3)
     
     plt.xlabel(param.replace('_', ' ').title(), fontsize=11, fontweight='bold')
     plt.ylabel(f'Median {y_value.replace("_", " ").title()}', fontsize=11, fontweight='bold')

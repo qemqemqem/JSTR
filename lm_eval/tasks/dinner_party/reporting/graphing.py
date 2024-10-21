@@ -48,7 +48,7 @@ def create_graph(results, param, y_value, args):
         plt.scatter(np.array([i] * len(y)) + jitter, y, color='#888888', alpha=0.3, s=30, zorder=2)
     
     # Create the point plot for mean values
-    sns.pointplot(x=x_data, y=y_data, capsize=0.1, join=False, color='#D81B60', scale=1.5, zorder=4)
+    sns.pointplot(x=x_data, y=y_data, capsize=0.1, linestyles="none", color='#D81B60', zorder=4)
     
     # Add error bars with improved visibility
     plt.errorbar(range(len(x_data)), y_data, yerr=confidence_intervals, fmt='none', color='#1E88E5', capsize=5, linewidth=1.5, alpha=0.8, capthick=1.5, zorder=3)

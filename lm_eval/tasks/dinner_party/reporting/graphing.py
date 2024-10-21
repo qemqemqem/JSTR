@@ -38,7 +38,7 @@ def create_graph(results, param, y_value):
             print(f"  KeyError: {e}")
             print(f"  Result: {result.keys()}")
 
-    x_data = sorted(param_values.keys())
+    x_data = list(param_values.keys())
     y_data = [np.mean(param_values[x]) for x in x_data]
     
     # Calculate confidence intervals
@@ -46,13 +46,14 @@ def create_graph(results, param, y_value):
                             for x in x_data]
 
     plt.figure(figsize=(12, 6))
-    plt.bar(x_data, y_data, yerr=confidence_intervals, capsize=5, alpha=0.7)
-    plt.errorbar(x_data, y_data, yerr=confidence_intervals, fmt='none', color='black', capsize=5)
+    x_positions = range(len(x_data))
+    plt.bar(x_positions, y_data, yerr=confidence_intervals, capsize=5, alpha=0.7)
+    plt.errorbar(x_positions, y_data, yerr=confidence_intervals, fmt='none', color='black', capsize=5)
     
     plt.xlabel(param.replace('_', ' ').title())
     plt.ylabel(f'Average {y_value.replace("_", " ").title()}')
     plt.title(f'{param.replace("_", " ").title()} vs Average {y_value.replace("_", " ").title()} with 95% CI')
-    plt.xticks(x_data, rotation=45, ha='right')  # Rotate x-axis labels for better readability
+    plt.xticks(x_positions, x_data, rotation=45, ha='right')  # Set x-ticks to categorical values
     plt.tight_layout()  # Adjust layout to prevent cutting off labels
     plt.grid(axis='y', linestyle='--', alpha=0.7)
     plt.show()

@@ -63,8 +63,14 @@ def main():
     parser.add_argument("--set_size", type=int, default=5, help="Number of people to select for each dinner party")
     args = parser.parse_args()
 
+    # Generate and print one random dinner party
+    random_party = produce_random_dinner_party(args.num_people, args.num_interests, args.set_size)
+    print("Random Dinner Party:")
+    print(random_party.to_prompt())
+    print("\nTarget Score:", random_party.target_score)
+
     produce_and_save_dinner_parties(args.num_parties, args.output, args.num_people, args.num_interests, args.set_size)
-    print(f"Dinner parties saved to `{args.output}`")
+    print(f"\nDinner parties saved to `{args.output}`")
 
 if __name__ == "__main__":
     main()

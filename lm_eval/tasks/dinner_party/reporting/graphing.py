@@ -46,6 +46,7 @@ def create_graph(results, param, y_value):
     plt.xlabel(param.replace('_', ' ').title())
     plt.ylabel(f'Average {y_value.replace("_", " ").title()}')
     plt.title(f'{param.replace("_", " ").title()} vs Average {y_value.replace("_", " ").title()}')
+    plt.xticks(x_data)  # Set x-ticks to only the values present in the data
     plt.grid(True)
     plt.show()
 

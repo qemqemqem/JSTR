@@ -63,7 +63,14 @@ def create_graph(results, param, y_value):
     plt.grid(axis='y', linestyle=':', alpha=0.7)
     plt.gca().set_facecolor('#f8f8f8')  # Light gray background
     
-    plt.show()
+    # Save the graph as an image
+    output_dir = Path(args.input_file).parent / Path(args.input_file).stem
+    output_dir.mkdir(parents=True, exist_ok=True)
+    output_file = output_dir / f"{param}_{y_value}.png"
+    plt.savefig(output_file, dpi=300, bbox_inches='tight')
+    print(f"Graph saved as: {output_file}")
+    
+    plt.close()
 
 def main():
     default_input_dir = Path(__file__).parents[3] / "tasks" / "dinner_party" / "results" / "gpt-4"

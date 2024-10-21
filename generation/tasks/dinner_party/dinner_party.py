@@ -16,18 +16,32 @@ class Person:
         self.interests = {k: v for k, v in self.interests.items() if v is not None}
 
     @classmethod
-    def random_person(cls, name: str, possible_interests: List[str]):
+    def random_person(cls, name: str, possible_interests: List[str], total_points: int):
         """
-        Create a random Person object with random interests.
+        Create a random Person object with random interests and a specified total number of points.
 
         Args:
         name (str): The name of the person.
         possible_interests (List[str]): A list of possible interests to choose from.
+        total_points (int): The total number of points to distribute among interests.
 
         Returns:
         Person: A new Person object with randomly selected interests and levels.
         """
-        interests = {interest: random.randint(1, 5) for interest in random.sample(possible_interests, random.randint(1, len(possible_interests)))}
+        num_interests = random.randint(1, min(len(possible_interests), total_points))
+        selected_interests = random.sample(possible_interests, num_interests)
+        
+        interests = {}
+        remaining_points = total_points
+        
+        for i, interest in enumerate(selected_interests):
+            if i == len(selected_interests) - 1:
+                interests[interest] = remaining_points
+            else:
+                points = random.randint(1, remaining_points - (len(selected_interests) - i - 1))
+                interests[interest] = points
+                remaining_points -= points
+        
         return cls(name, interests)
 
 
@@ -163,7 +177,15 @@ class DinnerParty(TaskSpecification):
         selected_names = random.sample(names, num_people)
         selected_interests = random.sample(all_interests, num_interests)
 
-        people = [Person.random_person(name, selected_interests) for name in selected_names]
+        # Randomly assign total points to each person, ensuring at least 1 point per person
+        total_points = num_interests * 5  # Assuming maximum 5 points per interest
+        points_per_person = [random.randint(1, total_points // num_people * 2) for _ in range(num_people)]
+        
+        # Adjust the last person's points to make the total sum up to total_points
+        points_per_person[-1] = total_points - sum(points_per_person[:-1])
+        
+        people = [Person.random_person(name, selected_interests, points) 
+                  for name, points in zip(selected_names, points_per_person)]
         task_description = f"Select {set_size} people for a dinner party that will have the most engaging conversations."
         return cls(task_description, people, set_size)
 

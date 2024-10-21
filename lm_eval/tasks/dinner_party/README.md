@@ -1,30 +1,46 @@
 # Dinner Party Task
 
-This task evaluates a language model's ability to generate appropriate and creative responses to dinner party scenarios.
+...
 
 ## Task Description
 
-Given a dinner party scenario or question, the model should generate a response that is evaluated based on its quality, creativity, and appropriateness.
+...
 
 ## Dataset
 
-The dataset is a local JSONL file (`dinner_party.jsonl`) where each line contains a JSON object with two fields:
-- `question`: A string describing a dinner party scenario or asking a related question.
+The dataset is a local JSONL file (`dinner_party.jsonl`) where each line contains a JSON object with ... fields:
+- `question`: A string prompt
 - `scoring_guide`: An object containing guidelines for scoring the response.
 
 ## Metrics
 
-The task uses three main metrics:
-1. `answer_quality`: Measures the overall quality of the response.
-2. `creativity`: Assesses the creativity and originality of the response.
-3. `appropriateness`: Evaluates how well the response fits the given scenario.
+...
 
-All metrics are aggregated using the mean and higher scores are better.
+## Graphing
 
-## Usage
+Command list:
 
-To run this task, ensure that the `dinner_party.jsonl` file is in the correct location and that the `scoring.py` file is properly implemented.
+Generate dinner parties in a jsonl file like this:
 
-## Version History
+```bash
+python generation/tasks/dinner_party/generate_dinner_parties.py \
+  --avg_points 25 --points_spread 0 --min_interests 2 \
+  --max_interests 6 --bimodal_discount=0,15 \
+  --num_parties=2 --set_size=3,4,5,7
+```
 
-- v1.0: Initial release
+Use lm_eval to run the LLM against those tasks. Make sure the yaml file points to the correct model and the jsonl file you just made.
+
+```bash
+lm_eval/tasks/dinner_party/run_evaluation.sh
+```
+
+Now, the results will be in the `lm_eval/tasks/dinner_party/results` directory. The `graphing.py` utility will default to using the most recent result there. 
+
+- [ ] Make sure it's using the most recent result and not just looking in gpt4
+
+You can make some graphs of your most recent run like this:
+
+```bash
+python lm_eval/tasks/dinner_party/reporting/graphing.py
+```

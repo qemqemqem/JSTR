@@ -39,13 +39,17 @@ class Person:
         interests = {}
         remaining_points = total_points
         
-        for i, interest in enumerate(selected_interests):
-            if i == len(selected_interests) - 1:
-                interests[interest] = remaining_points
-            else:
-                points = random.randint(1, max(1, remaining_points - (len(selected_interests) - i - 1)))
-                interests[interest] = points
-                remaining_points -= points
+        # Ensure each interest gets at least one point
+        for interest in selected_interests:
+            interests[interest] = 1
+            remaining_points -= 1
+        
+        # Distribute remaining points randomly
+        while remaining_points > 0:
+            interest = random.choice(selected_interests)
+            points = random.randint(1, min(remaining_points, 5))  # Cap individual additions to 5 points
+            interests[interest] += points
+            remaining_points -= points
         
         return cls(name, interests)
 
@@ -130,8 +134,17 @@ class DinnerParty(TaskSpecification):
             all_interests.items(),
             key=lambda x: (-len(x[1]), -sum(x[1]), x[0])
         )
+        
+        # Calculate base score from top 3 interests
         top_3_interests = sorted_interests[:3]
-        score = sum(sum(levels) for _, levels in top_3_interests)
+        base_score = sum(sum(levels) for _, levels in top_3_interests)
+        
+        # Calculate diversity bonus
+        unique_interests = len(all_interests)
+        diversity_bonus = unique_interests * 5  # 5 points per unique interest
+        
+        # Calculate final score
+        score = base_score + diversity_bonus
 
         if debug:
             print(f"Debug information for set: {selected_set}")
@@ -141,6 +154,8 @@ class DinnerParty(TaskSpecification):
             print("Top 3 interests:")
             for interest, levels in top_3_interests:
                 print(f"  {interest}: {levels} (count: {len(levels)}, sum: {sum(levels)})")
+            print(f"Base score: {base_score}")
+            print(f"Diversity bonus: {diversity_bonus}")
             print(f"Total score: {score}")
 
         return score

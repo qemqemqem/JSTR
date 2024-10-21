@@ -120,6 +120,15 @@ def main():
         params = ['bimodal_discount', 'set_size', 'num_people', 'num_interests', 'avg_points']
         for param in params:
             print(f"Creating graph for parameter: {param}")
+
+            # Check to see if all the values are the same
+            all_values = set()
+            for result in results:
+                all_values.add(result['doc']['scoring_guide']['parameters'][param])
+            if len(all_values) == 1:
+                print(f"  Skipping graph for parameter {param} because all values are the same: {all_values}")
+                continue
+
             create_graph(results, param, args.y_value, args)
     else:
         create_graph(results, args.param, args.y_value, args)

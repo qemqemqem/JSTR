@@ -51,7 +51,6 @@ def produce_and_save_dinner_parties(n: int, output_file: str, num_people: int = 
             party = produce_random_dinner_party(num_people, num_interests, set_size, avg_points, points_spread, min_interests, max_interests, bimodal_discount)
             json_obj = {
                 "question": party.to_prompt(),
-                "target_score": party.target_score,
                 "scoring_guide": {
                     "task_description": party.task_description,
                     "people": [
@@ -71,7 +70,8 @@ def produce_and_save_dinner_parties(n: int, output_file: str, num_people: int = 
                         "max_interests": max_interests,
                         "bimodal_discount": bimodal_discount
                     },
-                    "stored_scores": party.stored_scores
+                    "stored_scores": party.stored_scores,
+                    "target_score": party.target_score,
                 }
             }
             f.write(json.dumps(json_obj) + '\n')

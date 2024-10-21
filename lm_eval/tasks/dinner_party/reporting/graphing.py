@@ -39,7 +39,7 @@ def create_graph(results, param, y_value, args):
     confidence_intervals = [stats.sem(param_values[x]) * stats.t.ppf((1 + 0.95) / 2, len(param_values[x])-1)
                             for x in x_data]
 
-    plt.figure(figsize=(10, 6))  # Slightly smaller, more compact figure
+    plt.figure(figsize=(12, 7))  # Slightly larger figure to accommodate legend
     
     # Create the point plot with a softer color
     sns.pointplot(x=x_data, y=y_data, capsize=0.1, linestyles='dashed', color='#222222')
@@ -50,22 +50,22 @@ def create_graph(results, param, y_value, args):
     plt.xlabel(param.replace('_', ' ').title(), fontsize=11, fontweight='bold')
     plt.ylabel(f'Average {y_value.replace("_", " ").title()}', fontsize=11, fontweight='bold')
     plt.title(f'Impact of {param.replace("_", " ").title()} on {y_value.replace("_", " ").title()}', fontsize=13, fontweight='bold')
-    # plt.suptitle('95% Confidence Intervals', fontsize=9, y=0.0)
     
     plt.xticks(range(len(x_data)), x_data, rotation=0, ha='center', fontsize=9)
     plt.yticks(fontsize=9)
     
-    # Add value labels with improved positioning
-    # for i, v in enumerate(y_data):
-    #     plt.text(i, v+5, f'{v:.2f}', ha='center', va='bottom', fontsize=8, color='#4e79a7')
-    
-    plt.tight_layout()
     plt.grid(axis='y', linestyle='--', alpha=0.3)
     plt.gca().set_facecolor('#f9f9f9')  # Very light gray background
     
     # Add a subtle border
     for spine in plt.gca().spines.values():
         spine.set_edgecolor('#e0e0e0')
+    
+    # Add legend to show N for each bin
+    legend_labels = [f'{x}: N={len(param_values[x])}' for x in x_data]
+    plt.legend(legend_labels, title=param.replace('_', ' ').title(), title_fontsize=10, fontsize=8, loc='center left', bbox_to_anchor=(1, 0.5))
+    
+    plt.tight_layout()
     
     # Save the graph as an image
     output_dir = Path(args.input_file).parent / Path(args.input_file).stem

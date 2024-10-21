@@ -65,7 +65,7 @@ def main():
     parser.add_argument("--input_file", default=default_input_file, 
                         help="Path to the input JSONL file with evaluation results")
     parser.add_argument("--param", choices=['bimodal_discount', 'set_size', 'num_people', 'num_interests', 'avg_points'], 
-                        default='bimodal_discount', help="Parameter to use for x-axis")
+                        default='set_size', help="Parameter to use for x-axis")
     parser.add_argument("--y_value", choices=['dinner_score', 'percentile', 'ranking'], 
                         default='dinner_score', help="Value to use for y-axis")
     args = parser.parse_args()

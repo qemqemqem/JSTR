@@ -59,10 +59,10 @@ def create_graph(results, param, y_value, args):
     line = slope * np.array(x_data) + intercept
     plt.plot(range(1, len(x_data) + 1), line, color='red', linestyle='--', label=f'Best Fit Line (R² = {r_value**2:.3f})')
     
-    # Print mean vertically alongside the box plot
+    # Print median vertically alongside the box plot
     for i, x in enumerate(x_data):
-        mean_value = np.mean(param_values[x])
-        plt.text(i+1.2, mean_value, f'Mean: {mean_value:.2f}', rotation=90, va='center', fontsize=8)
+        median_value = np.median(param_values[x])
+        plt.text(i+1.2, median_value, f'Median: {median_value:.2f}', rotation=90, va='center', fontsize=8)
     
     plt.xlabel(param.replace('_', ' ').title(), fontsize=11, fontweight='bold')
     plt.ylabel(f'{y_value.replace("_", " ").title()}', fontsize=11, fontweight='bold')

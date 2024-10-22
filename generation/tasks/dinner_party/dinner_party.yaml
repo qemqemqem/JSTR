@@ -3,7 +3,7 @@ dataset_name: null
 dataset_kwargs:
   data_files: lm_eval/tasks/dinner_party/dinner_party.jsonl
 
-doc_to_text: "{{question}}\n\nAnswer with \"Answer: <person1>, <person2>, ...\"."
+doc_to_text: "{{question}}"
 doc_to_target: "{{scoring_guide}}"
 
 output_type: generate_until

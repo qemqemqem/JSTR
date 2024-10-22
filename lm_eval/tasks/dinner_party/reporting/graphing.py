@@ -101,7 +101,7 @@ def create_graph(results, param, y_value, args):
     plt.close()
 
 def main():
-    default_input_dir = Path(__file__).parents[3] / "tasks" / "dinner_party" / "results" / "gpt-4"
+    default_input_dir = Path(__file__).parents[3] / "tasks" / "dinner_party" / "results"
     default_input_file = get_latest_file(default_input_dir)
 
     parser = argparse.ArgumentParser(description="Create a graph from dinner party evaluation results")

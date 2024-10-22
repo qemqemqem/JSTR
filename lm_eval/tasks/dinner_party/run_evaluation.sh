@@ -3,7 +3,7 @@
 # TODO Try `--include_path .` instead
 
 lm_eval --model openai-chat-completions \
-    --model_args model=gpt-4 \
+    --model_args model=gpt-4-turbo \
     --include_path /home/keenan/Dev/JSTR/ \
     --tasks dinner_party_real \
     --num_fewshot 0 \

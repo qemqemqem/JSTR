@@ -40,5 +40,5 @@ Now, the results will be in the `lm_eval/tasks/dinner_party/results` directory. 
 You can make some graphs of your most recent run like this:
 
 ```bash
-python lm_eval/tasks/dinner_party/reporting/graphing.py
+python lm_eval/tasks/dinner_party/reporting/graphing.py --param=all
 ```

@@ -139,13 +139,9 @@ class DinnerParty(TaskSpecification):
         # Calculate base score from top 3 interests
         top_3_interests = sorted_interests[:3]
         base_score = sum(sum(levels) for _, levels in top_3_interests)
-        
-        # Calculate diversity bonus
-        unique_interests = len(all_interests)
-        diversity_bonus = unique_interests * 5  # 5 points per unique interest
-        
+
         # Calculate final score
-        score = base_score + diversity_bonus
+        score = base_score
 
         if debug:
             print(f"Debug information for set: {selected_set}")
@@ -156,7 +152,6 @@ class DinnerParty(TaskSpecification):
             for interest, levels in top_3_interests:
                 print(f"  {interest}: {levels} (count: {len(levels)}, sum: {sum(levels)})")
             print(f"Base score: {base_score}")
-            print(f"Diversity bonus: {diversity_bonus}")
             print(f"Total score: {score}")
 
         return score

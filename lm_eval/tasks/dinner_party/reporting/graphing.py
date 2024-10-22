@@ -59,16 +59,16 @@ def create_graph(results, param, y_value, args):
     line = slope * np.array(x_data) + intercept
     plt.plot(range(1, len(x_data) + 1), line, color='red', linestyle='--', label=f'Best Fit Line (R² = {r_value**2:.3f})')
     
-    # Print median vertically alongside the box plot
-    for i, x in enumerate(x_data):
-        median_value = np.median(param_values[x])
-        plt.text(i+1.3, median_value, f'Median: {median_value:.2f}', rotation=90, va='center', fontsize=8)
-    
     plt.xlabel(param.replace('_', ' ').title(), fontsize=11, fontweight='bold')
     plt.ylabel(f'{y_value.replace("_", " ").title()}', fontsize=11, fontweight='bold')
     plt.title(f'Impact of {param.replace("_", " ").title()} on {y_value.replace("_", " ").title()}', fontsize=13, fontweight='bold')
     
     plt.xticks(range(1, len(x_data) + 1), x_data, rotation=0, ha='center', fontsize=9)
+    
+    # Print median below the x-axis labels
+    for i, x in enumerate(x_data):
+        median_value = np.median(param_values[x])
+        plt.text(i+1, plt.gca().get_ylim()[0], f'Median: {median_value:.2f}', rotation=90, va='top', ha='center', fontsize=8)
     plt.yticks(fontsize=9)
     
     plt.grid(axis='y', linestyle='--', alpha=0.3)

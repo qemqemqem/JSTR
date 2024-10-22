@@ -68,7 +68,7 @@ def create_graph(results, param, y_value, args):
     # Print median horizontally below the x-axis labels
     for i, x in enumerate(x_data):
         median_value = np.median(param_values[x])
-        plt.text(i+1, plt.gca().get_ylim()[0] - 0.1 * (plt.gca().get_ylim()[1] - plt.gca().get_ylim()[0]), 
+        plt.text(i+1, plt.gca().get_ylim()[0] - 0.03 * (plt.gca().get_ylim()[1] - plt.gca().get_ylim()[0]),
                  f'Median: {median_value:.2f}', rotation=0, va='top', ha='center', fontsize=8)
     plt.yticks(fontsize=9)
     

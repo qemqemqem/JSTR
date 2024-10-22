@@ -10,7 +10,7 @@ from scipy import stats
 
 def get_latest_file(directory):
     return max(
-        (os.path.join(directory, f) for f in os.listdir(directory) if f.endswith('.jsonl')),
+        (os.path.join(root, f) for root, _, files in os.walk(directory) for f in files if f.endswith('.jsonl')),
         key=os.path.getmtime
     )
 

@@ -65,10 +65,11 @@ def create_graph(results, param, y_value, args):
     
     plt.xticks(range(1, len(x_data) + 1), x_data, rotation=0, ha='center', fontsize=9)
     
-    # Print median below the x-axis labels
+    # Print median horizontally below the x-axis labels
     for i, x in enumerate(x_data):
         median_value = np.median(param_values[x])
-        plt.text(i+1, plt.gca().get_ylim()[0], f'Median: {median_value:.2f}', rotation=90, va='top', ha='center', fontsize=8)
+        plt.text(i+1, plt.gca().get_ylim()[0] - 0.1 * (plt.gca().get_ylim()[1] - plt.gca().get_ylim()[0]), 
+                 f'Median: {median_value:.2f}', rotation=0, va='top', ha='center', fontsize=8)
     plt.yticks(fontsize=9)
     
     plt.grid(axis='y', linestyle='--', alpha=0.3)

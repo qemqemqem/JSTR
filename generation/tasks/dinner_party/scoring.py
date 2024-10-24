@@ -26,8 +26,14 @@ def score_answer(question, answer):
     else:
         answer_text = str(answer)
 
-    # Remove "Answer:" from the beginning of the answer text
-    answer_text = re.sub(r'^Answer:', '', answer_text).strip()
+    # Find the "Answer:" part in the response
+    match = re.search(r'Answer:\s*([^"\n]+)', answer_text)
+    if match:
+        answer_text = match.group(1).strip()
+    else:
+        # If no "Answer:" found, try to find names at the end of the response
+        lines = answer_text.split('\n')
+        answer_text = lines[-1].strip()  # Take the last non-empty line
 
     scoring_guide = question['scoring_guide']
 

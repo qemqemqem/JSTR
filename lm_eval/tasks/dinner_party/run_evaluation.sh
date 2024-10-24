@@ -24,7 +24,13 @@ INCLUDE_PATH="/home/keenan/Dev/JSTR/"
 
 # Assert that EVAL_PATH is a real directory
 if [ ! -d "$EVAL_PATH" ]; then
-    echo "Error: $EVAL_PATH is not a valid directory, please rerun with the '--path' option."
+    echo "Error: $EVAL_PATH is not a valid directory, please rerun with the '--path' option. Also, sorry for hard coding my own path in here."
+    exit 1
+fi
+
+# Assert that INCLUDE_PATH is a real directory
+if [ ! -d "$INCLUDE_PATH" ]; then
+    echo "Error: $INCLUDE_PATH is not a valid directory, please rerun with the '--include' option. Also, sorry for hard coding my own path in here."
     exit 1
 fi
 
@@ -89,5 +95,6 @@ lm_eval --model openai-chat-completions \
     --verbosity DEBUG
 
 # Uncomment to use Anthropic's Claude model instead
+# TODO Make this an argument
 #lm_eval --model anthropic-chat-completions \
 #    --model_args model=claude-3-5-sonnet-20240620 \

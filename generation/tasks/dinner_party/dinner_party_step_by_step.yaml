@@ -1,0 +1,6 @@
+include: dinner_party_base.yaml
+
+task: dinner_party_real_debug
+
+doc_to_text: "{{question}}\nPlease think step by step and then answer with \"\n\nAnswer: <person1>, <person2>, ...\""
+doc_to_target: "{{scoring_guide}}"

@@ -3,4 +3,4 @@ include: dinner_party_base.yaml
 task: dinner_party_real
 
 doc_to_text: "{{question}}"
-doc_to_target: "{{scoring_guide}}"
+doc_to_target: "{{scoring_guide}}\n\nI don't want you to think or comment before answering, just answer immediately in the following format: \"Answer: <person1>, <person2>, ...\""

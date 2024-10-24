@@ -140,7 +140,8 @@ def main():
         create_graph(results, args.param, args.y_value, args)
 
     # print the location where these are all saved
-    print(f"Graphs saved in: {default_input_dir}")
+    output_dir = Path(args.input_file).parent / Path(args.input_file).stem
+    print(f"Graphs saved in: {output_dir}")
 
 if __name__ == "__main__":
     main()

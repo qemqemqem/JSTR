@@ -4,21 +4,26 @@
 
 # Default model if not specified
 MODEL=${1:-gpt-4-turbo}
+STEP_BY_STEP=${2:-false}
 
 echo "Using model: $MODEL"
+echo "Step by step mode: $STEP_BY_STEP"
+
+TASK="dinner_party_real"
+if [ "$STEP_BY_STEP" = "true" ]; then
+    TASK="dinner_party_real_step_by_step"
+fi
 
 lm_eval --model openai-chat-completions \
     --model_args model=$MODEL \
     --include_path /home/keenan/Dev/JSTR/ \
-    --tasks dinner_party_real \
+    --tasks $TASK \
     --num_fewshot 0 \
     --batch_size 1 \
     --output_path lm_eval/tasks/dinner_party/results \
     --apply_chat_template \
     --log_samples \
     --verbosity DEBUG
-
-
 
 #lm_eval --model anthropic-chat-completions \
 #    --model_args model=claude-3-5-sonnet-20240620 \

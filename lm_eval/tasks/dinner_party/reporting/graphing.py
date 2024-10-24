@@ -139,5 +139,8 @@ def main():
     else:
         create_graph(results, args.param, args.y_value, args)
 
+    # print the location where these are all saved
+    print(f"Graphs saved in: {default_input_dir}")
+
 if __name__ == "__main__":
     main()

@@ -109,7 +109,7 @@ def main():
                         help="Path to the input JSONL file with evaluation results")
     parser.add_argument("--param", choices=['all', 'bimodal_discount', 'set_size', 'num_people', 'num_interests', 'avg_points'], 
                         default='set_size', help="Parameter to use for x-axis. Use 'all' to generate graphs for all parameters.")
-    parser.add_argument("--y_value", choices=['dinner_score', 'percentile', 'ranking'], 
+    parser.add_argument("--y_value", choices=['dinner_score', 'percentile', 'ranking', 'normalized_score', 'rank_normalized_score'], 
                         default='ranking', help="Value to use for y-axis")
     parser.add_argument("--display_graph", action="store_true", default=False,
                         help="Whether to display the graph (default: True)")

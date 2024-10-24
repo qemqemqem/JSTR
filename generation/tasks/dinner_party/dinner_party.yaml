@@ -3,6 +3,8 @@ dataset_name: null
 dataset_kwargs:
   data_files: lm_eval/tasks/dinner_party/dinner_party.jsonl
 
+task: dinner_party_real
+
 doc_to_text: "{{question}}"
 doc_to_target: "{{scoring_guide}}"
 
@@ -27,8 +29,6 @@ metric_list:
   - metric: percent_of_max
     aggregation: mean
     higher_is_better: true
-
-task: dinner_party_real
 
 test_split: train
 fewshot_split: train

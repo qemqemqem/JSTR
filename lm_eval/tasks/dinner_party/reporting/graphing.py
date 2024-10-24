@@ -83,9 +83,9 @@ def create_graph(results, param, y_value, args):
         spine.set_edgecolor('#e0e0e0')
     
     # Add legend to show N for each bin and best fit line info
-    legend_labels = [f'{x}: N={len(param_values[x])}' for x in x_data]
+    legend_labels = [f'{param.replace("_", " ").title()} = {x}: N={len(param_values[x])}' for x in x_data]
     plt.legend(legend_labels + [f'Best Fit Line (R² = {r_value**2:.3f})'], 
-               title="Bin Sizes and Fit", title_fontsize=10, fontsize=8, 
+               title="Parameter Values and Sample Sizes", title_fontsize=10, fontsize=8,
                loc='center left', bbox_to_anchor=(1, 0.5))
     
     plt.tight_layout()

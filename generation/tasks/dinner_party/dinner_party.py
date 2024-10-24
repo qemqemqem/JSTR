@@ -112,8 +112,9 @@ class DinnerParty(TaskSpecification):
         normalized_score = score / avg_score if avg_score > 0 else 1.0
         
         # Calculate rank normalized score using gaussian normalization
-        rank_percentile = (len(self.stored_scores) - ranking + 1) / len(self.stored_scores)
-        rank_normalized_score = stats.norm.ppf(rank_percentile) if 0 < rank_percentile < 1 else -4.0
+        # Add small offset to avoid exact 0 or 1 percentiles
+        rank_percentile = (len(self.stored_scores) - ranking + 0.5) / (len(self.stored_scores) + 1.0)
+        rank_normalized_score = stats.norm.ppf(rank_percentile)
         
         return {
             'percentile': percentile,

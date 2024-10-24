@@ -9,6 +9,7 @@ show_help() {
     echo "  -m, --model MODEL       Model to use (default: gpt-4-turbo)"
     echo "  -s, --step-by-step     Enable step-by-step mode (default: false)"
     echo "  -p, --path PATH        Path to lm-evaluation-harness directory"
+    echo "  -i, --include PATH     Path to include for task definitions"
     echo "  -h, --help            Show this help message"
     echo
     echo "Example:"
@@ -19,6 +20,7 @@ show_help() {
 MODEL="gpt-4-turbo"
 STEP_BY_STEP="false"
 EVAL_PATH="/home/keenan/Dev/lm-evaluation-harness/"
+INCLUDE_PATH="/home/keenan/Dev/JSTR/"
 
 # Assert that EVAL_PATH is a real directory
 if [ ! -d "$EVAL_PATH" ]; then
@@ -39,6 +41,10 @@ while [[ $# -gt 0 ]]; do
             ;;
         -p|--path)
             EVAL_PATH="$2"
+            shift 2
+            ;;
+        -i|--include)
+            INCLUDE_PATH="$2"
             shift 2
             ;;
         -h|--help)
@@ -62,6 +68,7 @@ echo "Configuration:"
 echo "  Model: $MODEL"
 echo "  Step-by-step mode: $STEP_BY_STEP"
 echo "  Evaluation harness path: $EVAL_PATH"
+echo "  Include path: $INCLUDE_PATH"
 
 # Set task based on step-by-step mode
 TASK="dinner_party_real"
@@ -72,7 +79,7 @@ fi
 # Run evaluation
 lm_eval --model openai-chat-completions \
     --model_args model=$MODEL \
-    --include_path /home/keenan/Dev/JSTR/ \
+    --include_path "$INCLUDE_PATH" \
     --tasks $TASK \
     --num_fewshot 0 \
     --batch_size 1 \

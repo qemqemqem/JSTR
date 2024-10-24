@@ -18,7 +18,13 @@ show_help() {
 # Default values
 MODEL="gpt-4-turbo"
 STEP_BY_STEP="false"
-EVAL_PATH="/home/keenan/Dev/JSTR/"
+EVAL_PATH="/home/keenan/Dev/lm-evaluation-harness/"
+
+# Assert that EVAL_PATH is a real directory
+if [ ! -d "$EVAL_PATH" ]; then
+    echo "Error: $EVAL_PATH is not a valid directory, please rerun with the '--path' option."
+    exit 1
+fi
 
 # Parse command line arguments
 while [[ $# -gt 0 ]]; do
@@ -66,7 +72,7 @@ fi
 # Run evaluation
 lm_eval --model openai-chat-completions \
     --model_args model=$MODEL \
-    --include_path "$EVAL_PATH" \
+    --include_path /home/keenan/Dev/JSTR/ \
     --tasks $TASK \
     --num_fewshot 0 \
     --batch_size 1 \

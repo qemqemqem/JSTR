@@ -1,12 +1,46 @@
-include: dinner_party_base.yaml
+dataset_path: json
+dataset_name: null
+dataset_kwargs:
+  data_files: lm_eval/tasks/dinner_party/dinner_party.jsonl
 
 task: dinner_party_real_step_by_step
 
 doc_to_text: "{{question}}\nPlease think about your options and then answer with \"\n\nAnswer: <person1>, <person2>, ...\""
 doc_to_target: "{{scoring_guide}}"
-include: dinner_party_base.yaml
 
-task: dinner_party_real_step_by_step
+output_type: generate_until
 
-doc_to_text: "{{question}}\n\nPlease think step by step about which people would create the most engaging conversations based on their shared interests:"
-doc_to_target: "{{scoring_guide}}\n\nI don't want you to comment before answering, just answer in the following format: \"Answer: <person1>, <person2>, ...\""
+metric_list:
+  - metric: dinner_score
+    aggregation: mean
+    higher_is_better: true
+  - metric: ranking
+    aggregation: mean
+    higher_is_better: false
+  - metric: normalized_score
+    aggregation: mean
+    higher_is_better: true
+  - metric: rank_normalized_score
+    aggregation: mean
+    higher_is_better: true
+  - metric: percentile
+    aggregation: mean
+    higher_is_better: true
+  - metric: percent_of_max
+    aggregation: mean
+    higher_is_better: true
+
+test_split: train
+fewshot_split: train
+
+generation_kwargs:
+  until:
+    - "\n\n"
+  do_sample: false
+  temperature: 0.0
+  max_gen_toks: 300
+
+process_results: !function scoring.score_answer
+
+metadata:
+  version: 1.0

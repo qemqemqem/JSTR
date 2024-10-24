@@ -1,0 +1,6 @@
+include: dinner_party_base.yaml
+
+task: dinner_party_real_debug
+
+doc_to_text: "DEBUG MODE\n{{question}}\nPlease think step by step about which people would create the most engaging conversations based on their shared interests:"
+doc_to_target: "{{scoring_guide}}"

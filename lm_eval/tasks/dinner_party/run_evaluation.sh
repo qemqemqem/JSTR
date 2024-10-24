@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# You may need to run `export PYTHONPATH=/home/keenan/Dev/lm-evaluation-harness:$PYTHONPATH:.` before running this script, to get the `lm_eval` command to work. Replace the path with the path to the `lm-evaluation-harness` directory on your machine.
+
 # TODO Try `--include_path .` instead
 
 lm_eval --model openai-chat-completions \

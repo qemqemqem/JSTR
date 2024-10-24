@@ -14,7 +14,7 @@ The dataset is a local JSONL file (`dinner_party.jsonl`) where each line contain
 
 ## Metrics
 
-...
+See `scoring.py` and the `get_score_statistics` function to see how this task is scored. I recommend using "ranking" or "normalized_score", which uses ranking.
 
 ## Graphing
 

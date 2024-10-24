@@ -107,5 +107,10 @@ def main():
     produce_and_save_dinner_parties(args.num_parties, args.output, **params)
     print(f"\nDinner parties saved to `{args.output}`")
 
+    # Print the number of dinner parties saved
+    with open(args.output, 'r') as f:
+        num_lines = sum(1 for line in f)
+    print(f"Number of dinner parties saved: {num_lines}")
+
 if __name__ == "__main__":
     main()

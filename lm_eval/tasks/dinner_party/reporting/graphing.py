@@ -141,7 +141,7 @@ def main():
 
     # print the location where these are all saved
     output_dir = Path(args.input_file).parent / Path(args.input_file).stem
-    print(f"Graphs saved in: {output_dir}")
+    print(f"\nGraphs saved in: {output_dir}")
 
 if __name__ == "__main__":
     main()

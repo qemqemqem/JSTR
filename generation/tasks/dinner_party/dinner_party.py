@@ -3,6 +3,8 @@ import random
 from dataclasses import dataclass, field
 from typing import Dict, List
 
+import scipy.stats as stats
+
 from generation.common.task_spec import TaskSpecification
 
 
@@ -99,9 +101,7 @@ class DinnerParty(TaskSpecification):
         """
         if not self.stored_scores:
             raise ValueError("No stored scores to compare against.")
-        
-        import scipy.stats as stats
-        
+
         percentile = sum(1 for s in self.stored_scores if s <= score) / len(self.stored_scores)
         ranking = sum(1 for s in self.stored_scores if s > score) + 1
         max_score = max(self.stored_scores)

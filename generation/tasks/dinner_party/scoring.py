@@ -51,5 +51,7 @@ def score_answer(question, answer):
         "dinner_score": score,
         "percentile": score_stats['percentile'],
         "ranking": score_stats['ranking'],
+        "normalized_score": ...,
+        "rank_normalized_score": ...,
         "percent_of_max": score_stats['percent_of_max'],
     }

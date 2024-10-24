@@ -100,15 +100,27 @@ class DinnerParty(TaskSpecification):
         if not self.stored_scores:
             raise ValueError("No stored scores to compare against.")
         
+        import scipy.stats as stats
+        
         percentile = sum(1 for s in self.stored_scores if s <= score) / len(self.stored_scores)
         ranking = sum(1 for s in self.stored_scores if s > score) + 1
         max_score = max(self.stored_scores)
         percent_of_max = score / max_score if max_score > 0 else 1.0
         
+        # Calculate normalized score using mean of stored scores
+        avg_score = sum(self.stored_scores) / len(self.stored_scores)
+        normalized_score = score / avg_score if avg_score > 0 else 1.0
+        
+        # Calculate rank normalized score using gaussian normalization
+        rank_percentile = (len(self.stored_scores) - ranking + 1) / len(self.stored_scores)
+        rank_normalized_score = stats.norm.ppf(rank_percentile) if 0 < rank_percentile < 1 else -4.0
+        
         return {
             'percentile': percentile,
             'ranking': ranking,
-            'percent_of_max': percent_of_max
+            'percent_of_max': percent_of_max,
+            'normalized_score': normalized_score,
+            'rank_normalized_score': rank_normalized_score
         }
 
     def score_set(self, selected_set: List[str], debug: bool = False) -> float:

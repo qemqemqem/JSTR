@@ -37,12 +37,15 @@ def create_graph(results, param, y_value, args):
     
     plt.figure(figsize=(14, 8))  # Larger figure to accommodate additional legend
     
+    # Generate distinct colors using a colormap
+    colors = plt.cm.Set3(np.linspace(0, 1, len(x_data)))
+    
     # Create box plot
     box_plot = plt.boxplot([param_values[x] for x in x_data], patch_artist=True, medianprops={'color': "#D81B60"})
     
     # Customize box plot colors
-    for box in box_plot['boxes']:
-        box.set(facecolor='#1E88E5', alpha=0.6)
+    for box, color in zip(box_plot['boxes'], colors):
+        box.set(facecolor=color, alpha=0.8)
     
     # Plot individual data points with jitter
     all_x = []

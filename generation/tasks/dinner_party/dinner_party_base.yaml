@@ -28,10 +28,10 @@ fewshot_split: train
 
 generation_kwargs:
   until:
-    - "\n\n"
+    - "Done."
   do_sample: false
-  temperature: 0.0
-  max_gen_toks: 300
+  temperature: 0.2
+  max_gen_toks: 2000
 
 process_results: !function scoring.score_answer
 

@@ -82,6 +82,8 @@ if [ "$STEP_BY_STEP" = "true" ]; then
     TASK="dinner_party_real_step_by_step"
 fi
 
+echo "  Task: $TASK"
+
 # Run evaluation
 lm_eval --model openai-chat-completions \
     --model_args model=$MODEL \

@@ -2,7 +2,7 @@ include: dinner_party_base.yaml
 
 task: dinner_party_real
 
-doc_to_text: "{{question}}\n\nI don't want you to think or comment before answering, just answer immediately in the following format: \"Answer: <person1>, <person2>, ...\""
+doc_to_text: "{{question}}\n\nI don't want you to think or comment before answering, just answer immediately in the following format: \"Answer: <person1>, <person2>, ... \nDone.\""
 doc_to_target: "{{scoring_guide}}"
 
 output_type: generate_until

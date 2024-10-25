@@ -191,7 +191,7 @@ class DinnerParty(TaskSpecification):
         print(f"Calling model {llm_model} to generate chain of thought...")
 
         prompt = self.to_prompt(no_think_through_commentary=True)
-        prompt += "\n\nI want you to think deeply about this problem. Write as much as you can about the topic, mixing in analysis of the problem space, considerations of possible solutions, and any other relevant thoughts. DO NOT GIVE A FINAL ANSWER! Instead, your answer will be consultation and advice on how to think about the problem."
+        prompt += "\n\nI want you to think deeply about this problem. Write as much as you can about the topic, mixing in analysis of the problem space, considerations of possible solutions, and any other relevant thoughts. DO NOT GIVE A FINAL ANSWER! Instead, your answer will be consultation and advice on how to think about the problem. Keep going until you feel you've really exhausted the topic."
         chat_completion = client.chat.completions.create(
             messages=[
                 {

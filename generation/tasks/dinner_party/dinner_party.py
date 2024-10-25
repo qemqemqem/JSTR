@@ -257,7 +257,7 @@ class DinnerParty(TaskSpecification):
             # Think deeply
             prompt += "\nThink deeply about your answer, then answer with \"Answer: <person1>, <person2>, ...\"\nDone."
         else:
-            raise ValueError("Invalid think_through value. Must be 0, 1, or 2.")
+            raise ValueError(f"Invalid think_through value. Must be 0, 1, or 2, got {self.think_through}.")
 
         return prompt
 

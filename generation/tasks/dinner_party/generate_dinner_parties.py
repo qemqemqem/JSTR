@@ -100,6 +100,22 @@ def produce_and_save_dinner_parties(n: int, output_file: str, **kwargs):
                 }
                 f.write(json.dumps(json_obj) + '\n')
 
+    # Create backup directory
+    backup_dir = Path("lm_eval/tasks/dinner_party/old_dinner_parties")
+    backup_dir.mkdir(parents=True, exist_ok=True)
+
+    # Get parameters with multiple values for filename
+    multi_params = [name for name, values in kwargs.items() if isinstance(values, list) and len(values) > 1]
+    param_str = '_'.join(f"{p}" for p in multi_params) if multi_params else 'single'
+    
+    # Create backup filename with timestamp and parameters
+    timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+    backup_filename = f"dinner_party_{timestamp}_{param_str}.jsonl"
+    backup_path = backup_dir / backup_filename
+    
+    # Copy the file
+    shutil.copy2(full_output_path, backup_path)
+
 def main():
     parser = argparse.ArgumentParser(description="Generate dinner party scenarios")
     parser.add_argument("-n", "--num_parties", type=int, default=5, help="Number of dinner parties to generate for each combination of parameters")
@@ -126,24 +142,8 @@ def main():
     params = {k: v for k, v in vars(args).items() if k not in ['num_parties', 'output']}
 
     produce_and_save_dinner_parties(args.num_parties, args.output, **params)
-    # Create backup directory
-    backup_dir = Path("lm_eval/tasks/dinner_party/old_dinner_parties")
-    backup_dir.mkdir(parents=True, exist_ok=True)
-
-    # Get parameters with multiple values for filename
-    multi_params = [name for name, values in kwargs.items() if isinstance(values, list) and len(values) > 1]
-    param_str = '_'.join(f"{p}" for p in multi_params) if multi_params else 'single'
-    
-    # Create backup filename with timestamp and parameters
-    timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-    backup_filename = f"dinner_party_{timestamp}_{param_str}.jsonl"
-    backup_path = backup_dir / backup_filename
-    
-    # Copy the file
-    shutil.copy2(full_output_path, backup_path)
 
     print(f"\nDinner parties saved to `{args.output}`")
-    print(f"Backup saved to `{backup_path}`")
 
     # Print the number of dinner parties saved
     with open(args.output, 'r') as f:

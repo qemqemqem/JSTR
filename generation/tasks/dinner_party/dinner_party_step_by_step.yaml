@@ -2,7 +2,7 @@ include: dinner_party_base.yaml
 
 task: dinner_party_real_step_by_step
 
-doc_to_text: "{{question}}\nPlease think about your options and then answer with \"\n\nAnswer: <person1>, <person2>, ... \nDone.\""
+doc_to_text: "{{question}}\nPlease briefly think about your options and then answer with \"\n\nAnswer: <person1>, <person2>, ... \nDone.\""
 doc_to_target: "{{scoring_guide}}"
 
 output_type: generate_until

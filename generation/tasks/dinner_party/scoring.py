@@ -19,6 +19,8 @@ def score_answer(question, answer):
     dict: A dictionary containing the score and other relevant information.
     """
     # Extract answer text
+    print()
+    print(f"Raw Answer: {answer[:100]}...")
     if isinstance(answer, dict):
         answer_text = answer.get('text', '')
     elif isinstance(answer, list) and len(answer) > 0:
@@ -38,7 +40,6 @@ def score_answer(question, answer):
     scoring_guide = question['scoring_guide']
 
     # Create the DinnerParty object from the scoring guide
-    print()
     # print(f"SCORING GUIDE: {scoring_guide}")
     print(f"ANSWER: {answer_text}")
     dinner_party = DinnerParty.from_dict(scoring_guide)

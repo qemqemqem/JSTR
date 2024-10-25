@@ -1,5 +1,6 @@
 import json
 import argparse
+import inspect
 from pathlib import Path
 import itertools
 import random
@@ -54,7 +55,9 @@ def produce_and_save_dinner_parties(n: int, output_file: str, **kwargs):
                         think_through=params["think_through"]
                     )
                 else:
-                    party = DinnerParty.random_dinner_party(**params)
+                    valid_params = inspect.signature(DinnerParty.random_dinner_party).parameters.keys()
+                    filtered_params = {k: v for k, v in params.items() if k in valid_params}
+                    party = DinnerParty.random_dinner_party(**filtered_params)
 
                 # I know it seems like this could be cleaned up, but it's actually a bit tricky to do so
                 params_dup = params.copy()  # Copy again to avoid using the modified "think_through" value

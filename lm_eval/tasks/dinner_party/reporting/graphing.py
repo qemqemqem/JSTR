@@ -114,10 +114,11 @@ def main():
     parser = argparse.ArgumentParser(description="Create a graph from dinner party evaluation results")
     parser.add_argument("--input_file", default=default_input_file, 
                         help="Path to the input JSONL file with evaluation results")
-    parser.add_argument("--param", choices=['all', 'bimodal_discount', 'set_size', 'num_people', 'num_interests', 'avg_points'], 
+    all_params = ['bimodal_discount', 'set_size', 'num_people', 'num_interests', 'avg_points', 'think_through']
+    parser.add_argument("--param", choices=['all'] + all_params,
                         default='set_size', help="Parameter to use for x-axis. Use 'all' to generate graphs for all parameters.")
     parser.add_argument("--y_value", choices=['dinner_score', 'percentile', 'ranking', 'normalized_score', 'rank_normalized_score'], 
-                        default='ranking', help="Value to use for y-axis")
+                        default='normalized_score', help="Value to use for y-axis")
     parser.add_argument("--display_graph", action="store_true", default=False,
                         help="Whether to display the graph (default: False)")
     parser.add_argument("--use_multiple_colors", action="store_true", default=True,
@@ -132,8 +133,7 @@ def main():
     results = load_results(args.input_file)
 
     if args.param == 'all':
-        params = ['bimodal_discount', 'set_size', 'num_people', 'num_interests', 'avg_points']
-        for param in params:
+        for param in all_params:
             print(f"Creating graph for parameter: {param}")
 
             # Check to see if all the values are the same

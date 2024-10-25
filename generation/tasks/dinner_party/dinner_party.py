@@ -170,7 +170,7 @@ class DinnerParty(TaskSpecification):
         return score
 
     @classmethod
-    def random_dinner_party(cls, num_people: int, num_interests: int, set_size: int, total_points: int, points_spread: int, min_interests: int, max_interests: int, bimodal_discount: int = 0):
+    def random_dinner_party(cls, num_people: int, num_interests: int, set_size: int, total_points: int, points_spread: int, min_interests: int, max_interests: int, bimodal_discount: int = 0, think_through: str = ""):
         """
         Create a random DinnerParty object.
 
@@ -226,7 +226,7 @@ class DinnerParty(TaskSpecification):
         people = [Person.random_person(name, selected_interests, points, min_interests, max_interests) 
                   for name, points in zip(selected_names, points_per_person)]
         task_description = f"Select {set_size} people for a dinner party that will have the most engaging conversations."
-        return cls(task_description, people, set_size)
+        return cls(task_description, people, set_size, think_through)
 
     def to_prompt(self) -> str:
         """

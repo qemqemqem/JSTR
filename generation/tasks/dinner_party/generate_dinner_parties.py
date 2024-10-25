@@ -35,9 +35,9 @@ def produce_and_save_dinner_parties(n: int, output_file: str, **kwargs):
 
     dinner_parties_by_param: dict[str, DinnerParty] = {}
 
-    # Find the smallest values for parameters we want to duplicate
-    min_think_through = min([kwargs["think_through"] for kwargs in combinations])
-    min_percent_chain_of_thought = min([kwargs["percent_chain_of_thought"] for kwargs in combinations])
+    # Get the first values for parameters we want to duplicate
+    first_think_through = next(kwargs["think_through"] for kwargs in combinations)
+    first_percent_chain_of_thought = next(kwargs["percent_chain_of_thought"] for kwargs in combinations)
 
     # Open the file in write mode to start with an empty file
     with open(full_output_path, 'w') as f:
@@ -47,8 +47,8 @@ def produce_and_save_dinner_parties(n: int, output_file: str, **kwargs):
                 # Check if there's a similar dinner party already in there
                 params_dup = params.copy()  # Create a copy of the parameters
                 params_dup["index"] = i
-                params_dup["think_through"] = min_think_through
-                params_dup["percent_chain_of_thought"] = min_percent_chain_of_thought
+                params_dup["think_through"] = first_think_through
+                params_dup["percent_chain_of_thought"] = first_percent_chain_of_thought
                 params_key: str = json.dumps(params_dup)
                 if params_key in dinner_parties_by_param:
                     # Deep copy the existing dinner party and update think_through

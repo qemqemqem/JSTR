@@ -38,24 +38,29 @@ def produce_and_save_dinner_parties(n: int, output_file: str, **kwargs):
     with open(full_output_path, 'w') as f:
         for combo in combinations:
             params = dict(zip(param_names, combo))
-            for _ in range(n):
+            for i in range(n):
                 # Check if there's a similar dinner party already in there
                 params_dup = params.copy()  # Create a copy of the parameters
+                params_dup["index"] = i
                 params_dup["think_through"] = 0
-                params_key = json.dumps(params_dup)
+                params_key: str = json.dumps(params_dup)
                 if params_key in dinner_parties_by_param:
                     # Deep copy the existing dinner party and update think_through
+                    base_party = dinner_parties_by_param[params_key]
                     party = DinnerParty(
-                        task_description=dinner_parties_by_param[params_key].task_description,
-                        people=dinner_parties_by_param[params_key].people.copy(),
-                        set_size=dinner_parties_by_param[params_key].set_size,
+                        task_description=base_party.task_description,
+                        people=base_party.people.copy(),
+                        set_size=base_party.set_size,
                         think_through=params["think_through"]
                     )
                 else:
                     party = DinnerParty.random_dinner_party(**params)
 
-                party = DinnerParty.random_dinner_party(**params)
-                dinner_parties_by_param[json.dumps(params)] = party
+                # I know it seems like this could be cleaned up, but it's actually a bit tricky to do so
+                params_dup = params.copy()  # Copy again to avoid using the modified "think_through" value
+                params_dup["index"] = i  # Edit this here because if it's put into params it will annoy DinnerParty
+                dinner_parties_by_param[json.dumps(params_dup)] = party
+
                 json_obj = {
                     "question": party.to_prompt(),
                     "scoring_guide": {

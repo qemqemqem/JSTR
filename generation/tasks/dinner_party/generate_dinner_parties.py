@@ -32,12 +32,21 @@ def produce_and_save_dinner_parties(n: int, output_file: str, **kwargs):
     param_values = [kwargs[name] if isinstance(kwargs[name], list) else [kwargs[name]] for name in param_names]
     combinations = list(itertools.product(*param_values))
 
+    dinner_parties_by_param: dict[str, DinnerParty] = {}
+
     # Open the file in write mode to start with an empty file
     with open(full_output_path, 'w') as f:
         for combo in combinations:
             params = dict(zip(param_names, combo))
             for _ in range(n):
+                # Check if there's a similar dinner party already in there
+                params_dup = ... # TODO Deep copy params
+                params_dup["think_through"] = 0
+                if json.dumps(params_dup) in dinner_parties_by_param:
+                    ... # TODO Deep copy the dinner party and change the think_through parameter
+
                 party = DinnerParty.random_dinner_party(**params)
+                dinner_parties_by_param[json.dumps(params)] = party
                 json_obj = {
                     "question": party.to_prompt(),
                     "scoring_guide": {

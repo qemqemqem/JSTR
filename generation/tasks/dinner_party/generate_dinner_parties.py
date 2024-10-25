@@ -12,27 +12,6 @@ def parse_range(arg: str) -> List[int]:
     """Parse a comma-separated string into a list of integers."""
     return [int(x) for x in arg.split(',')]
 
-def produce_random_dinner_party(num_people: int = 20, num_interests: int = 8, set_size: int = 5, avg_points: int = 20, points_spread: int = 10, min_interests: int = 1, max_interests: int = 5, bimodal_discount: int = 0, think_through: int = 0) -> DinnerParty:
-    """
-    Produce a random DinnerParty instance.
-
-    Args:
-    num_people (int): The number of people to generate for the dinner party.
-    num_interests (int): The number of possible interests to choose from.
-    set_size (int): The number of people to be selected for the dinner party.
-    avg_points (int): The average interest points for a person.
-    points_spread (int): The plus or minus on a person's total point value.
-    min_interests (int): The minimum number of interests a person can have.
-    max_interests (int): The maximum number of interests a person can have.
-    bimodal_discount (int): The discount to apply to 50% of people's points total.
-    think_through (int): Optional thinking prompt to add before the answer.
-
-    Returns:
-    DinnerParty: A randomly generated DinnerParty instance.
-    """
-
-    total_points = num_people * avg_points
-    return DinnerParty.random_dinner_party(num_people=num_people, num_interests=num_interests, set_size=set_size, total_points=total_points, points_spread=points_spread, min_interests=min_interests, max_interests=max_interests, bimodal_discount=bimodal_discount, think_through=think_through)
 
 def produce_and_save_dinner_parties(n: int, output_file: str, **kwargs):
     """
@@ -58,7 +37,7 @@ def produce_and_save_dinner_parties(n: int, output_file: str, **kwargs):
         for combo in combinations:
             params = dict(zip(param_names, combo))
             for _ in range(n):
-                party = produce_random_dinner_party(**params)
+                party = DinnerParty.random_dinner_party(**params)
                 json_obj = {
                     "question": party.to_prompt(),
                     "scoring_guide": {

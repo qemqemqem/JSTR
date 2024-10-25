@@ -64,6 +64,7 @@ class DinnerParty(TaskSpecification):
     options: List[str] = field(init=False)
     target_score: float = 0.0
     stored_scores: List[float] = field(default_factory=list)
+    think_through: int = -1
 
     def __post_init__(self):
         super().__init__(self.task_description, [person.name for person in self.people], self.set_size)
@@ -170,7 +171,7 @@ class DinnerParty(TaskSpecification):
         return score
 
     @classmethod
-    def random_dinner_party(cls, num_people: int, num_interests: int, set_size: int, total_points: int, points_spread: int, min_interests: int, max_interests: int, bimodal_discount: int = 0, think_through: int = 0):
+    def random_dinner_party(cls, num_people: int, num_interests: int, set_size: int, avg_points: int, points_spread: int, min_interests: int, max_interests: int, bimodal_discount: int = 0, think_through: int = 0):
         """
         Create a random DinnerParty object.
 
@@ -211,9 +212,6 @@ class DinnerParty(TaskSpecification):
         selected_names = random.sample(names, num_people)
         selected_interests = random.sample(all_interests, num_interests)
 
-        # Calculate average points per person
-        avg_points = total_points // num_people
-
         # Randomly assign points to each person, ensuring at least 1 point per person
         points_per_person = [max(1, random.randint(avg_points - points_spread, avg_points + points_spread)) for _ in range(num_people)]
         
@@ -226,7 +224,7 @@ class DinnerParty(TaskSpecification):
         people = [Person.random_person(name, selected_interests, points, min_interests, max_interests) 
                   for name, points in zip(selected_names, points_per_person)]
         task_description = f"Select {set_size} people for a dinner party that will have the most engaging conversations."
-        return cls(task_description, people, set_size, think_through)
+        return cls(task_description=task_description, people=people, set_size=set_size, think_through=think_through)
 
     def to_prompt(self) -> str:
         """
@@ -249,10 +247,17 @@ class DinnerParty(TaskSpecification):
         prompt += "3. The top 3 interests are selected.\n"
         prompt += "4. The final score is the sum of all interest levels for these top 3 interests.\n"
         prompt += "Your goal is to maximize this score by selecting a diverse group with strong, shared interests.\n"
-        if self.think_through:
-            prompt += f"\n{self.think_through}\n"
+        if self.think_through == 0:
+            # No step by step thinking through
+            prompt += "\nAnswer immediately with \"Answer: <person1>, <person2>, ...\"\nDone."
+        elif self.think_through == 1:
+            # Think briefly
+            prompt += "\nThink through your answer briefly, then answer with \"Answer: <person1>, <person2>, ...\"\nDone."
+        elif self.think_through == 2:
+            # Think deeply
+            prompt += "\nThink deeply about your answer, then answer with \"Answer: <person1>, <person2>, ...\"\nDone."
         else:
-            prompt += "\nAnswer immediately with \"Answer: <person1>, <person2>, ...\"\n"
+            raise ValueError("Invalid think_through value. Must be 0, 1, or 2.")
 
         return prompt
 

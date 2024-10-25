@@ -29,6 +29,9 @@ def create_graph(results, param, y_value, args):
     for i, result in enumerate(results):
         try:
             param_value = result['doc']['scoring_guide']['parameters'][param]
+            # For readability, convert integer values to strings
+            if param == "think_through":
+                param_value = {0: "No thinking through", 1: "Brief thought", 2: "Deep thought"}[param_value]
             param_values[param_value].append(result[y_value])
         except KeyError as e:
             print(f"  KeyError: {e}")

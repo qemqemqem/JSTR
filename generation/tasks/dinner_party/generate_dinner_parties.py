@@ -38,8 +38,6 @@ def produce_and_save_dinner_parties(n: int, output_file: str, **kwargs):
             params = dict(zip(param_names, combo))
             for _ in range(n):
                 party = DinnerParty.random_dinner_party(**params)
-                params_for_save = {k: v for k, v in params.items() if k != 'think_through'}
-                params_for_save['think_through'] = {0: "No thinking through", 1: "Brief thought", 2: "Deep thought"}[params['think_through']]
                 json_obj = {
                     "question": party.to_prompt(),
                     "scoring_guide": {
@@ -51,7 +49,7 @@ def produce_and_save_dinner_parties(n: int, output_file: str, **kwargs):
                             } for person in party.people
                         ],
                         "set_size": party.set_size,
-                        "parameters": params_for_save,
+                        "parameters": params,
                         "stored_scores": party.stored_scores,
                         "target_score": party.target_score,
                     }

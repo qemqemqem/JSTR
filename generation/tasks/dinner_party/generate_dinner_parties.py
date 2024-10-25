@@ -101,7 +101,7 @@ def main():
 
     args = parser.parse_args()
 
-    # Convert args to a dictionary, removing 'num_parties' and 'output'
+    # Convert args to a dictionary, removing 'num_parties' and 'output'. This is necessary, because the rest of the arguments are passed to random_dinner_party as kwargs.
     params = {k: v for k, v in vars(args).items() if k not in ['num_parties', 'output']}
 
     produce_and_save_dinner_parties(args.num_parties, args.output, **params)

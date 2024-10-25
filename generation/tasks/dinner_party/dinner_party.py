@@ -249,12 +249,10 @@ class DinnerParty(TaskSpecification):
         prompt += "3. The top 3 interests are selected.\n"
         prompt += "4. The final score is the sum of all interest levels for these top 3 interests.\n"
         prompt += "Your goal is to maximize this score by selecting a diverse group with strong, shared interests.\n"
-        # prompt += f"\nYour score to beat is: {self.target_score}."
-        # prompt += f"\nI don't want you to think before answering, just answer in the following format:"
-        # prompt += f"\n\nAnswer with \"Answer: <person1>, <person2>, ...\"."
-
-        # I don't want you to think or comment before answering, just answer immediately in the following format: \"Answer: <person1>, <person2>, ... \nDone.\"
-        # Please briefly think about your options and then answer with \"\n\nAnswer: <person1>, <person2>, ... \nDone.\"
+        if self.think_through:
+            prompt += f"\n{self.think_through}\n"
+        else:
+            prompt += "\nAnswer immediately with \"Answer: <person1>, <person2>, ...\"\n"
 
         return prompt
 

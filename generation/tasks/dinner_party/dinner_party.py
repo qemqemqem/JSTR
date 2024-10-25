@@ -80,6 +80,7 @@ class DinnerParty(TaskSpecification):
     stored_scores: List[float] = field(default_factory=list)
     think_through: int = -1
     full_chain_of_thought: str = ""
+    percent_chain_of_thought: int = 100
 
     def __post_init__(self):
         super().__init__(self.task_description, [person.name for person in self.people], self.set_size)
@@ -188,7 +189,7 @@ class DinnerParty(TaskSpecification):
     def get_full_chain_of_thought_from_llm(self, llm_model: str):
         chain_of_thought = "..."
         assert llm_model.startswith("gpt"), "Only GPT models are supported at present. Use LiteLLM or something if you want more than that."
-        print(f"Calling model {llm_model} to generate chain of thought...")
+        # print(f"Calling model {llm_model} to generate chain of thought...")
 
         prompt = self.to_prompt(no_think_through_commentary=True)
         prompt += "\n\nI want you to think deeply about this problem. Write as much as you can about the topic, mixing in analysis of the problem space, considerations of possible solutions, and any other relevant thoughts. DO NOT GIVE A FINAL ANSWER! Instead, your answer will be consultation and advice on how to think about the problem. Keep going until you feel you've really exhausted the topic."
@@ -208,12 +209,12 @@ class DinnerParty(TaskSpecification):
             temperature=0.4,
         )
         chain_of_thought = chat_completion.choices[0].message.content
-        print(f"Generated chain of thought: {chain_of_thought}")
+        print(f"Generated chain of thought: {chain_of_thought[:100]}")
 
         self.full_chain_of_thought = chain_of_thought
 
     @classmethod
-    def random_dinner_party(cls, num_people: int, num_interests: int, set_size: int, avg_points: int, points_spread: int, min_interests: int, max_interests: int, bimodal_discount: int = 0, think_through: int = 0):
+    def random_dinner_party(cls, num_people: int, num_interests: int, set_size: int, avg_points: int, points_spread: int, min_interests: int, max_interests: int, bimodal_discount: int = 0, think_through: int = 0, percent_chain_of_thought: int = 100):
         """
         Create a random DinnerParty object.
 
@@ -266,7 +267,7 @@ class DinnerParty(TaskSpecification):
         people = [Person.random_person(name, selected_interests, points, min_interests, max_interests) 
                   for name, points in zip(selected_names, points_per_person)]
         task_description = f"Select {set_size} people for a dinner party that will have the most engaging conversations."
-        return cls(task_description=task_description, people=people, set_size=set_size, think_through=think_through)
+        return cls(task_description=task_description, people=people, set_size=set_size, think_through=think_through, percent_chain_of_thought=percent_chain_of_thought)
 
     def to_prompt(self, no_think_through_commentary: bool = False) -> str:
         """
@@ -289,17 +290,27 @@ class DinnerParty(TaskSpecification):
         prompt += "3. The top 3 interests are selected.\n"
         prompt += "4. The final score is the sum of all interest levels for these top 3 interests.\n"
         prompt += "Your goal is to maximize this score by selecting a diverse group with strong, shared interests.\n"
+
+        # Use pregenerated chain of thought if available
+        if self.full_chain_of_thought:
+            if self.think_through != 0:
+                print("WARNING: Chain of thought is pregenerated, this is an unusual configuration")
+            # Get the first percent_chain_of_thought% of the chain of thought
+            num_thought_characters = int(len(self.full_chain_of_thought) * self.percent_chain_of_thought / 100.0)
+            first_part_chain_of_thought = self.full_chain_of_thought[:num_thought_characters]
+            prompt += f"\nI thought about the problem, and here's my analysis:\n{first_part_chain_of_thought}..."
+
         if not no_think_through_commentary:
             pass  # Say nothing about it...
         elif self.think_through == 0:
             # No step by step thinking through
-            prompt += "\nAnswer immediately with \"Answer: <person1>, <person2>, ...\"\nDone."
+            prompt += "\nAnswer immediately with \"Answer: <person1>, <person2>, ... Done.\""
         elif self.think_through == 1:
             # Think briefly
-            prompt += "\nThink through your answer briefly, then answer with \"Answer: <person1>, <person2>, ...\"\nDone."
+            prompt += "\nThink through your answer briefly, then answer with \"Answer: <person1>, <person2>, ... Done.\""
         elif self.think_through == 2:
             # Think deeply
-            prompt += "\nThink deeply about your answer, then answer with \"Answer: <person1>, <person2>, ...\"\nDone."
+            prompt += "\nThink deeply about your answer, then answer with \"Answer: <person1>, <person2>, ... Done.\""
         else:
             raise ValueError(f"Invalid think_through value. Must be 0, 1, or 2, got {self.think_through}.")
 

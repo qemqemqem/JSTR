@@ -57,14 +57,23 @@ def produce_and_save_dinner_parties(n: int, output_file: str, **kwargs):
                         task_description=base_party.task_description,
                         people=base_party.people.copy(),
                         set_size=base_party.set_size,
-                        think_through=params["think_through"]
+                        stored_scores=base_party.stored_scores,
+                        target_score=base_party.target_score,
+                        think_through=params["think_through"],
+                        full_chain_of_thought=base_party.full_chain_of_thought,
+                        percent_chain_of_thought=params["percent_chain_of_thought"],
                     )
+                    party.options = base_party.options.copy()
                 else:
                     # Create a new random dinner party
                     valid_params = inspect.signature(DinnerParty.random_dinner_party).parameters.keys()
                     filtered_params = {k: v for k, v in params.items() if k in valid_params}
                     party = DinnerParty.random_dinner_party(**filtered_params)
-                    party.get_full_chain_of_thought_from_llm(kwargs["llm_for_chain_of_thought"])
+
+                    # Annotate with the full chain of thought if requested
+                    if "llm_for_chain_of_thought" in kwargs:
+                        print(f"Getting full chain of thought {i+1}/{n} from {kwargs['llm_for_chain_of_thought']} (this takes 5-20s) ...")
+                        party.get_full_chain_of_thought_from_llm(kwargs["llm_for_chain_of_thought"])
 
                 # I know it seems like this could be cleaned up, but it's actually a bit tricky to do so
                 params_dup = params.copy()  # Copy again to avoid using the modified "think_through" value

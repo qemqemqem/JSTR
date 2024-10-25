@@ -40,10 +40,19 @@ def produce_and_save_dinner_parties(n: int, output_file: str, **kwargs):
             params = dict(zip(param_names, combo))
             for _ in range(n):
                 # Check if there's a similar dinner party already in there
-                params_dup = ... # TODO Deep copy params
+                params_dup = params.copy()  # Create a copy of the parameters
                 params_dup["think_through"] = 0
-                if json.dumps(params_dup) in dinner_parties_by_param:
-                    ... # TODO Deep copy the dinner party and change the think_through parameter
+                params_key = json.dumps(params_dup)
+                if params_key in dinner_parties_by_param:
+                    # Deep copy the existing dinner party and update think_through
+                    party = DinnerParty(
+                        task_description=dinner_parties_by_param[params_key].task_description,
+                        people=dinner_parties_by_param[params_key].people.copy(),
+                        set_size=dinner_parties_by_param[params_key].set_size,
+                        think_through=params["think_through"]
+                    )
+                else:
+                    party = DinnerParty.random_dinner_party(**params)
 
                 party = DinnerParty.random_dinner_party(**params)
                 dinner_parties_by_param[json.dumps(params)] = party

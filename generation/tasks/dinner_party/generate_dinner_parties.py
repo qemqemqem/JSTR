@@ -3,9 +3,29 @@ import argparse
 from pathlib import Path
 import itertools
 import random
-from typing import List
+from typing import List, Dict
 
 from generation.tasks.dinner_party.dinner_party import DinnerParty
+
+
+def create_party_json(party: DinnerParty, params: Dict) -> Dict:
+    """Create a JSON representation of a dinner party."""
+    return {
+        "question": party.to_prompt(),
+        "scoring_guide": {
+            "task_description": party.task_description,
+            "people": [
+                {
+                    "name": person.name,
+                    "interests": {k: v for k, v in person.interests.items() if v is not None}
+                } for person in party.people
+            ],
+            "set_size": party.set_size,
+            "parameters": params,
+            "stored_scores": party.stored_scores,
+            "target_score": party.target_score,
+        }
+    }
 
 
 def parse_range(arg: str) -> List[int]:
@@ -71,41 +91,11 @@ def produce_and_save_dinner_parties(n: int, output_file: str, **kwargs):
                     else:
                         # Fallback to creating a new party if base not found
                         party = DinnerParty.random_dinner_party(**params)
-                        json_obj = {
-                            "question": party.to_prompt(),
-                            "scoring_guide": {
-                                "task_description": party.task_description,
-                                "people": [
-                                    {
-                                        "name": person.name,
-                                        "interests": {k: v for k, v in person.interests.items() if v is not None}
-                                    } for person in party.people
-                                ],
-                                "set_size": party.set_size,
-                                "parameters": params,
-                                "stored_scores": party.stored_scores,
-                                "target_score": party.target_score,
-                            }
-                        }
+                        json_obj = create_party_json(party, params)
                 else:
                     # Create a new base party
                     party = DinnerParty.random_dinner_party(**params)
-                    json_obj = {
-                        "question": party.to_prompt(),
-                        "scoring_guide": {
-                            "task_description": party.task_description,
-                            "people": [
-                                {
-                                    "name": person.name,
-                                    "interests": {k: v for k, v in person.interests.items() if v is not None}
-                                } for person in party.people
-                            ],
-                            "set_size": party.set_size,
-                            "parameters": params,
-                            "stored_scores": party.stored_scores,
-                            "target_score": party.target_score,
-                        }
-                    }
+                    json_obj = create_party_json(party, params)
                     if think_through_idx >= 0:
                         base_parties[(base_key, iteration)] = json_obj
 

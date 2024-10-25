@@ -36,6 +36,7 @@ def produce_and_save_dinner_parties(n: int, output_file: str, **kwargs):
     dinner_parties_by_param: dict[str, DinnerParty] = {}
 
     # Get the first values for parameters we want to duplicate
+    print(combinations)
     first_think_through = next(kwargs["think_through"] for kwargs in combinations)
     first_percent_chain_of_thought = next(kwargs["percent_chain_of_thought"] for kwargs in combinations)
 

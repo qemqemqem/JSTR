@@ -37,8 +37,8 @@ def produce_and_save_dinner_parties(n: int, output_file: str, **kwargs):
 
     # Get the first values for parameters we want to duplicate
     print(combinations)
-    first_think_through = next(kwargs["think_through"] for kwargs in combinations)
-    first_percent_chain_of_thought = next(kwargs["percent_chain_of_thought"] for kwargs in combinations)
+    first_think_through = next(dict(zip(param_names, combo))["think_through"] for combo in combinations)
+    first_percent_chain_of_thought = next(dict(zip(param_names, combo))["percent_chain_of_thought"] for combo in combinations)
 
     # Open the file in write mode to start with an empty file
     with open(full_output_path, 'w') as f:

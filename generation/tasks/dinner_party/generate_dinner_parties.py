@@ -74,12 +74,6 @@ def main():
     # Convert args to a dictionary, removing 'num_parties' and 'output'
     params = {k: v for k, v in vars(args).items() if k not in ['num_parties', 'output']}
 
-    # # Generate and print one random dinner party
-    # random_party = produce_random_dinner_party(**params)
-    # print("Random Dinner Party:")
-    # print(random_party.to_prompt())
-    # print("\nTarget Score:", random_party.target_score)
-
     produce_and_save_dinner_parties(args.num_parties, args.output, **params)
     print(f"\nDinner parties saved to `{args.output}`")
 

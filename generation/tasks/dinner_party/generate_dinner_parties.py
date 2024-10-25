@@ -12,7 +12,7 @@ def parse_range(arg: str) -> List[int]:
     """Parse a comma-separated string into a list of integers."""
     return [int(x) for x in arg.split(',')]
 
-def produce_random_dinner_party(num_people: Union[int, List[int]] = 20, num_interests: Union[int, List[int]] = 8, set_size: Union[int, List[int]] = 5, avg_points: Union[int, List[int]] = 20, points_spread: int = 10, min_interests: int = 1, max_interests: int = 5, bimodal_discount: Union[int, List[int]] = 0) -> DinnerParty:
+def produce_random_dinner_party(num_people: Union[int, List[int]] = 20, num_interests: Union[int, List[int]] = 8, set_size: Union[int, List[int]] = 5, avg_points: Union[int, List[int]] = 20, points_spread: int = 10, min_interests: int = 1, max_interests: int = 5, bimodal_discount: Union[int, List[int]] = 0, think_through: Union[int, List[int]] = 0) -> DinnerParty:
     """
     Produce a random DinnerParty instance.
 
@@ -29,14 +29,18 @@ def produce_random_dinner_party(num_people: Union[int, List[int]] = 20, num_inte
     Returns:
     DinnerParty: A randomly generated DinnerParty instance.
     """
+
+    assert isinstance(num_people, int)
+
     num_people = random.choice(num_people) if isinstance(num_people, list) else num_people
     num_interests = random.choice(num_interests) if isinstance(num_interests, list) else num_interests
     set_size = random.choice(set_size) if isinstance(set_size, list) else set_size
     avg_points = random.choice(avg_points) if isinstance(avg_points, list) else avg_points
     bimodal_discount = random.choice(bimodal_discount) if isinstance(bimodal_discount, list) else bimodal_discount
+    think_through = random.choice(think_through) if isinstance(think_through, list) else think_through
 
     total_points = num_people * avg_points
-    return DinnerParty.random_dinner_party(num_people=num_people, num_interests=num_interests, set_size=set_size, total_points=total_points, points_spread=points_spread, min_interests=min_interests, max_interests=max_interests, bimodal_discount=bimodal_discount)
+    return DinnerParty.random_dinner_party(num_people=num_people, num_interests=num_interests, set_size=set_size, total_points=total_points, points_spread=points_spread, min_interests=min_interests, max_interests=max_interests, bimodal_discount=bimodal_discount, think_through=think_through)
 
 def produce_and_save_dinner_parties(n: int, output_file: str, **kwargs):
     """
@@ -93,21 +97,17 @@ def main():
     parser.add_argument("--min_interests", type=int, default=2, help="Minimum number of interests a person can have")
     parser.add_argument("--max_interests", type=int, default=5, help="Maximum number of interests a person can have")
     parser.add_argument("--bimodal_discount", type=parse_range, default="0", help="Discount to apply to 50% of people's points total (can be a range)")
-    parser.add_argument("--think_through", type=str, default="", help="Optional thinking prompt to add before the answer")
+    parser.add_argument("--think_through", type=parse_range, default="0", help="Optional thinking prompt to add before the answer")
     args = parser.parse_args()
 
     # Convert args to a dictionary, removing 'num_parties' and 'output'
     params = {k: v for k, v in vars(args).items() if k not in ['num_parties', 'output']}
 
-    # Generate and print one random dinner party
-    # Remove think-through from params before passing to produce_random_dinner_party
-    think_through = params.pop('think_through')
-    random_party = produce_random_dinner_party(**params)
-    # Add think-through back to params
-    params['think_through'] = think_through
-    print("Random Dinner Party:")
-    print(random_party.to_prompt())
-    print("\nTarget Score:", random_party.target_score)
+    # # Generate and print one random dinner party
+    # random_party = produce_random_dinner_party(**params)
+    # print("Random Dinner Party:")
+    # print(random_party.to_prompt())
+    # print("\nTarget Score:", random_party.target_score)
 
     produce_and_save_dinner_parties(args.num_parties, args.output, **params)
     print(f"\nDinner parties saved to `{args.output}`")

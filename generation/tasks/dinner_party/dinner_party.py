@@ -170,7 +170,7 @@ class DinnerParty(TaskSpecification):
         return score
 
     @classmethod
-    def random_dinner_party(cls, num_people: int, num_interests: int, set_size: int, total_points: int, points_spread: int, min_interests: int, max_interests: int, bimodal_discount: int = 0, think_through: str = ""):
+    def random_dinner_party(cls, num_people: int, num_interests: int, set_size: int, total_points: int, points_spread: int, min_interests: int, max_interests: int, bimodal_discount: int = 0, think_through: int = 0):
         """
         Create a random DinnerParty object.
 

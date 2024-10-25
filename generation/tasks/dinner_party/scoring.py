@@ -61,4 +61,5 @@ def score_answer(question, answer):
         "normalized_score": score_stats['normalized_score'],
         "rank_normalized_score": score_stats['rank_normalized_score'],
         "percent_of_max": score_stats['percent_of_max'],
+        "len_response": len(str(answer)),
     }

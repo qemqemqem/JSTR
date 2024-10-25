@@ -3,7 +3,7 @@ import argparse
 from pathlib import Path
 import itertools
 import random
-from typing import List, Union
+from typing import List
 
 from generation.tasks.dinner_party.dinner_party import DinnerParty
 
@@ -12,32 +12,24 @@ def parse_range(arg: str) -> List[int]:
     """Parse a comma-separated string into a list of integers."""
     return [int(x) for x in arg.split(',')]
 
-def produce_random_dinner_party(num_people: Union[int, List[int]] = 20, num_interests: Union[int, List[int]] = 8, set_size: Union[int, List[int]] = 5, avg_points: Union[int, List[int]] = 20, points_spread: int = 10, min_interests: int = 1, max_interests: int = 5, bimodal_discount: Union[int, List[int]] = 0, think_through: Union[int, List[int]] = 0) -> DinnerParty:
+def produce_random_dinner_party(num_people: int = 20, num_interests: int = 8, set_size: int = 5, avg_points: int = 20, points_spread: int = 10, min_interests: int = 1, max_interests: int = 5, bimodal_discount: int = 0, think_through: int = 0) -> DinnerParty:
     """
     Produce a random DinnerParty instance.
 
     Args:
-    num_people (int or List[int]): The number of people to generate for the dinner party.
-    num_interests (int or List[int]): The number of possible interests to choose from.
-    set_size (int or List[int]): The number of people to be selected for the dinner party.
-    avg_points (int or List[int]): The average interest points for a person.
+    num_people (int): The number of people to generate for the dinner party.
+    num_interests (int): The number of possible interests to choose from.
+    set_size (int): The number of people to be selected for the dinner party.
+    avg_points (int): The average interest points for a person.
     points_spread (int): The plus or minus on a person's total point value.
     min_interests (int): The minimum number of interests a person can have.
     max_interests (int): The maximum number of interests a person can have.
-    bimodal_discount (int or List[int]): The discount to apply to 50% of people's points total.
+    bimodal_discount (int): The discount to apply to 50% of people's points total.
+    think_through (int): Optional thinking prompt to add before the answer.
 
     Returns:
     DinnerParty: A randomly generated DinnerParty instance.
     """
-
-    assert isinstance(num_people, int)
-
-    num_people = random.choice(num_people) if isinstance(num_people, list) else num_people
-    num_interests = random.choice(num_interests) if isinstance(num_interests, list) else num_interests
-    set_size = random.choice(set_size) if isinstance(set_size, list) else set_size
-    avg_points = random.choice(avg_points) if isinstance(avg_points, list) else avg_points
-    bimodal_discount = random.choice(bimodal_discount) if isinstance(bimodal_discount, list) else bimodal_discount
-    think_through = random.choice(think_through) if isinstance(think_through, list) else think_through
 
     total_points = num_people * avg_points
     return DinnerParty.random_dinner_party(num_people=num_people, num_interests=num_interests, set_size=set_size, total_points=total_points, points_spread=points_spread, min_interests=min_interests, max_interests=max_interests, bimodal_discount=bimodal_discount, think_through=think_through)

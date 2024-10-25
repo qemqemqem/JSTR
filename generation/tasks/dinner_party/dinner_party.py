@@ -5,7 +5,21 @@ from typing import Dict, List
 
 import scipy.stats as stats
 
+try:
+    from openai import OpenAI
+except ImportError:
+    print("OpenAI not installed. You need it to pregenerate chain of thought.")
+
 from generation.common.task_spec import TaskSpecification
+
+
+try:
+    client = OpenAI(
+        # This is the default and can be omitted
+        api_key=os.environ.get("OPENAI_API_KEY"),
+    )
+except Exception as e:
+    pass
 
 
 @dataclass
@@ -65,6 +79,7 @@ class DinnerParty(TaskSpecification):
     target_score: float = 0.0
     stored_scores: List[float] = field(default_factory=list)
     think_through: int = -1
+    full_chain_of_thought: str = ""
 
     def __post_init__(self):
         super().__init__(self.task_description, [person.name for person in self.people], self.set_size)
@@ -170,6 +185,33 @@ class DinnerParty(TaskSpecification):
 
         return score
 
+    def get_full_chain_of_thought_from_llm(self, llm_model: str):
+        chain_of_thought = "..."
+        assert llm_model.startswith("gpt"), "Only GPT models are supported at present. Use LiteLLM or something if you want more than that."
+        print(f"Calling model {llm_model} to generate chain of thought...")
+
+        prompt = self.to_prompt(no_think_through_commentary=True)
+        prompt += "\n\nI want you to think deeply about this problem. Write as much as you can about the topic, mixing in analysis of the problem space, considerations of possible solutions, and any other relevant thoughts. DO NOT GIVE A FINAL ANSWER! Instead, your answer will be consultation and advice on how to think about the problem."
+        chat_completion = client.chat.completions.create(
+            messages=[
+                {
+                    "role": "system",
+                    "content": "You are a deep thinker who uses best practices to reason through complicated puzzles and difficult problems.",
+                },
+                {
+                    "role": "user",
+                    "content": prompt,
+                }
+            ],
+            model=llm_model,
+            max_tokens=2000,
+            temperature=0.4,
+        )
+        chain_of_thought = chat_completion.choices[0].message.content
+        print(f"Generated chain of thought: {chain_of_thought}")
+
+        self.full_chain_of_thought = chain_of_thought
+
     @classmethod
     def random_dinner_party(cls, num_people: int, num_interests: int, set_size: int, avg_points: int, points_spread: int, min_interests: int, max_interests: int, bimodal_discount: int = 0, think_through: int = 0):
         """
@@ -226,7 +268,7 @@ class DinnerParty(TaskSpecification):
         task_description = f"Select {set_size} people for a dinner party that will have the most engaging conversations."
         return cls(task_description=task_description, people=people, set_size=set_size, think_through=think_through)
 
-    def to_prompt(self) -> str:
+    def to_prompt(self, no_think_through_commentary: bool = False) -> str:
         """
         Generate a prompt string for the dinner party task.
 
@@ -247,7 +289,9 @@ class DinnerParty(TaskSpecification):
         prompt += "3. The top 3 interests are selected.\n"
         prompt += "4. The final score is the sum of all interest levels for these top 3 interests.\n"
         prompt += "Your goal is to maximize this score by selecting a diverse group with strong, shared interests.\n"
-        if self.think_through == 0:
+        if not no_think_through_commentary:
+            pass  # Say nothing about it...
+        elif self.think_through == 0:
             # No step by step thinking through
             prompt += "\nAnswer immediately with \"Answer: <person1>, <person2>, ...\"\nDone."
         elif self.think_through == 1:

@@ -36,7 +36,6 @@ def produce_and_save_dinner_parties(n: int, output_file: str, **kwargs):
     dinner_parties_by_param: dict[str, DinnerParty] = {}
 
     # Get the first values for parameters we want to duplicate
-    print(combinations)
     first_think_through = next(dict(zip(param_names, combo))["think_through"] for combo in combinations)
     first_percent_chain_of_thought = next(dict(zip(param_names, combo))["percent_chain_of_thought"] for combo in combinations)
 
@@ -61,9 +60,11 @@ def produce_and_save_dinner_parties(n: int, output_file: str, **kwargs):
                         think_through=params["think_through"]
                     )
                 else:
+                    # Create a new random dinner party
                     valid_params = inspect.signature(DinnerParty.random_dinner_party).parameters.keys()
                     filtered_params = {k: v for k, v in params.items() if k in valid_params}
                     party = DinnerParty.random_dinner_party(**filtered_params)
+                    party.get_full_chain_of_thought_from_llm(kwargs["llm_for_chain_of_thought"])
 
                 # I know it seems like this could be cleaned up, but it's actually a bit tricky to do so
                 params_dup = params.copy()  # Copy again to avoid using the modified "think_through" value
@@ -104,7 +105,7 @@ def main():
 
     parser.add_argument_group("Pre-generate chain of thought. The purpose of this is to generate chain of thought that can be used to get the answer. We pre-generate it rather than allowing the LLM to do so because we want to see if it makes a difference to use more or less of the same chain of thought trace.")
     parser.add_argument("--pregenerate_chain_of_thought", type=bool, default=False, help="Whether to pre-generate chain of thought")
-    parser.add_argument("--llm_chain_of_thought", type=str, default="gpt-4-turbo", help="Which LLM to use to generate chain of thought")
+    parser.add_argument("--llm_for_chain_of_thought", type=str, default="gpt-4-turbo", help="Which LLM to use to generate chain of thought")
     parser.add_argument("--percent_chain_of_thought", type=parse_range, default="100",
                         help="Percent of pregenerated chain of thought to use (can be a range, e.g., '25,50,75,100')")
 

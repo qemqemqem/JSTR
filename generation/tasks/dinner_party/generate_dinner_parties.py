@@ -114,7 +114,7 @@ def main():
 
     parser.add_argument_group("Pre-generate chain of thought. The purpose of this is to generate chain of thought that can be used to get the answer. We pre-generate it rather than allowing the LLM to do so because we want to see if it makes a difference to use more or less of the same chain of thought trace.")
     parser.add_argument("--pregenerate_chain_of_thought", type=bool, default=False, help="Whether to pre-generate chain of thought")
-    parser.add_argument("--llm_for_chain_of_thought", type=str, default="gpt-4-turbo", help="Which LLM to use to generate chain of thought")
+    parser.add_argument("--llm_for_chain_of_thought", type=str, default="", help="Which LLM to use to generate chain of thought, such as gpt-4-turbo.")
     parser.add_argument("--percent_chain_of_thought", type=parse_range, default="100",
                         help="Percent of pregenerated chain of thought to use (can be a range, e.g., '25,50,75,100')")
 

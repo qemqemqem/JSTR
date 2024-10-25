@@ -7,7 +7,6 @@ show_help() {
     echo
     echo "Options:"
     echo "  -m, --model MODEL       Model to use (default: gpt-4-turbo)"
-    echo "  -s, --step-by-step     Enable step-by-step mode (default: false)"
     echo "  -p, --path PATH        Path to lm-evaluation-harness directory"
     echo "  -i, --include PATH     Path to include for task definitions"
     echo "  -h, --help            Show this help message"
@@ -18,7 +17,6 @@ show_help() {
 
 # Default values
 MODEL="gpt-4-turbo"
-STEP_BY_STEP="false"
 EVAL_PATH="/home/keenan/Dev/lm-evaluation-harness/"
 INCLUDE_PATH="/home/keenan/Dev/JSTR/"
 
@@ -39,10 +37,6 @@ while [[ $# -gt 0 ]]; do
     case $1 in
         -m|--model)
             MODEL="$2"
-            shift 2
-            ;;
-        -s|--step-by-step)
-            STEP_BY_STEP="$2"
             shift 2
             ;;
         -p|--path)
@@ -72,16 +66,10 @@ fi
 
 echo "Configuration:"
 echo "  Model: $MODEL"
-echo "  Step-by-step mode: $STEP_BY_STEP"
 echo "  Evaluation harness path: $EVAL_PATH"
 echo "  Include path: $INCLUDE_PATH"
 
-# Set task based on step-by-step mode
 TASK="dinner_party_real"
-if [ "$STEP_BY_STEP" = "true" ]; then
-    TASK="dinner_party_real_step_by_step"
-fi
-
 echo "  Task: $TASK"
 
 # Run evaluation

@@ -252,6 +252,10 @@ class DinnerParty(TaskSpecification):
         # prompt += f"\nYour score to beat is: {self.target_score}."
         # prompt += f"\nI don't want you to think before answering, just answer in the following format:"
         # prompt += f"\n\nAnswer with \"Answer: <person1>, <person2>, ...\"."
+
+        # I don't want you to think or comment before answering, just answer immediately in the following format: \"Answer: <person1>, <person2>, ... \nDone.\"
+        # Please briefly think about your options and then answer with \"\n\nAnswer: <person1>, <person2>, ... \nDone.\"
+
         return prompt
 
     def get_random_set(self) -> List[str]:

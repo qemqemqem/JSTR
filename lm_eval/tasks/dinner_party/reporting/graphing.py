@@ -65,9 +65,15 @@ def create_graph(results, param, y_value, args):
         all_y.extend(y)
     
     # Compute best fit line
-    slope, intercept, r_value, p_value, std_err = stats.linregress(all_x, all_y)
-    line = slope * np.array(x_data) + intercept
-    plt.plot(range(1, len(x_data) + 1), line, color='red', linestyle='--', label=f'Best Fit Line (R² = {r_value**2:.3f})')
+
+    # all_x will be non-numeric if it's string values
+    if all(isinstance(i, (int, float)) for i in all_x):
+        slope, intercept, r_value, p_value, std_err = stats.linregress(all_x, all_y)
+        line = slope * np.array(x_data) + intercept
+        plt.plot(range(1, len(x_data) + 1), line, color='red', linestyle='--', label=f'Best Fit Line (R² = {r_value**2:.3f})')
+        r_value_legend = [f'Best Fit Line (R² = {r_value**2:.3f})']
+    else:
+        r_value_legend = []
     
     plt.xlabel(param.replace('_', ' ').title(), fontsize=11, fontweight='bold')
     plt.ylabel(f'{y_value.replace("_", " ").title()}', fontsize=11, fontweight='bold')
@@ -91,7 +97,7 @@ def create_graph(results, param, y_value, args):
     
     # Add legend to show N for each bin and best fit line info
     legend_labels = [f'{param.replace("_", " ").title()} = {x}: N={len(param_values[x])}' for x in x_data]
-    plt.legend(legend_labels + [f'Best Fit Line (R² = {r_value**2:.3f})'], 
+    plt.legend(legend_labels + r_value_legend,
                title="Parameter Values and Sample Sizes", title_fontsize=10, fontsize=8,
                loc='center left', bbox_to_anchor=(1, 0.5))
     

@@ -116,6 +116,7 @@ def produce_and_save_dinner_parties(n: int, output_file: str, **kwargs):
     # Copy the file
     shutil.copy2(full_output_path, backup_path)
 
+
 def main():
     parser = argparse.ArgumentParser(description="Generate dinner party scenarios")
     parser.add_argument("-n", "--num_parties", type=int, default=5, help="Number of dinner parties to generate for each combination of parameters")

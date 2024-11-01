@@ -65,13 +65,12 @@ def create_graph(results, param, y_value, args):
         all_y.extend(y)
     
     # Compute best fit line
-
     # all_x will be non-numeric if it's string values
     if all(isinstance(i, (int, float)) for i in all_x):
         slope, intercept, r_value, p_value, std_err = stats.linregress(all_x, all_y)
         line = slope * np.array(x_data) + intercept
         plt.plot(range(1, len(x_data) + 1), line, color='red', linestyle='--', label=f'Best Fit Line (R² = {r_value**2:.3f})')
-        r_value_legend = [f'Best Fit Line (R² = {r_value**2:.3f})']
+        r_value_legend = [f'Best Fit Line (slope = {slope:.3f}) (R² = {r_value**2:.3f})']
     else:
         r_value_legend = []
     
@@ -123,10 +122,10 @@ def main():
     parser = argparse.ArgumentParser(description="Create a graph from dinner party evaluation results")
     parser.add_argument("--input_file", default=default_input_file, 
                         help="Path to the input JSONL file with evaluation results")
-    all_params = ['bimodal_discount', 'set_size', 'num_people', 'num_interests', 'avg_points', 'think_through']
+    all_params = ['bimodal_discount', 'set_size', 'num_people', 'num_interests', 'avg_points', 'think_through', 'percent_chain_of_thought']
     parser.add_argument("--param", choices=['all'] + all_params,
                         default='set_size', help="Parameter to use for x-axis. Use 'all' to generate graphs for all parameters.")
-    parser.add_argument("--y_value", choices=['dinner_score', 'percentile', 'ranking', 'normalized_score', 'rank_normalized_score'], 
+    parser.add_argument("--y_value", choices=['dinner_score', 'percentile', 'ranking', 'normalized_score', 'rank_normalized_score', 'len_response'],
                         default='normalized_score', help="Value to use for y-axis")
     parser.add_argument("--display_graph", action="store_true", default=False,
                         help="Whether to display the graph (default: False)")

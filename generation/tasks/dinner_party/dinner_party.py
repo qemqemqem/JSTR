@@ -192,7 +192,7 @@ class DinnerParty(TaskSpecification):
         # print(f"Calling model {llm_model} to generate chain of thought...")
 
         prompt = self.to_prompt(no_think_through_commentary=True)
-        prompt += "\n\nI want you to think deeply about this problem. Write as much as you can about the topic, mixing in analysis of the problem space, considerations of possible solutions, and any other relevant thoughts. DO NOT GIVE A FINAL ANSWER! Instead, your answer will be consultation and advice on how to think about the problem. Keep going until you feel you've really exhausted the topic."
+        prompt += "\n\nThink this through by considering many possible answers and comment on whether they're a good answer. DO NOT GIVE A FINAL ANSWER! Instead, your answer will be a reference for me to find the answer. Keep going and don't stop until you've considered many possibilities. Consider one possibility and what its score would be, then consider another possibility and what its score would be, and so on."
         chat_completion = client.chat.completions.create(
             messages=[
                 {
@@ -298,19 +298,20 @@ class DinnerParty(TaskSpecification):
             # Get the first percent_chain_of_thought% of the chain of thought
             num_thought_characters = int(len(self.full_chain_of_thought) * self.percent_chain_of_thought / 100.0)
             first_part_chain_of_thought = self.full_chain_of_thought[:num_thought_characters]
-            prompt += f"\nI thought about the problem, and here's my analysis:\n{first_part_chain_of_thought}..."
+            if self.percent_chain_of_thought > 0:
+                prompt += f"\nI thought about the problem, and here's my analysis: \n{first_part_chain_of_thought}..."
 
-        if not no_think_through_commentary:
-            pass  # Say nothing about it...
+        if no_think_through_commentary:
+            pass  # Do not add any think-through commentary
         elif self.think_through == 0:
             # No step by step thinking through
-            prompt += "\nAnswer immediately with \"Answer: <person1>, <person2>, ... Done.\""
+            prompt += "\n\nAnswer immediately with \"Answer: <person1>, <person2>, ... Done.\""
         elif self.think_through == 1:
             # Think briefly
-            prompt += "\nThink through your answer briefly, then answer with \"Answer: <person1>, <person2>, ... Done.\""
+            prompt += "\n\nThink through your answer briefly, then answer with \"Answer: <person1>, <person2>, ... Done.\""
         elif self.think_through == 2:
             # Think deeply
-            prompt += "\nThink deeply about your answer, then answer with \"Answer: <person1>, <person2>, ... Done.\""
+            prompt += "\n\nThink deeply about your answer, then answer with \"Answer: <person1>, <person2>, ... Done.\""
         else:
             raise ValueError(f"Invalid think_through value. Must be 0, 1, or 2, got {self.think_through}.")
 

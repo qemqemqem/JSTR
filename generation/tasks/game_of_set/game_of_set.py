@@ -48,6 +48,18 @@ class GameOfSet:
     @classmethod
     def random_game(cls, board_size: int = 12, think_through: bool = False) -> 'GameOfSet':
         """Generate a random game board with exactly one valid set"""
+
+        if think_through == "0" or think_through == 0:
+            think_through = False
+        elif think_through == "1" or think_through == 1:
+            think_through = True
+        elif think_through in [True, False]:
+            pass
+        else:
+            # raise ValueError(f"Invalid value for think_through: {think_through}")
+            print(f"Invalid value for think_through: {think_through} (generate_games_of_set.py needs to implement parse_range)")
+            think_through = False  # TODO Need to implement this
+
         while True:
             # Generate all possible cards
             all_cards = [

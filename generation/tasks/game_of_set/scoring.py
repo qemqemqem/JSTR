@@ -53,6 +53,13 @@ def score_answer(question, answer):
     # Check if the selected cards form a valid set
     is_valid = len(selected_cards) == 3 and game.is_valid_set(selected_cards)
 
+    # Check if the selected cards are in the board
+    is_in_board = all(card in board for card in selected_cards)
+
+    # # Print out if the set is valid but not the correct one
+    # if is_valid and selected_cards != valid_set:
+    #     print(f"Surprise! Selected set is valid but not the correct one: \n\n{selected_cards}\n\nCompare to valid set: \n\n{valid_set}\n\nOn the board? {is_in_board}")
+
     # Calculate score: 1.0 if they found the valid set, 0.5 if they found a different valid set, 0.0 otherwise
     score = 1.0 if selected_cards == valid_set else (0.5 if is_valid else 0.0)
 

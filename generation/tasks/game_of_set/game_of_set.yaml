@@ -1,0 +1,8 @@
+include: game_of_set_base.yaml
+
+task: game_of_set
+
+doc_to_text: "{{question}}"
+doc_to_target: "{{scoring_guide}}"
+
+output_type: generate_until

@@ -1,4 +1,7 @@
-include: game_of_set_base.yaml
+dataset_path: json
+dataset_name: null
+dataset_kwargs:
+  data_files: lm_eval/tasks/game_of_set/game_of_set.jsonl
 
 task: game_of_set
 
@@ -6,3 +9,29 @@ doc_to_text: "{{question}}"
 doc_to_target: "{{scoring_guide}}"
 
 output_type: generate_until
+
+metric_list:
+  - metric: set_score
+    aggregation: mean
+    higher_is_better: true
+  - metric: valid_set
+    aggregation: mean
+    higher_is_better: true
+  - metric: len_response
+    aggregation: mean
+    higher_is_better: false
+
+test_split: train
+fewshot_split: train
+
+generation_kwargs:
+  until:
+    - "Done."
+  do_sample: false
+  temperature: 0.2
+  max_gen_toks: 2000
+
+process_results: !function scoring.score_answer
+
+metadata:
+  version: 1.0

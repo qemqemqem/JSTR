@@ -56,9 +56,9 @@ def score_answer(question, answer):
     # Check if the selected cards are in the board
     is_in_board = all(card in board for card in selected_cards)
 
-    # # Print out if the set is valid but not the correct one
-    # if is_valid and selected_cards != valid_set:
-    #     print(f"Surprise! Selected set is valid but not the correct one: \n\n{selected_cards}\n\nCompare to valid set: \n\n{valid_set}\n\nOn the board? {is_in_board}")
+    # Calculate various validity metrics
+    valid_but_not_present = float(is_valid and not is_in_board)
+    present_but_invalid = float(is_in_board and not is_valid)
 
     # Calculate score: 1.0 if they found the valid set, 0.5 if they found a different valid set, 0.0 otherwise
     score = 1.0 if selected_cards == valid_set else (0.5 if is_valid else 0.0)
@@ -67,4 +67,6 @@ def score_answer(question, answer):
         "set_score": score,
         "valid_set": float(is_valid),  # Convert bool to float for metrics
         "len_response": len(str(answer)),
+        "valid_but_not_present": valid_but_not_present,
+        "present_but_invalid": present_but_invalid,
     }

@@ -60,11 +60,7 @@ def score_answer(question, answer):
     valid_but_not_present = float(is_valid and not is_in_board)
     present_but_invalid = float(is_in_board and not is_valid)
 
-    # Calculate score: 1.0 if they found the valid set, 0.5 if they found a different valid set, 0.0 otherwise
-    score = 1.0 if selected_cards == valid_set else (0.5 if is_valid else 0.0)
-
     return {
-        "set_score": score,
         "valid_set": float(is_valid),  # Convert bool to float for metrics
         "len_response": len(str(answer)),
         "valid_but_not_present": valid_but_not_present,

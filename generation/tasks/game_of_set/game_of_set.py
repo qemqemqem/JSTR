@@ -30,13 +30,14 @@ class GameOfSet:
     NUMBERS = [1, 2, 3]
     SHADINGS = ['S', 'H', 'O']  # Solid, sHaded, Open
 
-    def __init__(self, board: List[Card], valid_set: Optional[List[Card]] = None):
+    def __init__(self, board: List[Card], valid_set: Optional[List[Card]] = None, think_through: bool = False):
         """Initialize with a board of cards and optionally a known valid set"""
         self.board = board
         self.valid_set = valid_set
+        self.think_through = think_through
         
     @classmethod
-    def random_game(cls, board_size: int = 12) -> 'GameOfSet':
+    def random_game(cls, board_size: int = 12, think_through: bool = False) -> 'GameOfSet':
         """Generate a random game board with exactly one valid set"""
         while True:
             # Generate all possible cards
@@ -54,8 +55,9 @@ class GameOfSet:
             valid_sets = cls.find_all_sets(board)
             
             # If we found exactly one valid set, we're done
+            # print(f"Found {len(valid_sets)} valid sets")  # This seems to happen on average 5-10 times or something, which is not too bad
             if len(valid_sets) == 1:
-                return cls(board, valid_sets[0])
+                return cls(board, valid_sets[0], think_through=think_through)
     
     @staticmethod
     def is_valid_set(cards: List[Card]) -> bool:
@@ -82,12 +84,28 @@ class GameOfSet:
     def to_prompt(self) -> str:
         """Convert the game board to a prompt string"""
         card_strs = [card.to_code() for card in self.board]
-        cards_formatted = ', '.join(card_strs)
+        cards_formatted = '\n'.join(card_strs)
         
-        return (
-            f"Here is a game board with {len(self.board)} cards for the game of Set:\n"
+        prompt = (
+            f"Here is a game board with {len(self.board)} cards for the game of Set:\n\n"
             f"{cards_formatted}\n\n"
             "Find a valid set of three cards. Remember, in a valid set, for each attribute "
             "(color, shape, number, shading), the cards must either all match or all differ.\n\n"
             "Express your answer as three card codes separated by commas."
         )
+
+        if self.think_through:
+            prompt += "\n\nThink through your answer by considering many different possible sets until you find the right one, then answer in this format: \n\nAnswer: R-O-1-S, G-S-2-H, P-D-3-O"
+        else:
+            prompt += "\n\nDo not think through your answer. Answer immediately in this format: \n\nAnswer: R-O-1-S, G-S-2-H, P-D-3-O"
+
+        return prompt
+
+if __name__ == "__main__":
+    game = GameOfSet.random_game()
+    print(game.to_prompt())
+
+    print("Valid set:")
+    card_strs = [card.to_code() for card in game.valid_set]
+    cards_formatted = '\n'.join(card_strs)
+    print(cards_formatted)

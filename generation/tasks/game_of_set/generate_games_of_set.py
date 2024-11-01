@@ -36,8 +36,8 @@ def produce_and_save_games(n: int, output_file: str, **kwargs):
             json_obj = {
                 "question": game.to_prompt(),
                 "scoring_guide": {
-                    "board": game.board,
-                    "valid_set": game.valid_set,
+                    "board": [card.to_dict() for card in game.board],
+                    "valid_set": [card.to_dict() for card in game.valid_set],
                     "parameters": kwargs
                 }
             }

@@ -21,6 +21,15 @@ class Card:
     def to_code(self) -> str:
         """Convert card to code string"""
         return f"{self.color}-{self.shape}-{self.number}-{self.shading}"
+        
+    def to_dict(self) -> dict:
+        """Convert card to dictionary for JSON serialization"""
+        return {
+            'color': self.color,
+            'shape': self.shape,
+            'number': self.number,
+            'shading': self.shading
+        }
 
 class GameOfSet:
     """Represents a game of Set with a board of cards and methods to find valid sets"""

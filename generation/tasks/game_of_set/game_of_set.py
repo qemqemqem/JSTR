@@ -57,7 +57,7 @@ class GameOfSet:
             pass
         else:
             # raise ValueError(f"Invalid value for think_through: {think_through}")
-            print(f"Invalid value for think_through: {think_through} (generate_games_of_set.py needs to implement parse_range)")
+            print(f"Invalid value for think_through: {think_through} (generate_games_of_set.py needs to implement parse_range) Defaulting to False.")
             think_through = False  # TODO Need to implement this
 
         while True:

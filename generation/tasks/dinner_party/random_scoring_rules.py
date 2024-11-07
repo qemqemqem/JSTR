@@ -197,6 +197,38 @@ class FewestInterestsHostRule(ScoringRule):
     def get_description(self) -> str:
         return f"[Focused Host] The host is chosen as the guest with the fewest number of interests (breaking ties alphabetically), and each guest gets {self.points_per_interest} points for each interest they share with the host."
 
+
+class WellRoundedInterestsRule(ScoringRule):
+    def __init__(self, dinner_party: DinnerParty):
+        super().__init__(dinner_party)
+    
+    def score_round(self, people: List[Person], game_scoring: "GameScoring") -> tuple[Dict[str, float], Dict[str, Any]]:
+        scores = {}
+        for person in people:
+            if not person.interests:
+                scores[person.name] = 0
+                continue
+                
+            # Find highest and lowest interest levels
+            highest = max(person.interests.values())
+            lowest = min(person.interests.values())
+            
+            # Calculate gap - smaller gaps get more points
+            gap = highest - lowest
+            
+            # Award points inversely proportional to the gap
+            # A gap of 0 gets 10 points, gap of 1 gets 8 points, etc.
+            scores[person.name] = max(0, 10 - 2 * gap)
+            
+        return scores, {}
+
+    @classmethod
+    def get_cr(cls) -> int:
+        return 1
+    
+    def get_description(self) -> str:
+        return "[Well-Rounded Interests] Each guest gets points based on how close their highest and lowest interest levels are. A smaller gap means more points, encouraging well-rounded conversationalists."
+
 class AlphabeticHostInterestRule(ScoringRule):
     def __init__(self, dinner_party: DinnerParty):
         super().__init__(dinner_party)
@@ -464,6 +496,7 @@ def random_scoring_rules(points: int, dinner_party: DinnerParty, target_number_r
         AlphabeticHostInterestRule,
         FewestInterestsHostRule,
         FewestInterestsLargestValueRule,
+        WellRoundedInterestsRule,
     ]
 
     if verbose:

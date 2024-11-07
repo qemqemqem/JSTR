@@ -26,7 +26,7 @@ Here are some examples of scoring rules:
 import random
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from typing import List, Dict, Optional
+from typing import List, Dict, Optional, Any
 from generation.tasks.dinner_party.dinner_party import Person, DinnerParty
 
 

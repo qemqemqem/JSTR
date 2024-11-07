@@ -198,6 +198,42 @@ class FewestInterestsHostRule(ScoringRule):
         return f"[Focused Host] The host is chosen as the guest with the fewest number of interests (breaking ties alphabetically), and each guest gets {self.points_per_interest} points for each interest they share with the host."
 
 
+class NicheInterestsRule(ScoringRule):
+    def __init__(self, dinner_party: DinnerParty):
+        super().__init__(dinner_party)
+        self.bonus_points = random.randint(3, 7)  # Random bonus points per niche interest
+    
+    def score_round(self, people: List[Person], game_scoring: "GameScoring") -> tuple[Dict[str, float], Dict[str, Any]]:
+        # Get all interests and their total values across all guests
+        interest_totals = {}
+        for person in people:
+            for interest, level in person.interests.items():
+                if interest not in interest_totals:
+                    interest_totals[interest] = 0
+                interest_totals[interest] += level
+        
+        # Find the three lowest-valued interests
+        niche_interests = sorted(interest_totals.items(), key=lambda x: (x[1], x[0]))[:3]
+        niche_interest_names = [interest for interest, _ in niche_interests]
+        
+        # Award bonus points to guests who have these interests
+        scores = {}
+        for person in people:
+            score = 0
+            for interest in niche_interest_names:
+                if interest in person.interests:
+                    score += self.bonus_points
+            scores[person.name] = score
+            
+        return scores, {"niche_interests": niche_interest_names}
+
+    @classmethod
+    def get_cr(cls) -> int:
+        return 2
+    
+    def get_description(self) -> str:
+        return f"[Niche Interests] Find the three interests with lowest total values across all guests. Award {self.bonus_points} bonus points to each guest for each of these niche interests they have."
+
 class WellRoundedInterestsRule(ScoringRule):
     def __init__(self, dinner_party: DinnerParty):
         super().__init__(dinner_party)
@@ -497,6 +533,7 @@ def random_scoring_rules(points: int, dinner_party: DinnerParty, target_number_r
         FewestInterestsHostRule,
         FewestInterestsLargestValueRule,
         WellRoundedInterestsRule,
+        NicheInterestsRule,
     ]
 
     if verbose:

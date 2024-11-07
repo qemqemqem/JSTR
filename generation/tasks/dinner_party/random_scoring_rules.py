@@ -150,7 +150,7 @@ class FewestInterestsLargestValueRule(ScoringRule):
         return 4
     
     def get_description(self) -> str:
-        return "[Focused Host Interest] In this round, one guest is chosen as the host. The host is the guest with the fewest number of interests (breaking ties alphabetically). That host's largest interest is chosen as the topic for the round. Then, each guest gets points equal to their value in that topic."
+        return "[Focused Host Interest] In this round, one guest is chosen as the host. The host is the guest with the fewest number of interests (breaking ties alphabetically). That host's largest interest (again, breaking ties alphabetically) is chosen as the topic for the round. Then, each guest gets points equal to their value in that topic."
 
 class FewestInterestsHostRule(ScoringRule):
     def __init__(self, dinner_party: "DinnerParty"):
@@ -232,7 +232,7 @@ class NicheInterestsRule(ScoringRule):
         return 2
     
     def get_description(self) -> str:
-        return f"[Niche Interests] In this round, we find the three interests with lowest total values across all guests. Then, we award {self.bonus_points} bonus points to each guest for each of these niche interests they have."
+        return f"[Niche Interests] In this round, we find the three interests with lowest total values across all guests, meaning the lowest sum of interest among all guests, breaking ties alphabetically. Then, we award {self.bonus_points} bonus points to each guest for each of these niche interests they have."
 
 class WellRoundedInterestsRule(ScoringRule):
     def __init__(self, dinner_party: "DinnerParty"):
@@ -338,7 +338,7 @@ class LargestInterestValueRule(ScoringRule):
         return 3
     
     def get_description(self) -> str:
-        return "[Loudest Interest] In this round, we find the interest with the highest value among all guests which has not yet been discussed. Then, each person is awarded their value in that interest in points."
+        return "[Loudest Interest] In this round, we find the interest with the highest value among all guests which has not yet been discussed. This is the highest single value in a single interest that one person has. Break ties alphabetically by interest name. Then, each person is awarded their value in that interest in points."
 
 
 class EachPersonSpeaksRule(ScoringRule):
@@ -394,7 +394,7 @@ class SingleInterestRule(ScoringRule):
         return 1
 
     def get_description(self) -> str:
-        return f"[Talk about {self.interest.title()}] This round is simple. Award each person their value in {self.interest} in points."
+        return f"[Talk about {self.interest.title()}] This round is simple. Award each person their value in {self.interest} in points. (Or 0 if they don't have it)"
 
 
 class MostCommonInterestRule(ScoringRule):
@@ -431,7 +431,7 @@ class MostCommonInterestRule(ScoringRule):
 
     def get_description(self) -> str:
         ignore_previous = ", excluding interests which have been chosen in previous rounds" if self.ignore_previous_interests else ""
-        return f"[Most Common Interest] First, find the most commonly shared interest by number of people with the interest{ignore_previous} (breaking ties alphabetically), and make it the topic for the round. Then, award each person their value in that interest in points."
+        return f"[Most Common Interest] First, find the most commonly shared interest by number of people with any value in the interest{ignore_previous} (breaking ties alphabetically), and make it the topic for the round. Then, award each person their value in that interest in points."
 
 class MostCommonInterestExceptPrevious(MostCommonInterestRule):
     def __init__(self, dinner_party: "DinnerParty"):

@@ -344,8 +344,6 @@ class MostCommonInterestRule(ScoringRule):
                     if not self.ignore_previous_interests or interest not in game_scoring.discussed_interests:
                         interest_counts[interest] = interest_counts.get(interest, 0) + 1
 
-        print("Interest counts:", interest_counts)
-        
         if not interest_counts:
             # If no valid interests found (all were previously discussed), return 0 scores
             return {person.name: 0 for person in people}, {}
@@ -534,8 +532,11 @@ def main(verbose: bool = True):
         print(", ".join(str(person) for person in people))
 
     # Score all rounds
-    random_rules.score_all_rounds(people, verbose=verbose)
+    final_scores = random_rules.score_all_rounds(people, verbose=verbose)
+
+    print("Final Scores:")
+    print(final_scores)
 
 
 if __name__ == "__main__":
-    main()
+    main(False)

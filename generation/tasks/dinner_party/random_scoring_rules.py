@@ -215,20 +215,27 @@ def random_scoring_rules(points: int, dinner_party: DinnerParty, target_number_r
     rules = []
     remaining_points = points
     
-    # Keep adding rules until we reach the target points
     while remaining_points > 0:
+        # Calculate ideal points per remaining rule
+        remaining_rules = target_number_rules - len(rules)
+        if remaining_rules <= 0:
+            break
+            
+        ideal_points_per_rule = remaining_points / remaining_rules
+        
         # Get possible rules we could add
         possible_rules = [rule for rule in available_rules if rule.get_cr() <= remaining_points]
-
         if len(rules) == 0:
-            # No previous
             possible_rules = [rule for rule in possible_rules if rule not in [MostCommonInterestExceptPrevious]]
         
         if not possible_rules:
             break
             
-        # Choose a rule
-        chosen_rule = random.choice(possible_rules)(dinner_party)
+        # Weight rules by how close their CR is to the ideal points per rule
+        weights = [1 / (abs(rule.get_cr() - ideal_points_per_rule) + 1) for rule in possible_rules]
+        
+        # Choose a rule using the weights
+        chosen_rule = random.choices(possible_rules, weights=weights, k=1)[0](dinner_party)
         rules.append(chosen_rule)
         remaining_points -= chosen_rule.get_cr()
     

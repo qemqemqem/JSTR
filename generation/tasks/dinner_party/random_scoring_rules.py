@@ -97,7 +97,7 @@ class FewestPointsHostRule(ScoringRule):
         return "[Obsessive Host] The host is chosen as the guest with the fewest total interest points (breaking ties alphabetically), and each guest gets 2 points for each interest they share with the host."
 
 
-class HostInterestRule(ScoringRule):
+class AlphabeticHostInterestRule(ScoringRule):
     def __init__(self, dinner_party: DinnerParty):
         super().__init__(dinner_party)
     
@@ -168,7 +168,7 @@ class LargestInterestValueRule(ScoringRule):
         return "[Loudest Interest] First, find the interest with the highest value among all guests. Then, award each person their value in that interest in points."
 
 
-class TopInterestRule(ScoringRule):
+class EachPersonSpeaksRule(ScoringRule):
     def __init__(self, dinner_party: DinnerParty):
         super().__init__(dinner_party)
     
@@ -338,12 +338,12 @@ class GameScoring:
 def random_scoring_rules(points: int, dinner_party: DinnerParty, target_number_rules: int = 3, weighting_exponent: float = 1.0) -> GameScoring:
     """Generate random scoring rules totaling the given complexity points"""
     available_rules = [
-        TopInterestRule,
+        EachPersonSpeaksRule,
         MostCommonInterestRule,
         SingleInterestRule,
         MostCommonInterestExceptPrevious,
         LargestInterestValueRule,
-        HostInterestRule,
+        AlphabeticHostInterestRule,
         FewestPointsHostRule,
     ]
     

@@ -35,8 +35,8 @@ class ScoringRule(ABC):
         pass
     
     @abstractmethod
-    def score_round(self, people: List[Person], game_scoring: "GameScoring") -> tuple[Dict[str, float], List[str]]:
-        """Returns a tuple of (scores dict mapping person names to their scores, list of interests discussed)"""
+    def score_round(self, people: List[Person], game_scoring: "GameScoring") -> tuple[Dict[str, float], Dict[str, Any]]:
+        """Returns a tuple of (scores dict mapping person names to their scores, metadata dict with 'interest' and/or 'host')"""
         pass
 
     @abstractmethod
@@ -138,12 +138,12 @@ class FewestInterestsLargestValueRule(ScoringRule):
         # Find host's largest interest
         max_interest = self._find_largest_interest(host.interests)
         if not max_interest:
-            return {person.name: 0 for person in people}, []
+            return {person.name: 0 for person in people}, {}
         
         chosen_interest = max_interest[0]
         scores = self._calculate_scores_for_interest(people, chosen_interest)
         
-        return scores, [chosen_interest]
+        return scores, {"interest": chosen_interest, "host": host.name}
 
     @classmethod
     def get_cr(cls) -> int:
@@ -188,7 +188,7 @@ class FewestInterestsHostRule(ScoringRule):
             shared_interests = set(person.interests.keys()) & host_interests
             scores[person.name] = self.points_per_interest * len(shared_interests)
         
-        return scores, []  # list(host_interests)
+        return scores, {"host": host.name}
 
     @classmethod
     def get_cr(cls) -> int:
@@ -226,7 +226,7 @@ class AlphabeticHostInterestRule(ScoringRule):
             shared_interests = set(person.interests.keys()) & host_interests
             scores[person.name] = 2 * len(shared_interests)
         
-        return scores, []  # list(host_interests)
+        return scores, {"host": host.name}
 
     @classmethod
     def get_cr(cls) -> int:
@@ -254,7 +254,7 @@ class LargestInterestValueRule(ScoringRule):
         
         # Find highest value interest, breaking ties alphabetically
         if not interest_values:
-            return {person.name: 0 for person in people}, []
+            return {person.name: 0 for person in people}, {}
             
         max_interest = max(interest_values.items(), key=lambda x: (x[1], -ord(x[0][0])))
         chosen_interest = max_interest[0]
@@ -264,7 +264,7 @@ class LargestInterestValueRule(ScoringRule):
         for person in people:
             scores[person.name] = person.interests.get(chosen_interest, 0)
         
-        return scores, [chosen_interest]
+        return scores, {"interest": chosen_interest}
 
     @classmethod
     def get_cr(cls) -> int:
@@ -298,7 +298,9 @@ class EachPersonSpeaksRule(ScoringRule):
                 # No undiscussed interests available
                 scores[person.name] = 0
                 
-        return scores, []  # Could return interests_used
+        if interests_used:
+            return scores, {"interest": interests_used[0]}  # Only return the first interest used
+        return scores, {}
 
     @classmethod
     def get_cr(cls) -> int:

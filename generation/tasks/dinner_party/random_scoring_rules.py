@@ -52,50 +52,42 @@ class ScoringRule(ABC):
     def __str__(self) -> str:
         return f"CR{self.get_cr()}: {self.get_description()}"
 
-class FewestInterestsHostRule(ScoringRule):
+class FewestInterestsLargestValueRule(ScoringRule):
     def __init__(self, dinner_party: DinnerParty):
         super().__init__(dinner_party)
-        self.points_per_interest = random.randint(2, 5)  # Both inclusive
     
     def score_round(self, people: List[Person], game_scoring: "GameScoring") -> tuple[Dict[str, float], List[str]]:
-        # Initialize previous_hosts if needed
-        if game_scoring.previous_hosts is None:
-            game_scoring.previous_hosts = []
-            
-        # Filter to people who haven't been host yet
-        available_hosts = [p for p in people if p.name not in game_scoring.previous_hosts]
-        
-        # If everyone has been host, reset the list
-        if not available_hosts:
-            game_scoring.previous_hosts = []
-            available_hosts = people
-            
-        # Calculate number of interests for available hosts
+        # Calculate number of interests for each person
         person_interests = {
             person.name: len(person.interests)
-            for person in available_hosts
+            for person in people
         }
         
-        # Choose host as person with fewest interests among available hosts (breaking ties alphabetically)
-        host = min(available_hosts, key=lambda x: (person_interests[x.name], x.name))
-        game_scoring.previous_hosts.append(host.name)
+        # Choose host as person with fewest interests (breaking ties alphabetically)
+        host = min(people, key=lambda x: (person_interests[x.name], x.name))
         
-        host_interests = set(host.interests.keys())
+        # Find the host's largest interest value
+        if not host.interests:
+            return {person.name: 0 for person in people}, []
+            
+        host_max_interest = max(host.interests.items(), key=lambda x: (x[1], -ord(x[0][0])))
+        chosen_interest = host_max_interest[0]
         
-        # Score each guest based on shared interests with host
+        # Score each person based on their value in the host's largest interest
         scores = {}
         for person in people:
-            shared_interests = set(person.interests.keys()) & host_interests
-            scores[person.name] = self.points_per_interest * len(shared_interests)
+            scores[person.name] = person.interests.get(chosen_interest, 0)
         
-        return scores, list(host_interests)
+        return scores, [chosen_interest]
 
     @classmethod
     def get_cr(cls) -> int:
         return 4
     
     def get_description(self) -> str:
-        return f"[Focused Host] The host is chosen as the guest with the fewest number of interests (breaking ties alphabetically), and each guest gets {self.points_per_interest} points for each interest they share with the host."
+        return "[Focused Host Interest] The host is chosen as the guest with the fewest number of interests (breaking ties alphabetically), and each guest gets points equal to their value in the host's largest interest."
+
+class FewestInterestsHostRule(ScoringRule):
 
 
 class AlphabeticHostInterestRule(ScoringRule):
@@ -352,6 +344,7 @@ def random_scoring_rules(points: int, dinner_party: DinnerParty, target_number_r
         LargestInterestValueRule,
         AlphabeticHostInterestRule,
         FewestInterestsHostRule,
+        FewestInterestsLargestValueRule,
     ]
     
     rules = []

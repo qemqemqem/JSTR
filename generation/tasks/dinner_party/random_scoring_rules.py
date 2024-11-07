@@ -52,31 +52,96 @@ class ScoringRule(ABC):
     def __str__(self) -> str:
         return f"CR{self.get_cr()}: {self.get_description()}"
 
+    def _select_host_from_available(self, people: List[Person], game_scoring: "GameScoring", key_func) -> Person:
+        """
+        Select a host from available people using the given key function for sorting.
+        Handles host rotation tracking.
+        
+        Args:
+            people: List of all people
+            game_scoring: GameScoring object containing previous_hosts
+            key_func: Function to use for selecting host (e.g., lambda x: (len(x.interests), x.name))
+        
+        Returns:
+            Selected host Person object
+        """
+        # Initialize previous_hosts if needed
+        if game_scoring.previous_hosts is None:
+            game_scoring.previous_hosts = []
+            
+        # Filter to people who haven't been host yet
+        available_hosts = [p for p in people if p.name not in game_scoring.previous_hosts]
+        
+        # If everyone has been host, reset the list
+        if not available_hosts:
+            game_scoring.previous_hosts = []
+            available_hosts = people
+            
+        # Choose host using provided key function
+        host = min(available_hosts, key=key_func)
+        game_scoring.previous_hosts.append(host.name)
+        
+        return host
+
+    def _find_largest_interest(self, interests: Dict[str, int]) -> Optional[tuple[str, int]]:
+        """
+        Find the interest with largest value, breaking ties alphabetically.
+        
+        Args:
+            interests: Dictionary mapping interest names to values
+        
+        Returns:
+            Tuple of (interest_name, value) or None if no interests
+        """
+        if not interests:
+            return None
+            
+        return max(interests.items(), key=lambda x: (x[1], -ord(x[0][0])))
+
+    def _calculate_scores_for_interest(self, people: List[Person], interest: str) -> Dict[str, float]:
+        """
+        Calculate scores for all people based on a single interest.
+        
+        Args:
+            people: List of all people
+            interest: Interest to score
+        
+        Returns:
+            Dictionary mapping person names to their scores
+        """
+        return {person.name: person.interests.get(interest, 0) for person in people}
+
+    def _count_interests_per_person(self, people: List[Person]) -> Dict[str, int]:
+        """
+        Count number of interests for each person.
+        
+        Args:
+            people: List of people to count interests for
+        
+        Returns:
+            Dictionary mapping person names to their interest counts
+        """
+        return {person.name: len(person.interests) for person in people}
+
 class FewestInterestsLargestValueRule(ScoringRule):
     def __init__(self, dinner_party: DinnerParty):
         super().__init__(dinner_party)
     
     def score_round(self, people: List[Person], game_scoring: "GameScoring") -> tuple[Dict[str, float], List[str]]:
-        # Calculate number of interests for each person
-        person_interests = {
-            person.name: len(person.interests)
-            for person in people
-        }
+        # Select host with fewest interests
+        host = self._select_host_from_available(
+            people, 
+            game_scoring,
+            key_func=lambda x: (len(x.interests), x.name)
+        )
         
-        # Choose host as person with fewest interests (breaking ties alphabetically)
-        host = min(people, key=lambda x: (person_interests[x.name], x.name))
-        
-        # Find the host's largest interest value
-        if not host.interests:
+        # Find host's largest interest
+        max_interest = self._find_largest_interest(host.interests)
+        if not max_interest:
             return {person.name: 0 for person in people}, []
-            
-        host_max_interest = max(host.interests.items(), key=lambda x: (x[1], -ord(x[0][0])))
-        chosen_interest = host_max_interest[0]
         
-        # Score each person based on their value in the host's largest interest
-        scores = {}
-        for person in people:
-            scores[person.name] = person.interests.get(chosen_interest, 0)
+        chosen_interest = max_interest[0]
+        scores = self._calculate_scores_for_interest(people, chosen_interest)
         
         return scores, [chosen_interest]
 

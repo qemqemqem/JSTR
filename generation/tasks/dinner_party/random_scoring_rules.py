@@ -223,10 +223,10 @@ class MostCommonInterestRule(ScoringRule):
         most_common = max(interest_counts.items(), key=lambda x: (x[1], -ord(x[0][0])))
         most_common_interest = most_common[0]
         
-        # Award double points for the most common interest
+        # Award points for the most common interest
         scores = {}
         for person in people:
-            scores[person.name] = 2 * person.interests.get(most_common_interest, 0)
+            scores[person.name] = person.interests.get(most_common_interest, 0)
         return scores, [most_common_interest]
 
     @classmethod
@@ -235,7 +235,7 @@ class MostCommonInterestRule(ScoringRule):
 
     def get_description(self) -> str:
         ignore_previous = ", excluding interests which have been chosen in previous rounds" if self.ignore_previous_interests else ""
-        return f"First, find the most commonly shared interest by number of people with the interest{ignore_previous} (breaking ties alphabetically). Then, award each person their value in that interest in points."
+        return f"First, find the most commonly shared interest by number of people with the interest{ignore_previous} (breaking ties alphabetically). Then, award each person their value in that interest in points. If no valid interests remain, everyone gets 0 points."
 
 class MostCommonInterestExceptPrevious(MostCommonInterestRule):
     def __init__(self, dinner_party: DinnerParty):

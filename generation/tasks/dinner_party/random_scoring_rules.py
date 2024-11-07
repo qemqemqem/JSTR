@@ -350,7 +350,7 @@ def random_scoring_rules(points: int, dinner_party: DinnerParty, target_number_r
         MostCommonInterestExceptPrevious,
         LargestInterestValueRule,
         AlphabeticHostInterestRule,
-        FewestPointsHostRule,
+        FewestInterestsHostRule,
     ]
     
     rules = []

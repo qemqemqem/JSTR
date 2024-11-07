@@ -75,7 +75,7 @@ class DinnerParty(TaskSpecification):
     task_description: str
     people: List[Person]
     set_size: int
-    options: List[str] = field(init=False)  # Options for people's names
+    options: List[str] = field(init=False)  # Options for people's names. This is redundant with people, sorry.
     target_score: float = 0.0
     stored_scores: List[float] = field(default_factory=list)
     think_through: int = -1

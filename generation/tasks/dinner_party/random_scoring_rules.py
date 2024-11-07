@@ -218,12 +218,7 @@ def random_scoring_rules(points: int, dinner_party: DinnerParty, target_number_r
     while remaining_points > 0:
         # Calculate ideal points per remaining rule
         remaining_rules = target_number_rules - len(rules)
-        
-        # Calculate ideal points - if we have enough rules, prefer smaller rules
-        ideal_points_per_rule = remaining_points / max(remaining_rules, 1)
-        if remaining_rules <= 0:
-            ideal_points_per_rule = 1  # Prefer smallest rules once we hit our target
-        
+
         # Get possible rules we could add
         possible_rules = [rule for rule in available_rules if rule.get_cr() <= remaining_points]
         if len(rules) == 0:
@@ -233,7 +228,10 @@ def random_scoring_rules(points: int, dinner_party: DinnerParty, target_number_r
             break
             
         # Weight rules by how close their CR is to the ideal points per rule
-        ideal_points_per_rule = remaining_points / remaining_rules
+        if remaining_rules > 0:
+            ideal_points_per_rule = remaining_points / remaining_rules
+        else:
+            ideal_points_per_rule = 1  # Prefer smallest rules once we hit our target
         weights = [1 / (abs(rule.get_cr() - ideal_points_per_rule) + 1) for rule in possible_rules]
         
         # Choose a rule using the weights

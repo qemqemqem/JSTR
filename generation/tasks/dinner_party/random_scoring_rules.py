@@ -533,7 +533,7 @@ class GameScoring:
         return prompt.strip()
 
 
-ALL_RULES: List[ScoringRule] = [
+ALL_RULES: List[type[ScoringRule]] = [
     EachPersonSpeaksRule,
     MostCommonInterestRule,
     SingleInterestRule,

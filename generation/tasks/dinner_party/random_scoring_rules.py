@@ -88,7 +88,49 @@ class FewestInterestsLargestValueRule(ScoringRule):
         return "[Focused Host Interest] The host is chosen as the guest with the fewest number of interests (breaking ties alphabetically), and each guest gets points equal to their value in the host's largest interest."
 
 class FewestInterestsHostRule(ScoringRule):
+    def __init__(self, dinner_party: DinnerParty):
+        super().__init__(dinner_party)
+        self.points_per_interest = random.randint(2, 5)  # Both inclusive
+    
+    def score_round(self, people: List[Person], game_scoring: "GameScoring") -> tuple[Dict[str, float], List[str]]:
+        # Initialize previous_hosts if needed
+        if game_scoring.previous_hosts is None:
+            game_scoring.previous_hosts = []
+            
+        # Filter to people who haven't been host yet
+        available_hosts = [p for p in people if p.name not in game_scoring.previous_hosts]
+        
+        # If everyone has been host, reset the list
+        if not available_hosts:
+            game_scoring.previous_hosts = []
+            available_hosts = people
+            
+        # Calculate number of interests for available hosts
+        person_interests = {
+            person.name: len(person.interests)
+            for person in available_hosts
+        }
+        
+        # Choose host as person with fewest interests among available hosts (breaking ties alphabetically)
+        host = min(available_hosts, key=lambda x: (person_interests[x.name], x.name))
+        game_scoring.previous_hosts.append(host.name)
+        
+        host_interests = set(host.interests.keys())
+        
+        # Score each guest based on shared interests with host
+        scores = {}
+        for person in people:
+            shared_interests = set(person.interests.keys()) & host_interests
+            scores[person.name] = self.points_per_interest * len(shared_interests)
+        
+        return scores, list(host_interests)
 
+    @classmethod
+    def get_cr(cls) -> int:
+        return 4
+    
+    def get_description(self) -> str:
+        return f"[Focused Host] The host is chosen as the guest with the fewest number of interests (breaking ties alphabetically), and each guest gets {self.points_per_interest} points for each interest they share with the host."
 
 class AlphabeticHostInterestRule(ScoringRule):
     def __init__(self, dinner_party: DinnerParty):

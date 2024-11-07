@@ -27,10 +27,11 @@ import random
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from typing import List, Dict, Optional
-from generation.tasks.dinner_party.dinner_party import Person
+from generation.tasks.dinner_party.dinner_party import Person, DinnerParty
+
 
 class ScoringRule(ABC):
-    def __init__(self):
+    def __init__(self, dinner_party: DinnerParty):
         pass
     
     @abstractmethod
@@ -52,9 +53,8 @@ class ScoringRule(ABC):
         return f"CR{self.get_cr()}: {self.get_description()}"
 
 class TopInterestRule(ScoringRule):
-    """CR1 rule: Each guest gets their top interest value"""
-    def __init__(self):
-        super().__init__()
+    def __init__(self, dinner_party: DinnerParty):
+        super().__init__(dinner_party)
     
     def score_round(self, people: List[Person]) -> Dict[str, float]:
         pass # TODO: Implement this
@@ -66,20 +66,37 @@ class TopInterestRule(ScoringRule):
     def get_description(self) -> str:
         return "Each person is awarded their top interest value in points"
 
-class MostCommonInterestRule(ScoringRule):
-    """CR3 rule: Points for the most common interest among guests"""
-    def __init__(self):
-        super().__init__()
-    
+
+class SingleInterestRule(ScoringRule):
+    def __init__(self, dinner_party: DinnerParty):
+        super().__init__(dinner_party)
+        self.interest = random.choice(dinner_party.all_interests)
+
     def score_round(self, people: List[Person]) -> Dict[str, float]:
-        pass # TODO: Implement this
+        pass  # TODO: Implement this
+
+    @classmethod
+    def get_cr(cls) -> int:
+        return 1
+
+    def get_description(self) -> str:
+        return f"Award each person their value in {self.interest} in points."
+
+
+class MostCommonInterestRule(ScoringRule):
+    def __init__(self, dinner_party: DinnerParty):
+        super().__init__(dinner_party)
+
+    def score_round(self, people: List[Person]) -> Dict[str, float]:
+        pass  # TODO: Implement this
 
     @classmethod
     def get_cr(cls) -> int:
         return 3
-    
+
     def get_description(self) -> str:
         return "First, find the most commonly shared interest by number of people with the interest (breaking ties alphabetically). Then, award each person their value in that interest in points."
+
 
 @dataclass
 class GameScoring:
@@ -87,10 +104,10 @@ class GameScoring:
     rules: List[ScoringRule]
 
     def __str__(self) -> str:
-        header = f"GameScoring (Total Complexity: CR{self.target_complexity})"
+        header = f"GameScoring (Total Complexity: CR{sum(rule.get_cr() for rule in self.rules)})"
         rounds = []
         for i, rule in enumerate(self.rules, 1):
-            assert isinstance(rule, ScoringRule)  # For IDE type hinting
+            assert isinstance(rule, ScoringRule), f"Got {rule}, a {rule.__class__.__name__}"  # For IDE type hinting
             round_desc = f"Round {i}: CR{rule.get_cr()}-{rule.__class__.__name__}: {rule.get_description()}"
             rounds.append(round_desc)
         return f"{header}\n" + "\n".join(rounds)
@@ -126,11 +143,12 @@ class GameScoring:
     def get_final_scores(self) -> Dict[str, float]:
         return self.scores.copy()
 
-def random_scoring_rules(points: int):
+def random_scoring_rules(points: int, dinner_party: DinnerParty):
     """Generate random scoring rules totaling the given complexity points"""
     available_rules = [
         TopInterestRule,
-        MostCommonInterestRule
+        MostCommonInterestRule,
+        SingleInterestRule,
     ]
     
     rules = []
@@ -145,17 +163,19 @@ def random_scoring_rules(points: int):
             break
             
         # Choose a rule
-        chosen_rule = random.choice(possible_rules)
+        chosen_rule = random.choice(possible_rules)(dinner_party)
         rules.append(chosen_rule)
         remaining_points -= chosen_rule.get_cr()
     
     return GameScoring(target_complexity=points, rules=rules)
 
 def main():
-    points = random.randint(20, 21)
+    dinner_party = DinnerParty.random_dinner_party(num_people=10, num_interests=6, set_size=5, points_spread=0, min_interests=2, max_interests=4, avg_points=15)
+
+    points = 6  # random.randint(3, 10)
     print(f"Generating rules with Points: {points}")
 
-    random_rules = random_scoring_rules(points)
+    random_rules = random_scoring_rules(points, dinner_party)
 
     print("Rules:")
     print(random_rules)

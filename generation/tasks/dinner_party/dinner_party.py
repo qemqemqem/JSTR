@@ -75,12 +75,13 @@ class DinnerParty(TaskSpecification):
     task_description: str
     people: List[Person]
     set_size: int
-    options: List[str] = field(init=False)
+    options: List[str] = field(init=False)  # Options for people's names
     target_score: float = 0.0
     stored_scores: List[float] = field(default_factory=list)
     think_through: int = -1
     full_chain_of_thought: str = ""
     percent_chain_of_thought: int = 100
+    all_interests: List[str] = field(default_factory=list)
 
     def __post_init__(self):
         super().__init__(self.task_description, [person.name for person in self.people], self.set_size)
@@ -214,7 +215,7 @@ class DinnerParty(TaskSpecification):
         self.full_chain_of_thought = chain_of_thought
 
     @classmethod
-    def random_dinner_party(cls, num_people: int, num_interests: int, set_size: int, avg_points: int, points_spread: int, min_interests: int, max_interests: int, bimodal_discount: int = 0, think_through: int = 0, percent_chain_of_thought: int = 100):
+    def random_dinner_party(cls, num_people: int, num_interests: int, set_size: int, avg_points: int, points_spread: int, min_interests: int, max_interests: int, bimodal_discount: int = 0, think_through: int = 0, percent_chain_of_thought: int = 100) -> "DinnerParty":
         """
         Create a random DinnerParty object.
 
@@ -267,7 +268,7 @@ class DinnerParty(TaskSpecification):
         people = [Person.random_person(name, selected_interests, points, min_interests, max_interests) 
                   for name, points in zip(selected_names, points_per_person)]
         task_description = f"Select {set_size} people for a dinner party that will have the most engaging conversations."
-        return cls(task_description=task_description, people=people, set_size=set_size, think_through=think_through, percent_chain_of_thought=percent_chain_of_thought)
+        return cls(task_description=task_description, people=people, set_size=set_size, think_through=think_through, percent_chain_of_thought=percent_chain_of_thought, all_interests=selected_interests)
 
     def to_prompt(self, no_think_through_commentary: bool = False) -> str:
         """

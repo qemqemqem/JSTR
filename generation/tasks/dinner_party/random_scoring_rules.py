@@ -203,7 +203,7 @@ class GameScoring:
     def get_final_scores(self) -> Dict[str, float]:
         return self.scores.copy()
 
-def random_scoring_rules(points: int, dinner_party: DinnerParty, target_number_rules: int = 3):
+def random_scoring_rules(points: int, dinner_party: DinnerParty, target_number_rules: int = 3, weighting_exponent: float = 1.0) -> GameScoring:
     """Generate random scoring rules totaling the given complexity points"""
     available_rules = [
         TopInterestRule,
@@ -233,6 +233,13 @@ def random_scoring_rules(points: int, dinner_party: DinnerParty, target_number_r
         else:
             ideal_points_per_rule = 1  # Prefer smallest rules once we hit our target
         weights = [1 / (abs(rule.get_cr() - ideal_points_per_rule) + 1) for rule in possible_rules]
+        weights = [weight ** weighting_exponent for weight in weights]
+
+        print("Weights")
+        print(f"Ideal points per rule: {ideal_points_per_rule}")
+        print([rule.get_cr() for rule in possible_rules])
+        print(weights)
+        print()
         
         # Choose a rule using the weights
         chosen_rule = random.choices(possible_rules, weights=weights, k=1)[0](dinner_party)
@@ -247,7 +254,7 @@ def main():
     points = 6  # random.randint(3, 10)
     print(f"Generating rules with Points: {points}")
 
-    random_rules = random_scoring_rules(points, dinner_party)
+    random_rules = random_scoring_rules(points, dinner_party, target_number_rules=3, weighting_exponent=2.0)
 
     print("Rules:")
     print(random_rules)

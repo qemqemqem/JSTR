@@ -100,13 +100,18 @@ class MostCommonInterestRule(ScoringRule):
         self.ignore_previous_interests = False
 
     def score_round(self, people: List[Person], game_scoring: "GameScoring") -> tuple[Dict[str, float], List[str]]:
-        # Count how many people have each interest
+        # Count how many people have each interest, excluding previously discussed interests if needed
         interest_counts = {}
         for person in people:
             for interest in person.interests:
                 if person.interests[interest] is not None and person.interests[interest] > 0:
-                    interest_counts[interest] = interest_counts.get(interest, 0) + 1
+                    if not self.ignore_previous_interests or interest not in game_scoring.discussed_interests:
+                        interest_counts[interest] = interest_counts.get(interest, 0) + 1
         
+        if not interest_counts:
+            # If no valid interests found (all were previously discussed), return 0 scores
+            return {person.name: 0 for person in people}, []
+            
         # Find the most common interest (breaking ties alphabetically)
         most_common = max(interest_counts.items(), key=lambda x: (x[1], -ord(x[0][0])))
         most_common_interest = most_common[0]

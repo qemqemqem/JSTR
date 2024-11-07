@@ -135,6 +135,7 @@ class MostCommonInterestExceptPrevious(MostCommonInterestRule):
         super().__init__(dinner_party)
         self.ignore_previous_interests = True
 
+    @classmethod
     def get_cr(self) -> int:
         return MostCommonInterestRule.get_cr() + 1
 
@@ -202,12 +203,13 @@ class GameScoring:
     def get_final_scores(self) -> Dict[str, float]:
         return self.scores.copy()
 
-def random_scoring_rules(points: int, dinner_party: DinnerParty):
+def random_scoring_rules(points: int, dinner_party: DinnerParty, target_number_rules: int = 3):
     """Generate random scoring rules totaling the given complexity points"""
     available_rules = [
         TopInterestRule,
         MostCommonInterestRule,
         SingleInterestRule,
+        MostCommonInterestExceptPrevious,
     ]
     
     rules = []
@@ -217,6 +219,10 @@ def random_scoring_rules(points: int, dinner_party: DinnerParty):
     while remaining_points > 0:
         # Get possible rules we could add
         possible_rules = [rule for rule in available_rules if rule.get_cr() <= remaining_points]
+
+        if len(rules) == 0:
+            # No previous
+            possible_rules = [rule for rule in possible_rules if rule not in [MostCommonInterestExceptPrevious]]
         
         if not possible_rules:
             break

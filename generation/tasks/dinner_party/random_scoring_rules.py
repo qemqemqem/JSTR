@@ -161,7 +161,7 @@ class GameScoring:
         header = f"GameScoring (Total Complexity: CR{self.target_complexity})"
         rounds = []
         for i, rule in enumerate(self.rules, 1):
-            round_desc = f"Round {i}: {rule.get_description()} {rule.selector}"
+            round_desc = f"Round {i}: {rule.get_description()} {rule.selector} [{rule.__class__.__name__}]"
             rounds.append(round_desc)
         return f"{header}\n" + "\n".join(rounds)
     

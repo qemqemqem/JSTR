@@ -23,12 +23,93 @@ Here are some examples of scoring rules:
 - (CR4) The most common interest is chosen among all guests, excluding interests which have been chosen in previous rounds, and each guest gets their value in that interest. (Round 2 and later only)
 """
 
-import random
+from abc import ABC, abstractmethod
+from dataclasses import dataclass
+from typing import List, Dict, Optional
+from generation.tasks.dinner_party.dinner_party import Person
 
+class InterestSelection(ABC):
+    @abstractmethod
+    def select_interests(self, people: List[Person]) -> List[str]:
+        pass
 
+class TopInterestSelection(InterestSelection):
+    """Selects each person's highest-value interest"""
+    def select_interests(self, people: List[Person]) -> List[str]:
+        result = []
+        for person in people:
+            if person.interests:
+                # Get interest with highest value, breaking ties alphabetically
+                top_interest = max(person.interests.items(), 
+                                 key=lambda x: (x[1], -ord(x[0][0])))
+                result.append(top_interest[0])
+        return result
+
+class ScoringRule(ABC):
+    def __init__(self, complexity_rating: int):
+        self.complexity_rating = complexity_rating
+    
+    @abstractmethod
+    def score_round(self, people: List[Person]) -> Dict[str, float]:
+        """Returns a dict mapping person names to their scores"""
+        pass
+
+class TopInterestRule(ScoringRule):
+    """CR1 rule: Each guest gets their top interest value"""
+    def __init__(self):
+        super().__init__(complexity_rating=1)
+        self.selector = TopInterestSelection()
+    
+    def score_round(self, people: List[Person]) -> Dict[str, float]:
+        scores = {}
+        for person in people:
+            if person.interests:
+                # Get highest value interest
+                top_value = max(person.interests.values())
+                scores[person.name] = top_value
+            else:
+                scores[person.name] = 0
+        return scores
+
+@dataclass
+class GameScoring:
+    target_complexity: int
+    rules: List[ScoringRule]
+    
+    def __post_init__(self):
+        # Validate that rules sum to target complexity
+        total_complexity = sum(rule.complexity_rating for rule in self.rules)
+        if total_complexity != self.target_complexity:
+            raise ValueError(
+                f"Rules complexity ({total_complexity}) "
+                f"doesn't match target ({self.target_complexity})"
+            )
+        self.current_round = 0
+        self.scores: Dict[str, float] = {}
+    
+    def score_round(self, people: List[Person]) -> Dict[str, float]:
+        if self.current_round >= len(self.rules):
+            raise ValueError("No more rounds available")
+            
+        # Get scores for this round
+        round_scores = self.rules[self.current_round].score_round(people)
+        
+        # Update cumulative scores
+        for name, score in round_scores.items():
+            if name not in self.scores:
+                self.scores[name] = 0
+            self.scores[name] += score
+        
+        self.current_round += 1
+        return round_scores
+    
+    def get_final_scores(self) -> Dict[str, float]:
+        return self.scores.copy()
 
 def random_scoring_rules(points: int):
-    ...
+    """Generate random scoring rules totaling the given complexity points"""
+    rules = [TopInterestRule()]  # Start with simplest rule for now
+    return GameScoring(target_complexity=points, rules=rules)
 
 def main():
     points = random.randint(0, 10)

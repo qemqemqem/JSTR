@@ -192,7 +192,7 @@ class EachPersonSpeaksRule(ScoringRule):
                 # No undiscussed interests available
                 scores[person.name] = 0
                 
-        return scores, interests_used
+        return scores, []  # Could return interests_used
 
     @classmethod
     def get_cr(cls) -> int:
@@ -219,7 +219,7 @@ class SingleInterestRule(ScoringRule):
         return 1
 
     def get_description(self) -> str:
-        return f"[Talk about {self.interest.title}] Award each person their value in {self.interest} in points."
+        return f"[Talk about {self.interest.title()}] Award each person their value in {self.interest} in points."
 
 
 class MostCommonInterestRule(ScoringRule):

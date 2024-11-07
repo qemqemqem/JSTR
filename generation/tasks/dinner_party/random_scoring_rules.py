@@ -55,6 +55,7 @@ class ScoringRule(ABC):
 class FewestInterestsHostRule(ScoringRule):
     def __init__(self, dinner_party: DinnerParty):
         super().__init__(dinner_party)
+        self.points_per_interest = random.randint(2, 5)  # Both inclusive
     
     def score_round(self, people: List[Person], game_scoring: "GameScoring") -> tuple[Dict[str, float], List[str]]:
         # Initialize previous_hosts if needed
@@ -85,7 +86,7 @@ class FewestInterestsHostRule(ScoringRule):
         scores = {}
         for person in people:
             shared_interests = set(person.interests.keys()) & host_interests
-            scores[person.name] = 2 * len(shared_interests)
+            scores[person.name] = self.points_per_interest * len(shared_interests)
         
         return scores, list(host_interests)
 
@@ -94,7 +95,7 @@ class FewestInterestsHostRule(ScoringRule):
         return 4
     
     def get_description(self) -> str:
-        return "[Focused Host] The host is chosen as the guest with the fewest number of interests (breaking ties alphabetically), and each guest gets 2 points for each interest they share with the host."
+        return f"[Focused Host] The host is chosen as the guest with the fewest number of interests (breaking ties alphabetically), and each guest gets {self.points_per_interest} points for each interest they share with the host."
 
 
 class AlphabeticHostInterestRule(ScoringRule):

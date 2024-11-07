@@ -80,7 +80,7 @@ class FewestPointsHostRule(ScoringRule):
         return 4
     
     def get_description(self) -> str:
-        return "The host is chosen as the guest with the fewest total interest points (breaking ties alphabetically), and each guest gets 2 points for each interest they share with the host."
+        return "[Obsessive Host] The host is chosen as the guest with the fewest total interest points (breaking ties alphabetically), and each guest gets 2 points for each interest they share with the host."
 
 
 class HostInterestRule(ScoringRule):
@@ -102,10 +102,10 @@ class HostInterestRule(ScoringRule):
 
     @classmethod
     def get_cr(cls) -> int:
-        return 4
+        return 3
     
     def get_description(self) -> str:
-        return "The host is chosen as the alphabetically lowest guest, and each guest gets 2 points for each interest they share with the host."
+        return "[First Host] The host is chosen as the alphabetically lowest guest, and each guest gets 2 points for each interest they share with the host."
 
 
 class LargestInterestValueRule(ScoringRule):
@@ -134,7 +134,7 @@ class LargestInterestValueRule(ScoringRule):
         return 3
     
     def get_description(self) -> str:
-        return "First, find the interest with the highest value among all guests. Then, award each person their value in that interest in points."
+        return "[Loudest Interest] First, find the interest with the highest value among all guests. Then, award each person their value in that interest in points."
 
 
 class TopInterestRule(ScoringRule):
@@ -168,7 +168,7 @@ class TopInterestRule(ScoringRule):
         return 1
     
     def get_description(self) -> str:
-        return "Each person is awarded points equal to their highest interest in any topic which has not yet been discussed. If a person has no undiscussed interests, they get 0 points."
+        return "[Each Person Speaks] Each person is awarded points equal to their highest interest in any topic which has not yet been discussed. If a person has no undiscussed interests, they get 0 points."
 
 
 class SingleInterestRule(ScoringRule):
@@ -188,7 +188,7 @@ class SingleInterestRule(ScoringRule):
         return 1
 
     def get_description(self) -> str:
-        return f"Award each person their value in {self.interest} in points."
+        return f"[Talk about {self.interest.title}] Award each person their value in {self.interest} in points."
 
 
 class MostCommonInterestRule(ScoringRule):
@@ -227,7 +227,7 @@ class MostCommonInterestRule(ScoringRule):
 
     def get_description(self) -> str:
         ignore_previous = ", excluding interests which have been chosen in previous rounds" if self.ignore_previous_interests else ""
-        return f"First, find the most commonly shared interest by number of people with the interest{ignore_previous} (breaking ties alphabetically). Then, award each person their value in that interest in points."
+        return f"[Most Common Interest] First, find the most commonly shared interest by number of people with the interest{ignore_previous} (breaking ties alphabetically). Then, award each person their value in that interest in points."
 
 class MostCommonInterestExceptPrevious(MostCommonInterestRule):
     def __init__(self, dinner_party: DinnerParty):
@@ -236,7 +236,7 @@ class MostCommonInterestExceptPrevious(MostCommonInterestRule):
 
     @classmethod
     def get_cr(self) -> int:
-        return MostCommonInterestRule.get_cr() + 1
+        return MostCommonInterestRule.get_cr()  # + 1
 
 
 @dataclass

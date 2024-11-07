@@ -27,15 +27,15 @@ import random
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from typing import List, Dict, Optional, Any
-from generation.tasks.dinner_party.dinner_party import Person, DinnerParty
+# from generation.tasks.dinner_party.dinner_party import Person, DinnerParty  # This causesa  circular import error
 
 
 class ScoringRule(ABC):
-    def __init__(self, dinner_party: DinnerParty):
+    def __init__(self, dinner_party: "DinnerParty"):
         pass
     
     @abstractmethod
-    def score_round(self, people: List[Person], game_scoring: "GameScoring") -> tuple[Dict[str, float], Dict[str, Any]]:
+    def score_round(self, people: List["Person"], game_scoring: "GameScoring") -> tuple[Dict[str, float], Dict[str, Any]]:
         """Returns a tuple of (scores dict mapping person names to their scores, metadata dict with 'interest' and/or 'host')"""
         pass
 
@@ -52,7 +52,7 @@ class ScoringRule(ABC):
     def __str__(self) -> str:
         return f"CR{self.get_cr()}: {self.get_description()}"
 
-    def _select_host_from_available(self, people: List[Person], game_scoring: "GameScoring", key_func) -> Person:
+    def _select_host_from_available(self, people: List["Person"], game_scoring: "GameScoring", key_func) -> "Person":
         """
         Select a host from available people using the given key function for sorting.
         Handles host rotation tracking.
@@ -63,7 +63,7 @@ class ScoringRule(ABC):
             key_func: Function to use for selecting host (e.g., lambda x: (len(x.interests), x.name))
         
         Returns:
-            Selected host Person object
+            Selected host "Person" object
         """
         # Initialize previous_hosts if needed
         if game_scoring.previous_hosts is None:
@@ -98,7 +98,7 @@ class ScoringRule(ABC):
             
         return max(interests.items(), key=lambda x: (x[1], -ord(x[0][0])))
 
-    def _calculate_scores_for_interest(self, people: List[Person], interest: str) -> Dict[str, float]:
+    def _calculate_scores_for_interest(self, people: List["Person"], interest: str) -> Dict[str, float]:
         """
         Calculate scores for all people based on a single interest.
         
@@ -111,7 +111,7 @@ class ScoringRule(ABC):
         """
         return {person.name: person.interests.get(interest, 0) for person in people}
 
-    def _count_interests_per_person(self, people: List[Person]) -> Dict[str, int]:
+    def _count_interests_per_person(self, people: List["Person"]) -> Dict[str, int]:
         """
         Count number of interests for each person.
         
@@ -124,10 +124,10 @@ class ScoringRule(ABC):
         return {person.name: len(person.interests) for person in people}
 
 class FewestInterestsLargestValueRule(ScoringRule):
-    def __init__(self, dinner_party: DinnerParty):
+    def __init__(self, dinner_party: "DinnerParty"):
         super().__init__(dinner_party)
     
-    def score_round(self, people: List[Person], game_scoring: "GameScoring") -> tuple[Dict[str, float], Dict[str, Any]]:
+    def score_round(self, people: List["Person"], game_scoring: "GameScoring") -> tuple[Dict[str, float], Dict[str, Any]]:
         # Select host with fewest interests
         host = self._select_host_from_available(
             people, 
@@ -153,11 +153,11 @@ class FewestInterestsLargestValueRule(ScoringRule):
         return "[Focused Host Interest] The host is chosen as the guest with the fewest number of interests (breaking ties alphabetically), and each guest gets points equal to their value in the host's largest interest."
 
 class FewestInterestsHostRule(ScoringRule):
-    def __init__(self, dinner_party: DinnerParty):
+    def __init__(self, dinner_party: "DinnerParty"):
         super().__init__(dinner_party)
         self.points_per_interest = random.randint(2, 5)  # Both inclusive
     
-    def score_round(self, people: List[Person], game_scoring: "GameScoring") -> tuple[Dict[str, float], Dict[str, Any]]:
+    def score_round(self, people: List["Person"], game_scoring: "GameScoring") -> tuple[Dict[str, float], Dict[str, Any]]:
         # Initialize previous_hosts if needed
         if game_scoring.previous_hosts is None:
             game_scoring.previous_hosts = []
@@ -199,11 +199,11 @@ class FewestInterestsHostRule(ScoringRule):
 
 
 class NicheInterestsRule(ScoringRule):
-    def __init__(self, dinner_party: DinnerParty):
+    def __init__(self, dinner_party: "DinnerParty"):
         super().__init__(dinner_party)
         self.bonus_points = random.randint(3, 7)  # Random bonus points per niche interest
     
-    def score_round(self, people: List[Person], game_scoring: "GameScoring") -> tuple[Dict[str, float], Dict[str, Any]]:
+    def score_round(self, people: List["Person"], game_scoring: "GameScoring") -> tuple[Dict[str, float], Dict[str, Any]]:
         # Get all interests and their total values across all guests
         interest_totals = {}
         for person in people:
@@ -235,10 +235,10 @@ class NicheInterestsRule(ScoringRule):
         return f"[Niche Interests] Find the three interests with lowest total values across all guests. Award {self.bonus_points} bonus points to each guest for each of these niche interests they have."
 
 class WellRoundedInterestsRule(ScoringRule):
-    def __init__(self, dinner_party: DinnerParty):
+    def __init__(self, dinner_party: "DinnerParty"):
         super().__init__(dinner_party)
     
-    def score_round(self, people: List[Person], game_scoring: "GameScoring") -> tuple[Dict[str, float], Dict[str, Any]]:
+    def score_round(self, people: List["Person"], game_scoring: "GameScoring") -> tuple[Dict[str, float], Dict[str, Any]]:
         scores = {}
         for person in people:
             if not person.interests:
@@ -266,10 +266,10 @@ class WellRoundedInterestsRule(ScoringRule):
         return "[Well-Rounded Interests] Each guest gets points based on how close their highest and lowest interest levels are. A smaller gap means more points, encouraging well-rounded conversationalists."
 
 class AlphabeticHostInterestRule(ScoringRule):
-    def __init__(self, dinner_party: DinnerParty):
+    def __init__(self, dinner_party: "DinnerParty"):
         super().__init__(dinner_party)
     
-    def score_round(self, people: List[Person], game_scoring: "GameScoring") -> tuple[Dict[str, float], Dict[str, Any]]:
+    def score_round(self, people: List["Person"], game_scoring: "GameScoring") -> tuple[Dict[str, float], Dict[str, Any]]:
         # Initialize previous_hosts if needed
         if game_scoring.previous_hosts is None:
             game_scoring.previous_hosts = []
@@ -305,10 +305,10 @@ class AlphabeticHostInterestRule(ScoringRule):
 
 
 class LargestInterestValueRule(ScoringRule):
-    def __init__(self, dinner_party: DinnerParty):
+    def __init__(self, dinner_party: "DinnerParty"):
         super().__init__(dinner_party)
     
-    def score_round(self, people: List[Person], game_scoring: "GameScoring") -> tuple[Dict[str, float], Dict[str, Any]]:
+    def score_round(self, people: List["Person"], game_scoring: "GameScoring") -> tuple[Dict[str, float], Dict[str, Any]]:
         # Get all undiscussed interests
         discussed = set(game_scoring.discussed_interests if game_scoring.discussed_interests else [])
         
@@ -343,10 +343,10 @@ class LargestInterestValueRule(ScoringRule):
 
 
 class EachPersonSpeaksRule(ScoringRule):
-    def __init__(self, dinner_party: DinnerParty):
+    def __init__(self, dinner_party: "DinnerParty"):
         super().__init__(dinner_party)
     
-    def score_round(self, people: List[Person], game_scoring: "GameScoring") -> tuple[Dict[str, float], Dict[str, Any]]:
+    def score_round(self, people: List["Person"], game_scoring: "GameScoring") -> tuple[Dict[str, float], Dict[str, Any]]:
         scores = {}
         interests_used = []
         
@@ -379,11 +379,11 @@ class EachPersonSpeaksRule(ScoringRule):
 
 
 class SingleInterestRule(ScoringRule):
-    def __init__(self, dinner_party: DinnerParty):
+    def __init__(self, dinner_party: "DinnerParty"):
         super().__init__(dinner_party)
         self.interest = random.choice(dinner_party.all_interests)
 
-    def score_round(self, people: List[Person], game_scoring: "GameScoring") -> tuple[Dict[str, float], Dict[str, Any]]:
+    def score_round(self, people: List["Person"], game_scoring: "GameScoring") -> tuple[Dict[str, float], Dict[str, Any]]:
         scores = {}
         for person in people:
             # Award points for the specific interest if they have it
@@ -399,11 +399,11 @@ class SingleInterestRule(ScoringRule):
 
 
 class MostCommonInterestRule(ScoringRule):
-    def __init__(self, dinner_party: DinnerParty):
+    def __init__(self, dinner_party: "DinnerParty"):
         super().__init__(dinner_party)
         self.ignore_previous_interests = False
 
-    def score_round(self, people: List[Person], game_scoring: "GameScoring") -> tuple[Dict[str, float], Dict[str, Any]]:
+    def score_round(self, people: List["Person"], game_scoring: "GameScoring") -> tuple[Dict[str, float], Dict[str, Any]]:
         # Count how many people have each interest, excluding previously discussed interests if needed
         interest_counts = {}
         for person in people:
@@ -435,7 +435,7 @@ class MostCommonInterestRule(ScoringRule):
         return f"[Most Common Interest] First, find the most commonly shared interest by number of people with the interest{ignore_previous} (breaking ties alphabetically). Then, award each person their value in that interest in points."
 
 class MostCommonInterestExceptPrevious(MostCommonInterestRule):
-    def __init__(self, dinner_party: DinnerParty):
+    def __init__(self, dinner_party: "DinnerParty"):
         super().__init__(dinner_party)
         self.ignore_previous_interests = True
 
@@ -472,7 +472,7 @@ class GameScoring:
         self.current_round = 0
         self.scores: Dict[str, float] = {}
     
-    def score_all_rounds(self, people: List[Person], verbose: bool = True) -> Dict[str, float]:
+    def score_all_rounds(self, people: List["Person"], verbose: bool = True) -> Dict[str, float]:
         """Score all rounds and return final scores"""
         self.discussed_interests = []
         self.previous_hosts = []
@@ -521,6 +521,17 @@ class GameScoring:
     def get_final_scores(self) -> Dict[str, float]:
         return self.scores.copy()
 
+    def to_prompt(self) -> str:
+        prompt = f"The game is split into {len(self.rules)} rounds. Each round is different, and provides a way for each participant in the dinner party to score points.\n"
+        prompt += f"At the end of the game, each participant's points are added together to score the dinner party as a whole.\n"
+        prompt += f"\nHere are the rules for each round:\n"
+        for i, rule in enumerate(self.rules, 1):
+            prompt += f"Round {i}: \n{rule.get_description()}\n"
+        prompt += f"\nThe final score is the sum of all interest levels for these top 3 interests.\n"
+        prompt += f"In all cases, if there is a tie between valid options, it goes to the interest or person with the name closest to the beginning of the alphabet.\n"
+        prompt += f"Your goal is to maximize the total score of the dinner party, by choosing just the right group of people.\n"
+        return prompt.strip()
+
 
 ALL_RULES: List[ScoringRule] = [
     EachPersonSpeaksRule,
@@ -535,7 +546,7 @@ ALL_RULES: List[ScoringRule] = [
     NicheInterestsRule,
 ]
 
-def random_scoring_rules(points: int, dinner_party: DinnerParty, target_number_rules: int = 3, weighting_exponent: Optional[float] = 1.0, verbose: bool = True) -> GameScoring:
+def random_scoring_rules(points: int, dinner_party: "DinnerParty", target_number_rules: int = 3, weighting_exponent: Optional[float] = 2.0, verbose: bool = False) -> GameScoring:
     """Generate random scoring rules totaling the given complexity points"""
 
     if verbose:
@@ -584,7 +595,7 @@ def random_scoring_rules(points: int, dinner_party: DinnerParty, target_number_r
     
     return GameScoring(target_complexity=points, rules=rules)
 
-def default_scoring_rules(dinner_party: DinnerParty) -> GameScoring:
+def default_scoring_rules(dinner_party: "DinnerParty") -> GameScoring:
     """Generate default scoring rules"""
     return GameScoring(target_complexity=25, rules=[
         MostCommonInterestExceptPrevious(dinner_party),
@@ -593,36 +604,6 @@ def default_scoring_rules(dinner_party: DinnerParty) -> GameScoring:
     ])
 
 
-def one_of_each_scoring_rule(dinner_party: DinnerParty) -> GameScoring:
+def one_of_each_scoring_rule(dinner_party: "DinnerParty") -> GameScoring:
     """Generate scoring rules that include one of each type"""
     return GameScoring(target_complexity=9, rules=[r(dinner_party) for r in ALL_RULES])
-
-def main(verbose: bool = True):
-    dinner_party = DinnerParty.random_dinner_party(num_people=10, num_interests=6, set_size=5, points_spread=0, min_interests=2, max_interests=4, avg_points=15)
-
-    points = random.randint(3, 15)
-    if verbose:
-        print(f"Generating rules with Points: {points}")
-
-    # random_rules = random_scoring_rules(points, dinner_party, target_number_rules=3, weighting_exponent=2.0, verbose=verbose)
-    random_rules = one_of_each_scoring_rule(dinner_party)
-
-    if verbose:
-        print("Rules:")
-        print(random_rules)
-
-    # Create a random set of people to score
-    people = random.sample(dinner_party.people, dinner_party.set_size)
-    if verbose:
-        print("\nPeople:")
-        print(", ".join(str(person) for person in people))
-
-    # Score all rounds
-    final_scores = random_rules.score_all_rounds(people, verbose=verbose)
-
-    print("Final Scores:")
-    print(final_scores)
-
-
-if __name__ == "__main__":
-    main(True)

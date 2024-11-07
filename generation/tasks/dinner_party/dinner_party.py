@@ -1,9 +1,11 @@
 import os
 import random
 from dataclasses import dataclass, field
-from typing import Dict, List
+from typing import Dict, List, Optional
 
 import scipy.stats as stats
+
+from generation.tasks.dinner_party.random_scoring_rules import GameScoring, default_scoring_rules, random_scoring_rules
 
 try:
     from openai import OpenAI
@@ -82,11 +84,15 @@ class DinnerParty(TaskSpecification):
     full_chain_of_thought: str = ""
     percent_chain_of_thought: int = 100
     all_interests: List[str] = field(default_factory=list)
+    target_complexity_points: int = 10
+    random_scoring_rules: Optional[GameScoring] = None
 
     def __post_init__(self):
         super().__init__(self.task_description, [person.name for person in self.people], self.set_size)
         self.options = [person.name for person in self.people]
         self._calculate_target_score()
+        if self.random_scoring_rules is None:
+            self.random_scoring_rules = random_scoring_rules(self.target_complexity_points, self)
 
     def _calculate_target_score(self, num_samples: int = 1000, kth: int = 3) -> None:
         """
@@ -283,14 +289,17 @@ class DinnerParty(TaskSpecification):
             prompt += f"{i}. {person.name}: {interests_str}\n"
         prompt += f"\nPlease choose {self.set_size} people that would create the most engaging dinner party."
         prompt += "\n\nScoring Explanation:\n"
-        prompt += "The dinner party is scored based on the interests of the selected people. "
-        prompt += "The scoring process works as follows:\n"
-        prompt += "1. All interests of the selected people are collected.\n"
-        prompt += "2. Interests are sorted by: number of people sharing the interest (descending), "
-        prompt += "sum of interest levels (descending), and alphabetically.\n"
-        prompt += "3. The top 3 interests are selected.\n"
-        prompt += "4. The final score is the sum of all interest levels for these top 3 interests.\n"
-        prompt += "Your goal is to maximize this score by selecting a diverse group with strong, shared interests.\n"
+        if self.random_scoring_rules is None:
+            prompt += "The dinner party is scored based on the interests of the selected people. "
+            prompt += "The scoring process works as follows:\n"
+            prompt += "1. All interests of the selected people are collected.\n"
+            prompt += "2. Interests are sorted by: number of people sharing the interest (descending), "
+            prompt += "sum of interest levels (descending), and alphabetically.\n"
+            prompt += "3. The top 3 interests are selected.\n"
+            prompt += "4. The final score is the sum of all interest levels for these top 3 interests.\n"
+            prompt += "Your goal is to maximize this score by selecting a diverse group with strong, shared interests.\n"
+        else:
+            prompt += self.random_scoring_rules.to_prompt()
 
         # Use pregenerated chain of thought if available
         if self.full_chain_of_thought:
@@ -357,4 +366,10 @@ class DinnerParty(TaskSpecification):
         
         return dinner_party
 
+def main():
+    dinner_party = DinnerParty.random_dinner_party(num_people=10, num_interests=6, set_size=5, points_spread=0, min_interests=2, max_interests=4, avg_points=15)
+    print(dinner_party.to_prompt())
 
+
+if __name__ == "__main__":
+    main()

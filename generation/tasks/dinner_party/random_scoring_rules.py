@@ -240,7 +240,7 @@ class EachPersonSpeaksRule(ScoringRule):
         return 1
     
     def get_description(self) -> str:
-        return "[Each Person Speaks] Each person is awarded points equal to their highest interest in any topic which has not yet been discussed. If a person has no undiscussed interests, they get 0 points."
+        return "[Each Person Speaks] Each person is awarded points equal to their highest interest in any topic which has not yet been discussed by the full group. If a person has no undiscussed interests, they get 0 points."
 
 
 class SingleInterestRule(ScoringRule):
@@ -388,6 +388,10 @@ def random_scoring_rules(points: int, dinner_party: DinnerParty, target_number_r
         FewestInterestsHostRule,
         FewestInterestsLargestValueRule,
     ]
+
+    print("Possible Rules:")
+    for rule in available_rules:
+        print(f" * {rule.__name__} (CR {rule.get_cr()}): {rule(dinner_party).get_description()}")
     
     rules = []
     remaining_points = points
@@ -435,7 +439,7 @@ def main():
     points = random.randint(3, 12)
     print(f"Generating rules with Points: {points}")
 
-    random_rules = random_scoring_rules(points, dinner_party, target_number_rules=3, weighting_exponent=1.0)
+    random_rules = random_scoring_rules(points, dinner_party, target_number_rules=3, weighting_exponent=2.0)
 
     print("Rules:")
     print(random_rules)

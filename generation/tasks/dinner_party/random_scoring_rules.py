@@ -521,24 +521,26 @@ class GameScoring:
     def get_final_scores(self) -> Dict[str, float]:
         return self.scores.copy()
 
+
+ALL_RULES: List[ScoringRule] = [
+    EachPersonSpeaksRule,
+    MostCommonInterestRule,
+    SingleInterestRule,
+    MostCommonInterestExceptPrevious,
+    LargestInterestValueRule,
+    AlphabeticHostInterestRule,
+    FewestInterestsHostRule,
+    FewestInterestsLargestValueRule,
+    WellRoundedInterestsRule,
+    NicheInterestsRule,
+]
+
 def random_scoring_rules(points: int, dinner_party: DinnerParty, target_number_rules: int = 3, weighting_exponent: Optional[float] = 1.0, verbose: bool = True) -> GameScoring:
     """Generate random scoring rules totaling the given complexity points"""
-    available_rules = [
-        EachPersonSpeaksRule,
-        MostCommonInterestRule,
-        SingleInterestRule,
-        MostCommonInterestExceptPrevious,
-        LargestInterestValueRule,
-        AlphabeticHostInterestRule,
-        FewestInterestsHostRule,
-        FewestInterestsLargestValueRule,
-        WellRoundedInterestsRule,
-        NicheInterestsRule,
-    ]
 
     if verbose:
         print("Possible Rules:")
-        for rule in available_rules:
+        for rule in ALL_RULES:
             print(f" * {rule.__name__} (CR {rule.get_cr()}): {rule(dinner_party).get_description()}")
     
     rules = []
@@ -549,7 +551,7 @@ def random_scoring_rules(points: int, dinner_party: DinnerParty, target_number_r
         remaining_rules = target_number_rules - len(rules)
 
         # Get possible rules we could add
-        possible_rules = [rule for rule in available_rules if rule.get_cr() <= remaining_points]
+        possible_rules = [rule for rule in ALL_RULES if rule.get_cr() <= remaining_points]
         if len(rules) == 0:
             possible_rules = [rule for rule in possible_rules if rule not in [MostCommonInterestExceptPrevious]]
         
@@ -584,11 +586,16 @@ def random_scoring_rules(points: int, dinner_party: DinnerParty, target_number_r
 
 def default_scoring_rules(dinner_party: DinnerParty) -> GameScoring:
     """Generate default scoring rules"""
-    return GameScoring(target_complexity=9, rules=[
+    return GameScoring(target_complexity=25, rules=[
         MostCommonInterestExceptPrevious(dinner_party),
         MostCommonInterestExceptPrevious(dinner_party),
         MostCommonInterestExceptPrevious(dinner_party),
     ])
+
+
+def one_of_each_scoring_rule(dinner_party: DinnerParty) -> GameScoring:
+    """Generate scoring rules that include one of each type"""
+    return GameScoring(target_complexity=9, rules=[r(dinner_party) for r in ALL_RULES])
 
 def main(verbose: bool = True):
     dinner_party = DinnerParty.random_dinner_party(num_people=10, num_interests=6, set_size=5, points_spread=0, min_interests=2, max_interests=4, avg_points=15)
@@ -597,7 +604,8 @@ def main(verbose: bool = True):
     if verbose:
         print(f"Generating rules with Points: {points}")
 
-    random_rules = random_scoring_rules(points, dinner_party, target_number_rules=3, weighting_exponent=2.0, verbose=verbose)
+    # random_rules = random_scoring_rules(points, dinner_party, target_number_rules=3, weighting_exponent=2.0, verbose=verbose)
+    random_rules = one_of_each_scoring_rule(dinner_party)
 
     if verbose:
         print("Rules:")
@@ -617,4 +625,4 @@ def main(verbose: bool = True):
 
 
 if __name__ == "__main__":
-    main(False)
+    main(True)

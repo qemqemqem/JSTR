@@ -137,28 +137,6 @@ class LargestInterestValueRule(ScoringRule):
         return "First, find the interest with the highest value among all guests. Then, award each person their value in that interest in points."
 
 
-class TopThreeInterestsRule(ScoringRule):
-    def __init__(self, dinner_party: DinnerParty):
-        super().__init__(dinner_party)
-    
-    def score_round(self, people: List[Person], game_scoring: "GameScoring") -> tuple[Dict[str, float], List[str]]:
-        scores = {}
-        interests_used = []
-        for person in people:
-            # Get the top 3 interests by value, breaking ties alphabetically
-            top_interests = sorted(person.interests.items(), key=lambda x: (x[1], -ord(x[0][0])), reverse=True)[:3]
-            scores[person.name] = sum(value for _, value in top_interests)
-            interests_used.extend(interest for interest, _ in top_interests)
-        return scores, []  # list(set(interests_used))
-
-    @classmethod
-    def get_cr(cls) -> int:
-        return 2
-    
-    def get_description(self) -> str:
-        return "Each person is awarded points equal to the sum of their three highest interest values."
-
-
 class TopInterestRule(ScoringRule):
     def __init__(self, dinner_party: DinnerParty):
         super().__init__(dinner_party)
@@ -316,7 +294,6 @@ def random_scoring_rules(points: int, dinner_party: DinnerParty, target_number_r
     """Generate random scoring rules totaling the given complexity points"""
     available_rules = [
         TopInterestRule,
-        TopThreeInterestsRule,
         MostCommonInterestRule,
         SingleInterestRule,
         MostCommonInterestExceptPrevious,

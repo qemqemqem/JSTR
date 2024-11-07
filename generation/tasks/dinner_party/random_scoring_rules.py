@@ -59,11 +59,19 @@ class ScoringRule(ABC):
         """Returns a dict mapping person names to their scores"""
         pass
 
+    @abstractmethod
+    def get_description(self) -> str:
+        """Returns a human-readable description of how the rule works"""
+        pass
+
     def __str__(self) -> str:
-        return f"CR{self.complexity_rating}: {self.__class__.__name__}"
+        return f"CR{self.complexity_rating}: {self.get_description()}"
 
 class TopInterestRule(ScoringRule):
     """CR1 rule: Each guest gets their top interest value"""
+    
+    def get_description(self) -> str:
+        return "Score each guest's highest-value interest"
     def __init__(self):
         super().__init__(complexity_rating=1)
         self.selector = TopInterestSelection()
@@ -81,6 +89,9 @@ class TopInterestRule(ScoringRule):
 
 class SharedInterestRule(ScoringRule):
     """CR2 rule: Points for interests shared between guests"""
+    
+    def get_description(self) -> str:
+        return "Award points for interests that are shared between multiple guests"
     def __init__(self):
         super().__init__(complexity_rating=2)
     
@@ -101,6 +112,9 @@ class SharedInterestRule(ScoringRule):
 
 class MostCommonInterestRule(ScoringRule):
     """CR3 rule: Points for the most common interest among guests"""
+    
+    def get_description(self) -> str:
+        return "Double points for the most commonly shared interest among guests"
     def __init__(self):
         super().__init__(complexity_rating=3)
     
@@ -129,8 +143,10 @@ class GameScoring:
     rules: List[ScoringRule]
 
     def __str__(self) -> str:
-        rules_str = "\n  ".join(str(rule) for rule in self.rules)
-        return f"GameScoring(CR{self.target_complexity}):\n  {rules_str}"
+        header = f"GameScoring (Total Complexity: CR{self.target_complexity})"
+        rules_str = "\n".join(f"Round {i+1}: {str(rule)}" 
+                             for i, rule in enumerate(self.rules))
+        return f"{header}\n{rules_str}"
     
     def __post_init__(self):
         # Validate that rules sum to target complexity

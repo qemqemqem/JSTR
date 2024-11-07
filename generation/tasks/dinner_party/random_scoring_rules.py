@@ -141,19 +141,22 @@ class LargestInterestValueRule(ScoringRule):
         super().__init__(dinner_party)
     
     def score_round(self, people: List[Person], game_scoring: "GameScoring") -> tuple[Dict[str, float], List[str]]:
+        # Get all undiscussed interests
+        discussed = set(game_scoring.discussed_interests if game_scoring.discussed_interests else [])
+        
         # Find the highest interest value and its corresponding interest across all people
         max_value = 0
         max_interest = None
         for person in people:
             for interest, value in person.interests.items():
-                if value > max_value:
+                if interest not in discussed and value > max_value:
                     max_value = value
                     max_interest = interest
         
         # Score each person based on their value in that interest
         scores = {}
         for person in people:
-            scores[person.name] = person.interests.get(max_interest, 0)
+            scores[person.name] = person.interests.get(max_interest, 0) if max_interest else 0
         
         return scores, [max_interest] if max_interest else []
 

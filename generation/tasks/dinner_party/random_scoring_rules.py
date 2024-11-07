@@ -150,7 +150,7 @@ class FewestInterestsLargestValueRule(ScoringRule):
         return 4
     
     def get_description(self) -> str:
-        return "[Focused Host Interest] In this round, one guest is chosen as the host. The host is the guest with the fewest number of interests (breaking ties alphabetically). That host's largest interest (again, breaking ties alphabetically) is chosen as the topic for the round. Then, each guest gets points equal to their value in that topic."
+        return "[Focused Host Interest] In this round, one guest is chosen as the host. The host is the guest with the fewest number of interests (breaking ties alphabetically, and skipping people who have previously hosted a round). That host's largest interest (again, breaking ties alphabetically) is chosen as the topic for the round. Then, each guest gets points equal to their value in that topic."
 
 class FewestInterestsHostRule(ScoringRule):
     def __init__(self, dinner_party: "DinnerParty"):
@@ -195,7 +195,7 @@ class FewestInterestsHostRule(ScoringRule):
         return 4
     
     def get_description(self) -> str:
-        return f"[Focused Host] In this round, the host is chosen as the guest with the fewest number of interests (breaking ties alphabetically). Then, each guest gets {self.points_per_interest} points for each interest they share with the host."
+        return f"[Focused Host] In this round, the host is chosen as the guest with the fewest number of interests (breaking ties alphabetically, and skipping guests who have previously hosted a round). Then, each guest gets {self.points_per_interest} points for each interest they share with the host."
 
 
 class NicheInterestsRule(ScoringRule):
@@ -300,7 +300,7 @@ class AlphabeticHostInterestRule(ScoringRule):
         return 3
     
     def get_description(self) -> str:
-        return "[First Host] In this round, the alphabetically lowest guest is chosen as the host. Then, each guest gets 2 points for each interest they share with the host."
+        return "[First Host] In this round, the alphabetically lowest guest is chosen as the host, excluding guests who have previously hosted a round. Then, each guest gets 2 points for each interest they share with the host."
 
 
 class LargestInterestValueRule(ScoringRule):

@@ -57,14 +57,28 @@ class FewestPointsHostRule(ScoringRule):
         super().__init__(dinner_party)
     
     def score_round(self, people: List[Person], game_scoring: "GameScoring") -> tuple[Dict[str, float], List[str]]:
-        # Calculate total points for each person
+        # Initialize previous_hosts if needed
+        if game_scoring.previous_hosts is None:
+            game_scoring.previous_hosts = []
+            
+        # Filter to people who haven't been host yet
+        available_hosts = [p for p in people if p.name not in game_scoring.previous_hosts]
+        
+        # If everyone has been host, reset the list
+        if not available_hosts:
+            game_scoring.previous_hosts = []
+            available_hosts = people
+            
+        # Calculate total points for available hosts
         person_points = {
             person.name: sum(person.interests.values())
-            for person in people
+            for person in available_hosts
         }
         
-        # Choose host as person with fewest points (breaking ties alphabetically)
-        host = min(people, key=lambda x: (person_points[x.name], x.name))
+        # Choose host as person with fewest points among available hosts (breaking ties alphabetically)
+        host = min(available_hosts, key=lambda x: (person_points[x.name], x.name))
+        game_scoring.previous_hosts.append(host.name)
+        
         host_interests = set(host.interests.keys())
         
         # Score each guest based on shared interests with host
@@ -88,8 +102,22 @@ class HostInterestRule(ScoringRule):
         super().__init__(dinner_party)
     
     def score_round(self, people: List[Person], game_scoring: "GameScoring") -> tuple[Dict[str, float], List[str]]:
-        # Choose host as alphabetically lowest guest
-        host = min(people, key=lambda x: x.name)
+        # Initialize previous_hosts if needed
+        if game_scoring.previous_hosts is None:
+            game_scoring.previous_hosts = []
+            
+        # Filter to people who haven't been host yet
+        available_hosts = [p for p in people if p.name not in game_scoring.previous_hosts]
+        
+        # If everyone has been host, reset the list
+        if not available_hosts:
+            game_scoring.previous_hosts = []
+            available_hosts = people
+            
+        # Choose host as alphabetically lowest guest among available hosts
+        host = min(available_hosts, key=lambda x: x.name)
+        game_scoring.previous_hosts.append(host.name)
+        
         host_interests = set(host.interests.keys())
         
         # Score each guest based on shared interests with host
@@ -244,6 +272,7 @@ class GameScoring:
     target_complexity: int
     rules: List[ScoringRule]
     discussed_interests: List[str] = None
+    previous_hosts: List[str] = None
 
     def __str__(self) -> str:
         header = f"GameScoring (Total Complexity: CR{sum(rule.get_cr() for rule in self.rules)})"
@@ -269,6 +298,7 @@ class GameScoring:
     def score_all_rounds(self, people: List[Person]) -> Dict[str, float]:
         """Score all rounds and return final scores"""
         self.discussed_interests = []
+        self.previous_hosts = []
         
         print("\nScoring all rounds:")
         for round_num, rule in enumerate(self.rules, 1):

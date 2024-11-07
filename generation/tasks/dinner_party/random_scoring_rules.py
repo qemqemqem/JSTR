@@ -214,8 +214,6 @@ def main():
 
     print("Rules:")
     print(random_rules)
-    for rule in random_rules.rules:
-        print(rule)
 
 
 if __name__ == "__main__":

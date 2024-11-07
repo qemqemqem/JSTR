@@ -512,6 +512,14 @@ def random_scoring_rules(points: int, dinner_party: DinnerParty, target_number_r
     
     return GameScoring(target_complexity=points, rules=rules)
 
+def default_scoring_rules(dinner_party: DinnerParty) -> GameScoring:
+    """Generate default scoring rules"""
+    return GameScoring(target_complexity=9, rules=[
+        MostCommonInterestExceptPrevious(dinner_party),
+        MostCommonInterestExceptPrevious(dinner_party),
+        MostCommonInterestExceptPrevious(dinner_party),
+    ])
+
 def main(verbose: bool = True):
     dinner_party = DinnerParty.random_dinner_party(num_people=10, num_interests=6, set_size=5, points_spread=0, min_interests=2, max_interests=4, avg_points=15)
 

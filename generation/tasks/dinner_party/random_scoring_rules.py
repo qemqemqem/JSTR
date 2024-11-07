@@ -57,7 +57,12 @@ class TopInterestRule(ScoringRule):
         super().__init__(dinner_party)
     
     def score_round(self, people: List[Person]) -> Dict[str, float]:
-        pass # TODO: Implement this
+        scores = {}
+        for person in people:
+            # Get the highest value interest, breaking ties alphabetically
+            top_interest = max(person.interests.items(), key=lambda x: (x[1], -ord(x[0][0])))
+            scores[person.name] = top_interest[1]
+        return scores
 
     @classmethod
     def get_cr(cls) -> int:
@@ -73,7 +78,11 @@ class SingleInterestRule(ScoringRule):
         self.interest = random.choice(dinner_party.all_interests)
 
     def score_round(self, people: List[Person]) -> Dict[str, float]:
-        pass  # TODO: Implement this
+        scores = {}
+        for person in people:
+            # Award points for the specific interest if they have it
+            scores[person.name] = person.interests.get(self.interest, 0)
+        return scores
 
     @classmethod
     def get_cr(cls) -> int:
@@ -88,7 +97,21 @@ class MostCommonInterestRule(ScoringRule):
         super().__init__(dinner_party)
 
     def score_round(self, people: List[Person]) -> Dict[str, float]:
-        pass  # TODO: Implement this
+        # Count how many people have each interest
+        interest_counts = {}
+        for person in people:
+            for interest in person.interests:
+                interest_counts[interest] = interest_counts.get(interest, 0) + 1
+        
+        # Find the most common interest (breaking ties alphabetically)
+        most_common = max(interest_counts.items(), key=lambda x: (x[1], -ord(x[0][0])))
+        most_common_interest = most_common[0]
+        
+        # Award double points for the most common interest
+        scores = {}
+        for person in people:
+            scores[person.name] = 2 * person.interests.get(most_common_interest, 0)
+        return scores
 
     @classmethod
     def get_cr(cls) -> int:

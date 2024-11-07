@@ -79,6 +79,50 @@ class TopInterestRule(ScoringRule):
                 scores[person.name] = 0
         return scores
 
+class SharedInterestRule(ScoringRule):
+    """CR2 rule: Points for interests shared between guests"""
+    def __init__(self):
+        super().__init__(complexity_rating=2)
+    
+    def score_round(self, people: List[Person]) -> Dict[str, float]:
+        scores = {p.name: 0 for p in people}
+        # Count how many people share each interest
+        interest_counts = {}
+        for person in people:
+            for interest in person.interests:
+                interest_counts[interest] = interest_counts.get(interest, 0) + 1
+        
+        # Award points for shared interests
+        for person in people:
+            for interest in person.interests:
+                if interest_counts[interest] > 1:
+                    scores[person.name] += person.interests[interest]
+        return scores
+
+class MostCommonInterestRule(ScoringRule):
+    """CR3 rule: Points for the most common interest among guests"""
+    def __init__(self):
+        super().__init__(complexity_rating=3)
+    
+    def score_round(self, people: List[Person]) -> Dict[str, float]:
+        scores = {p.name: 0 for p in people}
+        # Find the most common interest
+        interest_counts = {}
+        for person in people:
+            for interest in person.interests:
+                interest_counts[interest] = interest_counts.get(interest, 0) + 1
+        
+        if not interest_counts:
+            return scores
+            
+        most_common = max(interest_counts.items(), key=lambda x: (x[1], x[0]))[0]
+        
+        # Award points for the most common interest
+        for person in people:
+            if most_common in person.interests:
+                scores[person.name] = person.interests[most_common] * 2
+        return scores
+
 @dataclass
 class GameScoring:
     target_complexity: int
@@ -121,7 +165,29 @@ class GameScoring:
 
 def random_scoring_rules(points: int):
     """Generate random scoring rules totaling the given complexity points"""
-    rules = [TopInterestRule()]  # Start with simplest rule for now
+    available_rules = {
+        1: TopInterestRule,
+        2: SharedInterestRule,
+        3: MostCommonInterestRule
+    }
+    
+    rules = []
+    remaining_points = points
+    
+    # Keep adding rules until we reach the target points
+    while remaining_points > 0:
+        # Get possible rules we could add
+        possible_rules = [cr for cr, rule in available_rules.items() 
+                         if cr <= remaining_points]
+        
+        if not possible_rules:
+            break
+            
+        # Choose a rule
+        chosen_cr = random.choice(possible_rules)
+        rules.append(available_rules[chosen_cr]())
+        remaining_points -= chosen_cr
+    
     return GameScoring(target_complexity=points, rules=rules)
 
 def main():

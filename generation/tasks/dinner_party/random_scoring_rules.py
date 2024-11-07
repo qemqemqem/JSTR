@@ -144,19 +144,31 @@ class TopInterestRule(ScoringRule):
     def score_round(self, people: List[Person], game_scoring: "GameScoring") -> tuple[Dict[str, float], List[str]]:
         scores = {}
         interests_used = []
+        
+        # Get all undiscussed interests
+        discussed = set(game_scoring.discussed_interests if game_scoring.discussed_interests else [])
+        
         for person in people:
-            # Get the highest value interest, breaking ties alphabetically
-            top_interest = max(person.interests.items(), key=lambda x: (x[1], -ord(x[0][0])))
-            scores[person.name] = top_interest[1]
-            interests_used.append(top_interest[0])
-        return scores, []  # Could return list(set(interests_used))
+            # Filter to only undiscussed interests
+            available_interests = {k: v for k, v in person.interests.items() if k not in discussed}
+            
+            if available_interests:
+                # Get the highest value undiscussed interest, breaking ties alphabetically
+                top_interest = max(available_interests.items(), key=lambda x: (x[1], -ord(x[0][0])))
+                scores[person.name] = top_interest[1]
+                interests_used.append(top_interest[0])
+            else:
+                # No undiscussed interests available
+                scores[person.name] = 0
+                
+        return scores, interests_used
 
     @classmethod
     def get_cr(cls) -> int:
         return 1
     
     def get_description(self) -> str:
-        return "Each person is awarded points equal to their highest interest in any topic."
+        return "Each person is awarded points equal to their highest interest in any topic which has not yet been discussed. If a person has no undiscussed interests, they get 0 points."
 
 
 class SingleInterestRule(ScoringRule):

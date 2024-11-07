@@ -147,7 +147,7 @@ class GameScoring:
         self.current_round = 0
         self.scores: Dict[str, float] = {}
     
-    def score_round(self, people: List[Person]) -> Dict[str, float]:
+    def score_all_rounds(self, people: List[Person]) -> Dict[str, float]:
         if self.current_round >= len(self.rules):
             raise ValueError("No more rounds available")
             

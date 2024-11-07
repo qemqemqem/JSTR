@@ -214,6 +214,8 @@ class MostCommonInterestRule(ScoringRule):
                 if person.interests[interest] is not None and person.interests[interest] > 0:
                     if not self.ignore_previous_interests or interest not in game_scoring.discussed_interests:
                         interest_counts[interest] = interest_counts.get(interest, 0) + 1
+
+        print("Interest counts:", interest_counts)
         
         if not interest_counts:
             # If no valid interests found (all were previously discussed), return 0 scores
@@ -235,7 +237,7 @@ class MostCommonInterestRule(ScoringRule):
 
     def get_description(self) -> str:
         ignore_previous = ", excluding interests which have been chosen in previous rounds" if self.ignore_previous_interests else ""
-        return f"First, find the most commonly shared interest by number of people with the interest{ignore_previous} (breaking ties alphabetically). Then, award each person their value in that interest in points. If no valid interests remain, everyone gets 0 points."
+        return f"First, find the most commonly shared interest by number of people with the interest{ignore_previous} (breaking ties alphabetically). Then, award each person their value in that interest in points."
 
 class MostCommonInterestExceptPrevious(MostCommonInterestRule):
     def __init__(self, dinner_party: DinnerParty):

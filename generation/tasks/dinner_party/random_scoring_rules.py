@@ -88,7 +88,7 @@ class MostCommonInterestSelection(InterestSelection):
 class ScoringRule(ABC):
     def __init__(self, complexity_rating: int, selector: InterestSelection):
         self.complexity_rating = complexity_rating
-        self.selector = selector
+        self.selector: InterestSelection = selector
     
     @abstractmethod
     def score_round(self, people: List[Person]) -> Dict[str, float]:
@@ -161,7 +161,8 @@ class GameScoring:
         header = f"GameScoring (Total Complexity: CR{self.target_complexity})"
         rounds = []
         for i, rule in enumerate(self.rules, 1):
-            round_desc = f"Round {i}: {rule.get_description()} {rule.selector} [{rule.__class__.__name__}, {rule.selector.__class__.__name__}]"
+            assert isinstance(rule, ScoringRule)  # For IDE type hinting
+            round_desc = f"Round {i}: {rule.get_description()} {rule.selector} [CR{rule.complexity_rating}-{rule.__class__.__name__}, CR{1}-{rule.selector.__class__.__name__}]"
             rounds.append(round_desc)
         return f"{header}\n" + "\n".join(rounds)
     

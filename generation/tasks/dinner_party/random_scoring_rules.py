@@ -43,8 +43,9 @@ class ScoringRule(ABC):
         """Returns a human-readable description of how the rule works"""
         pass
 
+    @classmethod
     @abstractmethod
-    def get_cr(self) -> int:
+    def get_cr(cls) -> int:
         pass
 
     def __str__(self) -> str:
@@ -58,7 +59,8 @@ class TopInterestRule(ScoringRule):
     def score_round(self, people: List[Person]) -> Dict[str, float]:
         pass # TODO: Implement this
 
-    def get_cr(self) -> int:
+    @classmethod
+    def get_cr(cls) -> int:
         return 1
     
     def get_description(self) -> str:
@@ -72,7 +74,8 @@ class MostCommonInterestRule(ScoringRule):
     def score_round(self, people: List[Person]) -> Dict[str, float]:
         pass # TODO: Implement this
 
-    def get_cr(self) -> int:
+    @classmethod
+    def get_cr(cls) -> int:
         return 3
     
     def get_description(self) -> str:

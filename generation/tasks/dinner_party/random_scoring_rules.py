@@ -128,10 +128,10 @@ class GameScoring:
 
 def random_scoring_rules(points: int):
     """Generate random scoring rules totaling the given complexity points"""
-    available_rules = {
-        1: TopInterestRule,
-        3: MostCommonInterestRule
-    }
+    available_rules = [
+        TopInterestRule,
+        MostCommonInterestRule
+    ]
     
     rules = []
     remaining_points = points
@@ -139,16 +139,15 @@ def random_scoring_rules(points: int):
     # Keep adding rules until we reach the target points
     while remaining_points > 0:
         # Get possible rules we could add
-        possible_rules = [cr for cr, rule in available_rules.items() 
-                         if cr <= remaining_points]
+        possible_rules = [rule for rule in available_rules if rule.get_cr() <= remaining_points]
         
         if not possible_rules:
             break
             
         # Choose a rule
-        chosen_cr = random.choice(possible_rules)
-        rules.append(available_rules[chosen_cr]())
-        remaining_points -= chosen_cr
+        chosen_rule = random.choice(possible_rules)
+        rules.append(chosen_rule)
+        remaining_points -= chosen_rule.get_cr()
     
     return GameScoring(target_complexity=points, rules=rules)
 

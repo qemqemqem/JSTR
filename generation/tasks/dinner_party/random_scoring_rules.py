@@ -188,7 +188,7 @@ class FewestInterestsHostRule(ScoringRule):
             shared_interests = set(person.interests.keys()) & host_interests
             scores[person.name] = self.points_per_interest * len(shared_interests)
         
-        return scores, list(host_interests)
+        return scores, []  # list(host_interests)
 
     @classmethod
     def get_cr(cls) -> int:
@@ -226,7 +226,7 @@ class AlphabeticHostInterestRule(ScoringRule):
             shared_interests = set(person.interests.keys()) & host_interests
             scores[person.name] = 2 * len(shared_interests)
         
-        return scores, list(host_interests)
+        return scores, []  # list(host_interests)
 
     @classmethod
     def get_cr(cls) -> int:
@@ -502,7 +502,7 @@ def random_scoring_rules(points: int, dinner_party: DinnerParty, target_number_r
 def main():
     dinner_party = DinnerParty.random_dinner_party(num_people=10, num_interests=6, set_size=5, points_spread=0, min_interests=2, max_interests=4, avg_points=15)
 
-    points = random.randint(3, 12)
+    points = random.randint(3, 15)
     print(f"Generating rules with Points: {points}")
 
     random_rules = random_scoring_rules(points, dinner_party, target_number_rules=3, weighting_exponent=2.0)

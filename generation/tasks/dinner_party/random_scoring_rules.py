@@ -52,6 +52,35 @@ class ScoringRule(ABC):
     def __str__(self) -> str:
         return f"CR{self.get_cr()}: {self.get_description()}"
 
+class LargestInterestValueRule(ScoringRule):
+    def __init__(self, dinner_party: DinnerParty):
+        super().__init__(dinner_party)
+    
+    def score_round(self, people: List[Person], game_scoring: "GameScoring") -> tuple[Dict[str, float], List[str]]:
+        # Find the highest interest value and its corresponding interest across all people
+        max_value = 0
+        max_interest = None
+        for person in people:
+            for interest, value in person.interests.items():
+                if value > max_value:
+                    max_value = value
+                    max_interest = interest
+        
+        # Score each person based on their value in that interest
+        scores = {}
+        for person in people:
+            scores[person.name] = person.interests.get(max_interest, 0)
+        
+        return scores, [max_interest] if max_interest else []
+
+    @classmethod
+    def get_cr(cls) -> int:
+        return 3
+    
+    def get_description(self) -> str:
+        return "First, find the interest with the highest value among all guests. Then, award each person their value in that interest in points."
+
+
 class TopThreeInterestsRule(ScoringRule):
     def __init__(self, dinner_party: DinnerParty):
         super().__init__(dinner_party)
@@ -233,6 +262,7 @@ def random_scoring_rules(points: int, dinner_party: DinnerParty, target_number_r
         MostCommonInterestRule,
         SingleInterestRule,
         MostCommonInterestExceptPrevious,
+        LargestInterestValueRule,
     ]
     
     rules = []

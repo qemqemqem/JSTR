@@ -33,10 +33,14 @@ class InterestSelection(ABC):
     @abstractmethod
     def select_interests(self, people: List[Person]) -> List[str]:
         pass
+    
+    def __str__(self) -> str:
+        return self.__class__.__name__
 
 class TopInterestSelection(InterestSelection):
     """Selects each person's highest-value interest"""
     def select_interests(self, people: List[Person]) -> List[str]:
+        """Returns a list of the highest-value interest for each person"""
         result = []
         for person in people:
             if person.interests:
@@ -54,6 +58,9 @@ class ScoringRule(ABC):
     def score_round(self, people: List[Person]) -> Dict[str, float]:
         """Returns a dict mapping person names to their scores"""
         pass
+
+    def __str__(self) -> str:
+        return f"CR{self.complexity_rating}: {self.__class__.__name__}"
 
 class TopInterestRule(ScoringRule):
     """CR1 rule: Each guest gets their top interest value"""
@@ -76,6 +83,10 @@ class TopInterestRule(ScoringRule):
 class GameScoring:
     target_complexity: int
     rules: List[ScoringRule]
+
+    def __str__(self) -> str:
+        rules_str = "\n  ".join(str(rule) for rule in self.rules)
+        return f"GameScoring(CR{self.target_complexity}):\n  {rules_str}"
     
     def __post_init__(self):
         # Validate that rules sum to target complexity

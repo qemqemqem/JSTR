@@ -118,7 +118,7 @@ class TopInterestRule(ScoringRule):
         return scores
     
     def get_description(self) -> str:
-        return "Score points based on"
+        return "First, find each person's highest-value interest (breaking ties alphabetically). Then, award each person their points in that interest"
 
 class SharedInterestRule(ScoringRule):
     """CR2 rule: Points for interests shared between guests"""
@@ -134,7 +134,7 @@ class SharedInterestRule(ScoringRule):
         return scores
     
     def get_description(self) -> str:
-        return "Score points based on"
+        return "First, find all interests that are shared by multiple people. Then, award each person their points in those shared interests"
 
 class MostCommonInterestRule(ScoringRule):
     """CR3 rule: Points for the most common interest among guests"""
@@ -150,7 +150,7 @@ class MostCommonInterestRule(ScoringRule):
         return scores
     
     def get_description(self) -> str:
-        return "Score double points based on"
+        return "First, find the interest(s) that the most people share. Then, award each person double their points in those interests"
 
 @dataclass
 class GameScoring:

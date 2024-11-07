@@ -352,7 +352,8 @@ class GameScoring:
             round_scores, round_interests = rule.score_round(people, self)
             
             # Print what happened this round
-            print(f"Discussed interests: {', '.join(round_interests)}")
+            if round_interests:
+                print(f"Discussed interests: {', '.join(round_interests)}")
             print("Scores this round:")
             for name, score in round_scores.items():
                 print(f"  {name}: {score}")

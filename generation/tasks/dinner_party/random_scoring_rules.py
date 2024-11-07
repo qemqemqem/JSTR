@@ -161,7 +161,7 @@ class GameScoring:
         header = f"GameScoring (Total Complexity: CR{self.target_complexity})"
         rounds = []
         for i, rule in enumerate(self.rules, 1):
-            round_desc = f"Round {i}: {rule.get_description()} {rule.selector} [{rule.__class__.__name__}]"
+            round_desc = f"Round {i}: {rule.get_description()} {rule.selector} [{rule.__class__.__name__}, {rule.selector.__class__.__name__}]"
             rounds.append(round_desc)
         return f"{header}\n" + "\n".join(rounds)
     
@@ -224,7 +224,7 @@ def random_scoring_rules(points: int):
     return GameScoring(target_complexity=points, rules=rules)
 
 def main():
-    points = random.randint(0, 10)
+    points = random.randint(2, 10)
     print(f"Generating rules with Points: {points}")
 
     random_rules = random_scoring_rules(points)

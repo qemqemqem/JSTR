@@ -29,66 +29,9 @@ from dataclasses import dataclass
 from typing import List, Dict, Optional
 from generation.tasks.dinner_party.dinner_party import Person
 
-class InterestSelection(ABC):
-    @abstractmethod
-    def select_interests(self, people: List[Person]) -> List[str]:
-        pass
-    
-    @abstractmethod
-    def get_description(self) -> str:
-        """Returns a human-readable description of how the selection works"""
-        pass
-    
-    def __str__(self) -> str:
-        return self.get_description()
-
-class TopInterestSelection(InterestSelection):
-    """Selects each person's highest-value interest"""
-    def select_interests(self, people: List[Person]) -> List[str]:
-        result = []
-        for person in people:
-            if person.interests:
-                top_interest = max(person.interests.items(), 
-                                 key=lambda x: (x[1], -ord(x[0][0])))
-                result.append(top_interest[0])
-        return result
-        
-    def get_description(self) -> str:
-        return "selecting each person's highest-value interest"
-
-class SharedInterestSelection(InterestSelection):
-    """Selects interests that are shared between multiple people"""
-    def select_interests(self, people: List[Person]) -> List[str]:
-        interest_counts = {}
-        for person in people:
-            for interest in person.interests:
-                interest_counts[interest] = interest_counts.get(interest, 0) + 1
-        return [interest for interest, count in interest_counts.items() 
-                if count > 1]
-                
-    def get_description(self) -> str:
-        return "selecting interests shared between multiple people"
-
-class MostCommonInterestSelection(InterestSelection):
-    """Selects the most common interests among all people"""
-    def select_interests(self, people: List[Person]) -> List[str]:
-        interest_counts = {}
-        for person in people:
-            for interest in person.interests:
-                interest_counts[interest] = interest_counts.get(interest, 0) + 1
-        if not interest_counts:
-            return []
-        max_count = max(interest_counts.values())
-        return [interest for interest, count in interest_counts.items() 
-                if count == max_count]
-                
-    def get_description(self) -> str:
-        return "selecting the most commonly shared interests"
-
 class ScoringRule(ABC):
-    def __init__(self, complexity_rating: int, selector: InterestSelection):
-        self.complexity_rating = complexity_rating
-        self.selector: InterestSelection = selector
+    def __init__(self):
+        pass
     
     @abstractmethod
     def score_round(self, people: List[Person]) -> Dict[str, float]:
@@ -100,57 +43,40 @@ class ScoringRule(ABC):
         """Returns a human-readable description of how the rule works"""
         pass
 
+    @abstractmethod
+    def get_cr(self) -> int:
+        pass
+
     def __str__(self) -> str:
-        return f"CR{self.complexity_rating}: {self.get_description()} by {self.selector}"
+        return f"CR{self.get_cr()}: {self.get_description()}"
 
 class TopInterestRule(ScoringRule):
     """CR1 rule: Each guest gets their top interest value"""
     def __init__(self):
-        super().__init__(complexity_rating=1, selector=TopInterestSelection())
+        super().__init__()
     
     def score_round(self, people: List[Person]) -> Dict[str, float]:
-        scores = {p.name: 0 for p in people}
-        selected_interests = self.selector.select_interests(people)
-        for person in people:
-            matching_interests = set(person.interests.keys()) & set(selected_interests)
-            if matching_interests:
-                scores[person.name] = max(person.interests[i] for i in matching_interests)
-        return scores
-    
-    def get_description(self) -> str:
-        return "First, find each person's highest-value interest (breaking ties alphabetically). Then, award each person their points in that interest"
+        pass # TODO: Implement this
 
-class SharedInterestRule(ScoringRule):
-    """CR2 rule: Points for interests shared between guests"""
-    def __init__(self):
-        super().__init__(complexity_rating=2, selector=SharedInterestSelection())
-    
-    def score_round(self, people: List[Person]) -> Dict[str, float]:
-        scores = {p.name: 0 for p in people}
-        selected_interests = self.selector.select_interests(people)
-        for person in people:
-            for interest in set(person.interests.keys()) & set(selected_interests):
-                scores[person.name] += person.interests[interest]
-        return scores
+    def get_cr(self) -> int:
+        return 1
     
     def get_description(self) -> str:
-        return "First, find all interests that are shared by multiple people. Then, award each person their points in those shared interests"
+        return "Each person is awarded their top interest value in points"
 
 class MostCommonInterestRule(ScoringRule):
     """CR3 rule: Points for the most common interest among guests"""
     def __init__(self):
-        super().__init__(complexity_rating=3, selector=MostCommonInterestSelection())
+        super().__init__()
     
     def score_round(self, people: List[Person]) -> Dict[str, float]:
-        scores = {p.name: 0 for p in people}
-        selected_interests = self.selector.select_interests(people)
-        for person in people:
-            for interest in set(person.interests.keys()) & set(selected_interests):
-                scores[person.name] += person.interests[interest] * 2
-        return scores
+        pass # TODO: Implement this
+
+    def get_cr(self) -> int:
+        return 3
     
     def get_description(self) -> str:
-        return "First, find the interest(s) that the most people share. Then, award each person double their points in those interests"
+        return "First, find the most commonly shared interest by number of people with the interest (breaking ties alphabetically). Then, award each person their value in that interest in points."
 
 @dataclass
 class GameScoring:
@@ -162,13 +88,13 @@ class GameScoring:
         rounds = []
         for i, rule in enumerate(self.rules, 1):
             assert isinstance(rule, ScoringRule)  # For IDE type hinting
-            round_desc = f"Round {i}: {rule.get_description()} {rule.selector} [CR{rule.complexity_rating}-{rule.__class__.__name__}, CR{1}-{rule.selector.__class__.__name__}]"
+            round_desc = f"Round {i}: CR{rule.get_cr()}-{rule.__class__.__name__}: {rule.get_description()}"
             rounds.append(round_desc)
         return f"{header}\n" + "\n".join(rounds)
     
     def __post_init__(self):
         # Validate that rules sum to target complexity
-        total_complexity = sum(rule.complexity_rating for rule in self.rules)
+        total_complexity = sum(rule.get_cr() for rule in self.rules)
         if total_complexity != self.target_complexity:
             # TODO This is an error
             print(
@@ -201,7 +127,6 @@ def random_scoring_rules(points: int):
     """Generate random scoring rules totaling the given complexity points"""
     available_rules = {
         1: TopInterestRule,
-        2: SharedInterestRule,
         3: MostCommonInterestRule
     }
     
@@ -225,7 +150,7 @@ def random_scoring_rules(points: int):
     return GameScoring(target_complexity=points, rules=rules)
 
 def main():
-    points = random.randint(2, 10)
+    points = random.randint(20, 21)
     print(f"Generating rules with Points: {points}")
 
     random_rules = random_scoring_rules(points)

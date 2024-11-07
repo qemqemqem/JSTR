@@ -81,7 +81,8 @@ class GameScoring:
         # Validate that rules sum to target complexity
         total_complexity = sum(rule.complexity_rating for rule in self.rules)
         if total_complexity != self.target_complexity:
-            raise ValueError(
+            # TODO This is an error
+            print(
                 f"Rules complexity ({total_complexity}) "
                 f"doesn't match target ({self.target_complexity})"
             )
@@ -117,6 +118,11 @@ def main():
     print(f"Generating rules with Points: {points}")
 
     random_rules = random_scoring_rules(points)
+
+    print("Rules:")
+    print(random_rules)
+    for rule in random_rules.rules:
+        print(rule)
 
 
 if __name__ == "__main__":

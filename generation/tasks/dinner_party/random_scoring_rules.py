@@ -406,31 +406,37 @@ class GameScoring:
         self.current_round = 0
         self.scores: Dict[str, float] = {}
     
-    def score_all_rounds(self, people: List[Person]) -> Dict[str, float]:
+    def score_all_rounds(self, people: List[Person], verbose: bool = True) -> Dict[str, float]:
         """Score all rounds and return final scores"""
         self.discussed_interests = []
         self.previous_hosts = []
         
-        print("\nScoring all rounds:")
+        if verbose:
+            print("\nScoring all rounds:")
         for round_num, rule in enumerate(self.rules, 1):
-            print(f"\nRound {round_num}:")
-            print(rule)
+            if verbose:
+                print(f"\nRound {round_num}:")
+                print(rule)
             # Get scores and interests for this round
             round_scores, notes = rule.score_round(people, self)
-            print(notes)
+            if verbose:
+                print(notes)
             
-            # Print what happened this round
+            # Process what happened this round
             assert isinstance(notes, dict)
             if notes:
                 if "interest" in notes:
-                    print(f"Discussed Interest: {notes['interest']}")
+                    if verbose:
+                        print(f"Discussed Interest: {notes['interest']}")
                     self.discussed_interests.append(notes["interest"])
                 if "host" in notes:
-                    print(f"Host: {notes['host']}")
+                    if verbose:
+                        print(f"Host: {notes['host']}")
                     self.previous_hosts.append(notes["host"])
-            print("Scores this round:")
-            for name, score in round_scores.items():
-                print(f"  {name}: {score}")
+            if verbose:
+                print("Scores this round:")
+                for name, score in round_scores.items():
+                    print(f"  {name}: {score}")
             
             # Update cumulative scores
             for name, score in round_scores.items():
@@ -438,17 +444,18 @@ class GameScoring:
                     self.scores[name] = 0
                 self.scores[name] += score
 
-        print("\nFinal cumulative scores:")
-        for name, score in sorted(self.scores.items(), key=lambda x: (-x[1], x[0])):
-            print(f"  {name}: {score}")
-        print(f"\nAll interests discussed: {', '.join(sorted(set(self.discussed_interests)))}")
+        if verbose:
+            print("\nFinal cumulative scores:")
+            for name, score in sorted(self.scores.items(), key=lambda x: (-x[1], x[0])):
+                print(f"  {name}: {score}")
+            print(f"\nAll interests discussed: {', '.join(sorted(set(self.discussed_interests)))}")
         
         return self.scores.copy()
     
     def get_final_scores(self) -> Dict[str, float]:
         return self.scores.copy()
 
-def random_scoring_rules(points: int, dinner_party: DinnerParty, target_number_rules: int = 3, weighting_exponent: Optional[float] = 1.0) -> GameScoring:
+def random_scoring_rules(points: int, dinner_party: DinnerParty, target_number_rules: int = 3, weighting_exponent: Optional[float] = 1.0, verbose: bool = True) -> GameScoring:
     """Generate random scoring rules totaling the given complexity points"""
     available_rules = [
         EachPersonSpeaksRule,
@@ -461,9 +468,10 @@ def random_scoring_rules(points: int, dinner_party: DinnerParty, target_number_r
         FewestInterestsLargestValueRule,
     ]
 
-    print("Possible Rules:")
-    for rule in available_rules:
-        print(f" * {rule.__name__} (CR {rule.get_cr()}): {rule(dinner_party).get_description()}")
+    if verbose:
+        print("Possible Rules:")
+        for rule in available_rules:
+            print(f" * {rule.__name__} (CR {rule.get_cr()}): {rule(dinner_party).get_description()}")
     
     rules = []
     remaining_points = points
@@ -492,11 +500,12 @@ def random_scoring_rules(points: int, dinner_party: DinnerParty, target_number_r
             # If none, no weighting
             weights = [1 for _ in weights]
 
-        print("Weights")
-        print(f"Ideal points per rule: {ideal_points_per_rule}")
-        print([rule.get_cr() for rule in possible_rules])
-        print(weights)
-        print()
+        if verbose:
+            print("Weights")
+            print(f"Ideal points per rule: {ideal_points_per_rule}")
+            print([rule.get_cr() for rule in possible_rules])
+            print(weights)
+            print()
         
         # Choose a rule using the weights
         chosen_rule = random.choices(possible_rules, weights=weights, k=1)[0](dinner_party)
@@ -505,24 +514,27 @@ def random_scoring_rules(points: int, dinner_party: DinnerParty, target_number_r
     
     return GameScoring(target_complexity=points, rules=rules)
 
-def main():
+def main(verbose: bool = True):
     dinner_party = DinnerParty.random_dinner_party(num_people=10, num_interests=6, set_size=5, points_spread=0, min_interests=2, max_interests=4, avg_points=15)
 
     points = random.randint(3, 15)
-    print(f"Generating rules with Points: {points}")
+    if verbose:
+        print(f"Generating rules with Points: {points}")
 
-    random_rules = random_scoring_rules(points, dinner_party, target_number_rules=3, weighting_exponent=2.0)
+    random_rules = random_scoring_rules(points, dinner_party, target_number_rules=3, weighting_exponent=2.0, verbose=verbose)
 
-    print("Rules:")
-    print(random_rules)
+    if verbose:
+        print("Rules:")
+        print(random_rules)
 
     # Create a random set of people to score
     people = random.sample(dinner_party.people, dinner_party.set_size)
-    print("\nPeople:")
-    print(", ".join(str(person) for person in people))
+    if verbose:
+        print("\nPeople:")
+        print(", ".join(str(person) for person in people))
 
     # Score all rounds
-    random_rules.score_all_rounds(people)
+    random_rules.score_all_rounds(people, verbose=verbose)
 
 
 if __name__ == "__main__":

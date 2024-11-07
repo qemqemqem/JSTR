@@ -35,7 +35,7 @@ class ScoringRule(ABC):
         pass
     
     @abstractmethod
-    def score_round(self, people: List[Person]) -> tuple[Dict[str, float], List[str]]:
+    def score_round(self, people: List[Person], game_scoring: "GameScoring") -> tuple[Dict[str, float], List[str]]:
         """Returns a tuple of (scores dict mapping person names to their scores, list of interests discussed)"""
         pass
 
@@ -56,7 +56,7 @@ class TopInterestRule(ScoringRule):
     def __init__(self, dinner_party: DinnerParty):
         super().__init__(dinner_party)
     
-    def score_round(self, people: List[Person]) -> tuple[Dict[str, float], List[str]]:
+    def score_round(self, people: List[Person], game_scoring: "GameScoring") -> tuple[Dict[str, float], List[str]]:
         scores = {}
         interests_used = []
         for person in people:
@@ -64,14 +64,14 @@ class TopInterestRule(ScoringRule):
             top_interest = max(person.interests.items(), key=lambda x: (x[1], -ord(x[0][0])))
             scores[person.name] = top_interest[1]
             interests_used.append(top_interest[0])
-        return scores, list(set(interests_used))
+        return scores, []  # Could return list(set(interests_used))
 
     @classmethod
     def get_cr(cls) -> int:
         return 1
     
     def get_description(self) -> str:
-        return "Each person is awarded their top interest value in points"
+        return "Each person is awarded points equal to their highest interest in any topic."
 
 
 class SingleInterestRule(ScoringRule):
@@ -79,7 +79,7 @@ class SingleInterestRule(ScoringRule):
         super().__init__(dinner_party)
         self.interest = random.choice(dinner_party.all_interests)
 
-    def score_round(self, people: List[Person]) -> tuple[Dict[str, float], List[str]]:
+    def score_round(self, people: List[Person], game_scoring: "GameScoring") -> tuple[Dict[str, float], List[str]]:
         scores = {}
         for person in people:
             # Award points for the specific interest if they have it
@@ -97,13 +97,15 @@ class SingleInterestRule(ScoringRule):
 class MostCommonInterestRule(ScoringRule):
     def __init__(self, dinner_party: DinnerParty):
         super().__init__(dinner_party)
+        self.ignore_previous_interests = False
 
-    def score_round(self, people: List[Person]) -> tuple[Dict[str, float], List[str]]:
+    def score_round(self, people: List[Person], game_scoring: "GameScoring") -> tuple[Dict[str, float], List[str]]:
         # Count how many people have each interest
         interest_counts = {}
         for person in people:
             for interest in person.interests:
-                interest_counts[interest] = interest_counts.get(interest, 0) + 1
+                if person.interests[interest] is not None and person.interests[interest] > 0:
+                    interest_counts[interest] = interest_counts.get(interest, 0) + 1
         
         # Find the most common interest (breaking ties alphabetically)
         most_common = max(interest_counts.items(), key=lambda x: (x[1], -ord(x[0][0])))
@@ -120,13 +122,23 @@ class MostCommonInterestRule(ScoringRule):
         return 3
 
     def get_description(self) -> str:
-        return "First, find the most commonly shared interest by number of people with the interest (breaking ties alphabetically). Then, award each person their value in that interest in points."
+        ignore_previous = ", excluding interests which have been chosen in previous rounds" if self.ignore_previous_interests else ""
+        return f"First, find the most commonly shared interest by number of people with the interest{ignore_previous} (breaking ties alphabetically). Then, award each person their value in that interest in points."
+
+class MostCommonInterestExceptPrevious(MostCommonInterestRule):
+    def __init__(self, dinner_party: DinnerParty):
+        super().__init__(dinner_party)
+        self.ignore_previous_interests = True
+
+    def get_cr(self) -> int:
+        return MostCommonInterestRule.get_cr() + 1
 
 
 @dataclass
 class GameScoring:
     target_complexity: int
     rules: List[ScoringRule]
+    discussed_interests: List[str] = None
 
     def __str__(self) -> str:
         header = f"GameScoring (Total Complexity: CR{sum(rule.get_cr() for rule in self.rules)})"
@@ -151,13 +163,14 @@ class GameScoring:
     
     def score_all_rounds(self, people: List[Person]) -> Dict[str, float]:
         """Score all rounds and return final scores"""
-        discussed_interests = []
+        self.discussed_interests = []
         
         print("\nScoring all rounds:")
         for round_num, rule in enumerate(self.rules, 1):
             print(f"\nRound {round_num}:")
+            print(rule)
             # Get scores and interests for this round
-            round_scores, round_interests = rule.score_round(people)
+            round_scores, round_interests = rule.score_round(people, self)
             
             # Print what happened this round
             print(f"Discussed interests: {', '.join(round_interests)}")
@@ -172,12 +185,12 @@ class GameScoring:
                 self.scores[name] += score
             
             # Track discussed interests
-            discussed_interests.extend(round_interests)
+            self.discussed_interests.extend(round_interests)
         
         print("\nFinal cumulative scores:")
         for name, score in sorted(self.scores.items(), key=lambda x: (-x[1], x[0])):
             print(f"  {name}: {score}")
-        print(f"\nAll interests discussed: {', '.join(sorted(set(discussed_interests)))}")
+        print(f"\nAll interests discussed: {', '.join(sorted(set(self.discussed_interests)))}")
         
         return self.scores.copy()
     
@@ -220,6 +233,14 @@ def main():
 
     print("Rules:")
     print(random_rules)
+
+    # Create a random set of people to score
+    people = random.sample(dinner_party.people, dinner_party.set_size)
+    print("\nPeople:")
+    print(", ".join(str(person) for person in people))
+
+    # Score all rounds
+    random_rules.score_all_rounds(people)
 
 
 if __name__ == "__main__":

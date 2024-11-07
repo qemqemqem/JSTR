@@ -52,7 +52,7 @@ class ScoringRule(ABC):
     def __str__(self) -> str:
         return f"CR{self.get_cr()}: {self.get_description()}"
 
-class FewestPointsHostRule(ScoringRule):
+class FewestInterestsHostRule(ScoringRule):
     def __init__(self, dinner_party: DinnerParty):
         super().__init__(dinner_party)
     
@@ -69,14 +69,14 @@ class FewestPointsHostRule(ScoringRule):
             game_scoring.previous_hosts = []
             available_hosts = people
             
-        # Calculate total points for available hosts
-        person_points = {
-            person.name: sum(person.interests.values())
+        # Calculate number of interests for available hosts
+        person_interests = {
+            person.name: len(person.interests)
             for person in available_hosts
         }
         
-        # Choose host as person with fewest points among available hosts (breaking ties alphabetically)
-        host = min(available_hosts, key=lambda x: (person_points[x.name], x.name))
+        # Choose host as person with fewest interests among available hosts (breaking ties alphabetically)
+        host = min(available_hosts, key=lambda x: (person_interests[x.name], x.name))
         game_scoring.previous_hosts.append(host.name)
         
         host_interests = set(host.interests.keys())
@@ -94,7 +94,7 @@ class FewestPointsHostRule(ScoringRule):
         return 4
     
     def get_description(self) -> str:
-        return "[Obsessive Host] The host is chosen as the guest with the fewest total interest points (breaking ties alphabetically), and each guest gets 2 points for each interest they share with the host."
+        return "[Focused Host] The host is chosen as the guest with the fewest number of interests (breaking ties alphabetically), and each guest gets 2 points for each interest they share with the host."
 
 
 class AlphabeticHostInterestRule(ScoringRule):

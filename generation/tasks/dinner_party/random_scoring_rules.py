@@ -219,7 +219,7 @@ def random_scoring_rules(points: int, dinner_party: DinnerParty, target_number_r
         # Calculate ideal points per remaining rule
         remaining_rules = target_number_rules - len(rules)
         # if remaining_rules <= 0:
-        #     break
+        #     break  # Don't do this!
         
         # Get possible rules we could add
         possible_rules = [rule for rule in available_rules if rule.get_cr() <= remaining_points]

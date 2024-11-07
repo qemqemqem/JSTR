@@ -35,8 +35,8 @@ class ScoringRule(ABC):
         pass
     
     @abstractmethod
-    def score_round(self, people: List[Person]) -> Dict[str, float]:
-        """Returns a dict mapping person names to their scores"""
+    def score_round(self, people: List[Person]) -> tuple[Dict[str, float], List[str]]:
+        """Returns a tuple of (scores dict mapping person names to their scores, list of interests discussed)"""
         pass
 
     @abstractmethod
@@ -56,13 +56,15 @@ class TopInterestRule(ScoringRule):
     def __init__(self, dinner_party: DinnerParty):
         super().__init__(dinner_party)
     
-    def score_round(self, people: List[Person]) -> Dict[str, float]:
+    def score_round(self, people: List[Person]) -> tuple[Dict[str, float], List[str]]:
         scores = {}
+        interests_used = []
         for person in people:
             # Get the highest value interest, breaking ties alphabetically
             top_interest = max(person.interests.items(), key=lambda x: (x[1], -ord(x[0][0])))
             scores[person.name] = top_interest[1]
-        return scores
+            interests_used.append(top_interest[0])
+        return scores, list(set(interests_used))
 
     @classmethod
     def get_cr(cls) -> int:
@@ -77,12 +79,12 @@ class SingleInterestRule(ScoringRule):
         super().__init__(dinner_party)
         self.interest = random.choice(dinner_party.all_interests)
 
-    def score_round(self, people: List[Person]) -> Dict[str, float]:
+    def score_round(self, people: List[Person]) -> tuple[Dict[str, float], List[str]]:
         scores = {}
         for person in people:
             # Award points for the specific interest if they have it
             scores[person.name] = person.interests.get(self.interest, 0)
-        return scores
+        return scores, [self.interest]
 
     @classmethod
     def get_cr(cls) -> int:
@@ -96,7 +98,7 @@ class MostCommonInterestRule(ScoringRule):
     def __init__(self, dinner_party: DinnerParty):
         super().__init__(dinner_party)
 
-    def score_round(self, people: List[Person]) -> Dict[str, float]:
+    def score_round(self, people: List[Person]) -> tuple[Dict[str, float], List[str]]:
         # Count how many people have each interest
         interest_counts = {}
         for person in people:
@@ -111,7 +113,7 @@ class MostCommonInterestRule(ScoringRule):
         scores = {}
         for person in people:
             scores[person.name] = 2 * person.interests.get(most_common_interest, 0)
-        return scores
+        return scores, [most_common_interest]
 
     @classmethod
     def get_cr(cls) -> int:
@@ -148,20 +150,36 @@ class GameScoring:
         self.scores: Dict[str, float] = {}
     
     def score_all_rounds(self, people: List[Person]) -> Dict[str, float]:
-        if self.current_round >= len(self.rules):
-            raise ValueError("No more rounds available")
+        """Score all rounds and return final scores"""
+        discussed_interests = []
+        
+        print("\nScoring all rounds:")
+        for round_num, rule in enumerate(self.rules, 1):
+            print(f"\nRound {round_num}:")
+            # Get scores and interests for this round
+            round_scores, round_interests = rule.score_round(people)
             
-        # Get scores for this round
-        round_scores = self.rules[self.current_round].score_round(people)
+            # Print what happened this round
+            print(f"Discussed interests: {', '.join(round_interests)}")
+            print("Scores this round:")
+            for name, score in round_scores.items():
+                print(f"  {name}: {score}")
+            
+            # Update cumulative scores
+            for name, score in round_scores.items():
+                if name not in self.scores:
+                    self.scores[name] = 0
+                self.scores[name] += score
+            
+            # Track discussed interests
+            discussed_interests.extend(round_interests)
         
-        # Update cumulative scores
-        for name, score in round_scores.items():
-            if name not in self.scores:
-                self.scores[name] = 0
-            self.scores[name] += score
+        print("\nFinal cumulative scores:")
+        for name, score in sorted(self.scores.items(), key=lambda x: (-x[1], x[0])):
+            print(f"  {name}: {score}")
+        print(f"\nAll interests discussed: {', '.join(sorted(set(discussed_interests)))}")
         
-        self.current_round += 1
-        return round_scores
+        return self.scores.copy()
     
     def get_final_scores(self) -> Dict[str, float]:
         return self.scores.copy()

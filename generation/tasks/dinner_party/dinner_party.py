@@ -90,9 +90,10 @@ class DinnerParty(TaskSpecification):
     def __post_init__(self):
         super().__init__(self.task_description, [person.name for person in self.people], self.set_size)
         self.options = [person.name for person in self.people]
-        self._calculate_target_score()
         if self.random_scoring_rules is None:
             self.random_scoring_rules = random_scoring_rules(self.target_complexity_points, self)
+        # Do this after setting the random scoring rules
+        self._calculate_target_score()
 
     def _calculate_target_score(self, num_samples: int = 100, kth: int = 3) -> None:
         """

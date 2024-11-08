@@ -94,7 +94,7 @@ class DinnerParty(TaskSpecification):
         if self.random_scoring_rules is None:
             self.random_scoring_rules = random_scoring_rules(self.target_complexity_points, self)
 
-    def _calculate_target_score(self, num_samples: int = 1000, kth: int = 3) -> None:
+    def _calculate_target_score(self, num_samples: int = 100, kth: int = 3) -> None:
         """
         Calculate the target score by sampling random parties.
 

@@ -73,7 +73,7 @@ def produce_and_save_dinner_parties(n: int, output_file: str, **kwargs):
                     party = DinnerParty.random_dinner_party(**filtered_params)
 
                     # Annotate with the full chain of thought if requested
-                    if "llm_for_chain_of_thought" in kwargs:
+                    if "llm_for_chain_of_thought" in kwargs and kwargs["llm_for_chain_of_thought"]:
                         print(f"Getting full chain of thought {i+1}/{n} from {kwargs['llm_for_chain_of_thought']} (this takes 5-20s) ...")
                         party.get_full_chain_of_thought_from_llm(kwargs["llm_for_chain_of_thought"])
 

@@ -523,13 +523,13 @@ class GameScoring:
     def to_prompt(self) -> str:
         prompt = f"The game is split into {len(self.rules)} rounds. Each round is different, and provides a way for each participant in the dinner party to score points.\n"
         prompt += f"At the end of the game, each participant's points are added together to score the dinner party as a whole.\n"
-        prompt += f"\nHere are the rules for each round:\n"
+        prompt += f"\nHere are the rules for each round:\n\n"
         for i, rule in enumerate(self.rules, 1):
-            prompt += f"Round {i}: \n{rule.get_description()}\n"
+            prompt += f"Round {i}: {rule.get_description()}\n\n"
         prompt += f"\nThe final score is the sum of all interest levels for these top 3 interests.\n"
         prompt += f"In all cases, if there is a tie between valid options, it goes to the interest or person with the name closest to the beginning of the alphabet.\n"
         prompt += f"Your goal is to maximize the total score of the dinner party, by choosing just the right group of people.\n"
-        return prompt.strip()
+        return prompt
 
 
 ALL_RULES: List[type[ScoringRule]] = [

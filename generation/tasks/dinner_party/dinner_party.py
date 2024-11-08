@@ -160,6 +160,10 @@ class DinnerParty(TaskSpecification):
         float: The score for the selected set of people.
         """
         selected_people = [person for person in self.people if person.name in selected_set]
+
+        if self.random_scoring_rules is not None:
+            return self.random_scoring_rules.score_all_rounds(selected_people)
+
         all_interests = {}
         for person in selected_people:
             for interest, level in person.interests.items():

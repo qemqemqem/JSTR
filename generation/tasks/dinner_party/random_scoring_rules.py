@@ -471,7 +471,7 @@ class GameScoring:
         self.current_round = 0
         self.scores: Dict[str, float] = {}
     
-    def score_all_rounds(self, people: List["Person"], verbose: bool = True) -> Dict[str, float]:
+    def score_all_rounds(self, people: List["Person"], verbose: bool = True) -> float:
         """Score all rounds and return final scores"""
         self.discussed_interests = []
         self.previous_hosts = []
@@ -515,7 +515,7 @@ class GameScoring:
                 print(f"  {name}: {score}")
             print(f"\nAll interests discussed: {', '.join(sorted(set(self.discussed_interests)))}")
         
-        return self.scores.copy()
+        return sum(self.scores.values())
     
     def get_final_scores(self) -> Dict[str, float]:
         return self.scores.copy()

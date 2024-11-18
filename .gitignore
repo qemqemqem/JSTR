@@ -164,3 +164,6 @@ cython_debug/
 
 # Add results manually
 lm_eval/tasks/*/results/*
+
+# This is created content which doesn't need to be checked in by default
+lm_eval/tasks/dinner_party/old_dinner_parties/*

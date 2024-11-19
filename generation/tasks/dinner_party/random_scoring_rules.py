@@ -470,6 +470,10 @@ class GameScoring:
             )
         self.current_round = 0
         self.scores: Dict[str, float] = {}
+
+    def reset(self):
+        # Reset everything so that we can score a new round
+        ...
     
     def score_all_rounds(self, people: List["Person"], verbose: bool = True) -> float:
         """Score all rounds and return final scores"""
@@ -514,6 +518,7 @@ class GameScoring:
             for name, score in sorted(self.scores.items(), key=lambda x: (-x[1], x[0])):
                 print(f"  {name}: {score}")
             print(f"\nAll interests discussed: {', '.join(sorted(set(self.discussed_interests)))}")
+            print(f"Total score: {sum(self.scores.values())}")
         
         return sum(self.scores.values())
     

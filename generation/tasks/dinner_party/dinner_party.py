@@ -356,7 +356,7 @@ class DinnerParty(TaskSpecification):
         dinner_party = cls(
             task_description=data['task_description'],
             people=people,
-            set_size=data['set_size']
+            set_size=data['set_size'],
         )
         
         # Set additional attributes if they exist in the data

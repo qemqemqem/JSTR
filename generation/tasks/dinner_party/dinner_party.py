@@ -352,6 +352,33 @@ class DinnerParty(TaskSpecification):
         Returns:
         DinnerParty: A new DinnerParty instance.
         """
+        # Get the parameter names of the __init__ method
+        init_params = signature(cls).parameters
+
+        # Filter the data dictionary to only include keys that match the __init__ parameters
+        filtered_data = {k: v for k, v in data.items() if k in init_params}
+
+        # Create the people list separately since it's a nested structure
+        people = [Person(name=p['name'], interests=p['interests']) for p in data['people']]
+        filtered_data['people'] = people
+
+        # Initialize the DinnerParty instance with the filtered data
+        dinner_party = cls(**filtered_data)
+
+        # Load scoring rules if they exist in the data
+        if 'scoring_rules' in data and data['scoring_rules'] is not None:
+            dinner_party.random_scoring_rules = GameScoring.from_dict(data["scoring_rules"], dinner_party=dinner_party)
+
+        return dinner_party
+        """
+        Create a DinnerParty instance from a dictionary.
+
+        Args:
+        data (Dict): A dictionary containing the DinnerParty data.
+
+        Returns:
+        DinnerParty: A new DinnerParty instance.
+        """
         people = [Person(name=p['name'], interests=p['interests']) for p in data['people']]
         dinner_party = cls(
             task_description=data['task_description'],

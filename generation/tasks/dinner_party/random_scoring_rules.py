@@ -27,7 +27,9 @@ import random
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from typing import List, Dict, Optional, Any
-# from generation.tasks.dinner_party.dinner_party import Person, DinnerParty  # DO NOT UNCOMMENT. This causes a circular import error
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from generation.tasks.dinner_party.dinner_party import Person, DinnerParty  # DO NOT UNCOMMENT. This causes a circular import error
 
 
 class ScoringRule(ABC):

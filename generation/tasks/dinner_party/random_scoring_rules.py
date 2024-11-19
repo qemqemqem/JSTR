@@ -598,6 +598,17 @@ class GameScoring:
         prompt += f"Your goal is to maximize the total score of the dinner party, by choosing just the right group of people.\n"
         return prompt
 
+    def to_dict(self) -> Dict[str, Any]:
+        """Convert the GameScoring object to a dictionary for JSON serialization."""
+        return {
+            "target_complexity": self.target_complexity,
+            "rules": [rule.to_dict() for rule in self.rules],
+            "discussed_interests": self.discussed_interests,
+            "previous_hosts": self.previous_hosts,
+            "current_round": self.current_round,
+            "scores": self.scores,
+        }
+
 
 ALL_RULES: List[type[ScoringRule]] = [
     EachPersonSpeaksRule,

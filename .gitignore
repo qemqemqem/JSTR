@@ -168,3 +168,5 @@ lm_eval/tasks/*/results/*
 
 # This is created content which doesn't need to be checked in by default
 lm_eval/tasks/dinner_party/old_dinner_parties/*
+# This is used to store the dinner party between generation and lm_eval
+lm_eval/tasks/dinner_party/dinner_party.jsonl

@@ -92,7 +92,6 @@ class DinnerParty(TaskSpecification):
         self.options = [person.name for person in self.people]
         if self.random_scoring_rules is None:
             self.random_scoring_rules = random_scoring_rules(self.scoring_complexity, self)
-            # self.random_scoring_rules = default_scoring_rules(self.target_complexity_points)
         # Do this after setting the random scoring rules
         self._calculate_target_score(100)
 
@@ -227,7 +226,7 @@ class DinnerParty(TaskSpecification):
         self.full_chain_of_thought = chain_of_thought
 
     @classmethod
-    def random_dinner_party(cls, num_people: int, num_interests: int, set_size: int, avg_points: int, points_spread: int, min_interests: int, max_interests: int, bimodal_discount: int = 0, think_through: int = 0, percent_chain_of_thought: int = 100) -> "DinnerParty":
+    def random_dinner_party(cls, num_people: int, num_interests: int, set_size: int, avg_points: int, points_spread: int, min_interests: int, max_interests: int, bimodal_discount: int = 0, think_through: int = 0, percent_chain_of_thought: int = 100, scoring_complexity: int = 10) -> "DinnerParty":
         """
         Create a random DinnerParty object.
 
@@ -280,7 +279,7 @@ class DinnerParty(TaskSpecification):
         people = [Person.random_person(name, selected_interests, points, min_interests, max_interests) 
                   for name, points in zip(selected_names, points_per_person)]
         task_description = f"Select {set_size} people for a dinner party that will have the most engaging conversations."
-        return cls(task_description=task_description, people=people, set_size=set_size, think_through=think_through, percent_chain_of_thought=percent_chain_of_thought, all_interests=selected_interests)
+        return cls(task_description=task_description, people=people, set_size=set_size, think_through=think_through, percent_chain_of_thought=percent_chain_of_thought, all_interests=selected_interests, scoring_complexity=scoring_complexity)
 
     def to_prompt(self, no_think_through_commentary: bool = False) -> str:
         """

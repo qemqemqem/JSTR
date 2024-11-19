@@ -64,6 +64,7 @@ def produce_and_save_dinner_parties(n: int, output_file: str, **kwargs):
                         think_through=params["think_through"],
                         full_chain_of_thought=base_party.full_chain_of_thought,
                         percent_chain_of_thought=params["percent_chain_of_thought"],
+                        scoring_complexity=params["scoring_complexity"],
                     )
                     party.options = base_party.options.copy()
                 else:
@@ -132,7 +133,7 @@ def main():
     parser.add_argument("--max_interests", type=int, default=5, help="Maximum number of interests a person can have")
     parser.add_argument("--bimodal_discount", type=parse_range, default="0", help="Discount to apply to 50% of people's points total (can be a range)")
     parser.add_argument("--think_through", type=parse_range, default="0", help="Optional thinking prompt to add before the answer")
-    parser.add_argument("--scoring_rule_complexity", type=parse_range, default="10", help="Complexity of scoring rules (can be a range, e.g., '5,10,15')")
+    parser.add_argument("--scoring_complexity", type=parse_range, default="10", help="Complexity of scoring rules. The rules are measured in 'points', see random_scoring_rules.py for more info. Suggested values are in the 3-12 range. (can be a set of values, e.g., '5,10,15')")
 
     parser.add_argument_group("Pre-generate chain of thought. The purpose of this is to generate chain of thought that can be used to get the answer. We pre-generate it rather than allowing the LLM to do so because we want to see if it makes a difference to use more or less of the same chain of thought trace.")
     parser.add_argument("--pregenerate_chain_of_thought", type=bool, default=False, help="Whether to pre-generate chain of thought")

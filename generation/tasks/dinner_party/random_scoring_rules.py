@@ -562,7 +562,7 @@ class MostCommonInterestExceptPrevious(MostCommonInterestRule):
 
 @dataclass
 class GameScoring:
-    target_complexity: int
+    scoring_complexity: int
     rules: List[ScoringRule]
     discussed_interests: List[str] = None
     previous_hosts: List[str] = None
@@ -581,11 +581,11 @@ class GameScoring:
     def __post_init__(self):
         # Validate that rules sum to target complexity
         total_complexity = sum(rule.get_cr() for rule in self.rules)
-        if total_complexity != self.target_complexity:
+        if total_complexity != self.scoring_complexity:
             # TODO This is an error
             print(
                 f"Rules complexity ({total_complexity}) "
-                f"doesn't match target ({self.target_complexity})"
+                f"doesn't match target ({self.scoring_complexity})"
             )
 
     def reset(self):
@@ -658,7 +658,7 @@ class GameScoring:
     def to_dict(self) -> Dict[str, Any]:
         """Convert the GameScoring object to a dictionary for JSON serialization."""
         return {
-            "target_complexity": self.target_complexity,
+            "scoring_complexity": self.scoring_complexity,
             "rules": [rule.to_dict() for rule in self.rules],
             "discussed_interests": self.discussed_interests,
             "previous_hosts": self.previous_hosts,
@@ -671,7 +671,7 @@ class GameScoring:
         """Create a GameScoring instance from a dictionary."""
         rules = [scoring_rule_from_dict(rule_data, dinner_party=dinner_party) for rule_data in data['rules']]
         return cls(
-            target_complexity=data['target_complexity'],
+            scoring_complexity=data['scoring_complexity'],
             rules=rules,
             discussed_interests=data.get('discussed_interests', []),
             previous_hosts=data.get('previous_hosts', []),
@@ -768,11 +768,11 @@ def random_scoring_rules(points: int, dinner_party: "DinnerParty", target_number
         rules.append(chosen_rule)
         remaining_points -= chosen_rule.get_cr()
 
-    return GameScoring(target_complexity=points, rules=rules)
+    return GameScoring(scoring_complexity=points, rules=rules)
 
 def default_scoring_rules(dinner_party: "DinnerParty") -> GameScoring:
     """Generate default scoring rules"""
-    return GameScoring(target_complexity=25, rules=[
+    return GameScoring(scoring_complexity=25, rules=[
         MostCommonInterestExceptPrevious(dinner_party),
         MostCommonInterestExceptPrevious(dinner_party),
         MostCommonInterestExceptPrevious(dinner_party),
@@ -781,4 +781,4 @@ def default_scoring_rules(dinner_party: "DinnerParty") -> GameScoring:
 
 def one_of_each_scoring_rule(dinner_party: "DinnerParty") -> GameScoring:
     """Generate scoring rules that include one of each type"""
-    return GameScoring(target_complexity=9, rules=[r(dinner_party) for r in ALL_RULES])
+    return GameScoring(scoring_complexity=9, rules=[r(dinner_party) for r in ALL_RULES])

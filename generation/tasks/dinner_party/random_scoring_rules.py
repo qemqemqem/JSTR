@@ -706,31 +706,37 @@ def scoring_rule_from_dict(data: Dict[str, Any], verbose: bool = False, dinner_p
         raise ValueError(f"Unknown rule type: {rule_type}")
     """Generate random scoring rules totaling the given complexity points."""
 
+
+def random_scoring_rules(points: int, dinner_party: "DinnerParty", target_number_rules: int = 3,
+                         weighting_exponent: Optional[float] = 2.0, verbose: bool = False) -> GameScoring:
+    """Generate random scoring rules totaling the given complexity points"""
+
     if verbose:
         print("Possible Rules:")
         for rule in ALL_RULES:
             print(f" * {rule.__name__} (CR {rule.get_cr()}): {rule(dinner_party).get_description()}")
-    
+
     rules = []
     remaining_points = points
-    
+
     while remaining_points > 0:
         # Calculate ideal points per remaining rule
         remaining_rules = target_number_rules - len(rules)
 
         # Get possible rules we could add
         possible_rules = [rule for rule in ALL_RULES if rule.get_cr() <= remaining_points]
-        if len(rules) == 0 and dinner_party is not None:
+        if len(rules) == 0:
             possible_rules = [rule for rule in possible_rules if rule not in [MostCommonInterestExceptPrevious]]
-        
+
         if not possible_rules:
             break
-            
+
         # Weight rules by how close their CR is to the ideal points per rule
         if remaining_rules > 0:
             ideal_points_per_rule = remaining_points / remaining_rules
         else:
-            ideal_points_per_rule = max(rule.get_cr() for rule in possible_rules)  # Prefer largest rules once we hit our target
+            ideal_points_per_rule = max(
+                rule.get_cr() for rule in possible_rules)  # Prefer largest rules once we hit our target
         weights = [1 / (abs(rule.get_cr() - ideal_points_per_rule) + 1) for rule in possible_rules]
         if weighting_exponent is not None:
             weights = [weight ** weighting_exponent for weight in weights]
@@ -744,12 +750,12 @@ def scoring_rule_from_dict(data: Dict[str, Any], verbose: bool = False, dinner_p
             print([rule.get_cr() for rule in possible_rules])
             print(weights)
             print()
-        
+
         # Choose a rule using the weights
         chosen_rule = random.choices(possible_rules, weights=weights, k=1)[0](dinner_party)
         rules.append(chosen_rule)
         remaining_points -= chosen_rule.get_cr()
-    
+
     return GameScoring(target_complexity=points, rules=rules)
 
 def default_scoring_rules(dinner_party: "DinnerParty") -> GameScoring:

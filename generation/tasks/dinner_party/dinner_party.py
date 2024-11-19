@@ -84,15 +84,15 @@ class DinnerParty(TaskSpecification):
     full_chain_of_thought: str = ""
     percent_chain_of_thought: int = 100
     all_interests: List[str] = field(default_factory=list)
-    target_complexity_points: int = 10
+    scoring_complexity: int = 10
     random_scoring_rules: Optional[GameScoring] = None
 
     def __post_init__(self):
         super().__init__(self.task_description, [person.name for person in self.people], self.set_size)
         self.options = [person.name for person in self.people]
         if self.random_scoring_rules is None:
-            # self.random_scoring_rules = random_scoring_rules(self.target_complexity_points, self)
-            self.random_scoring_rules = default_scoring_rules(self.target_complexity_points)
+            self.random_scoring_rules = random_scoring_rules(self.scoring_complexity, self)
+            # self.random_scoring_rules = default_scoring_rules(self.target_complexity_points)
         # Do this after setting the random scoring rules
         self._calculate_target_score(100)
 

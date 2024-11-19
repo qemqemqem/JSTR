@@ -122,7 +122,7 @@ def main():
     parser = argparse.ArgumentParser(description="Create a graph from dinner party evaluation results")
     parser.add_argument("--input_file", default=default_input_file, 
                         help="Path to the input JSONL file with evaluation results")
-    all_params = ['bimodal_discount', 'set_size', 'num_people', 'num_interests', 'avg_points', 'think_through', 'percent_chain_of_thought']
+    all_params = ['bimodal_discount', 'set_size', 'num_people', 'num_interests', 'avg_points', 'think_through', 'percent_chain_of_thought', 'scoring_complexity']
     parser.add_argument("--param", choices=['all'] + all_params,
                         default='set_size', help="Parameter to use for x-axis. Use 'all' to generate graphs for all parameters.")
     parser.add_argument("--y_value", choices=['dinner_score', 'percentile', 'ranking', 'normalized_score', 'rank_normalized_score', 'len_response'],

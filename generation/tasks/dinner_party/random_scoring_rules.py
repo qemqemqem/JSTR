@@ -43,6 +43,8 @@ class ScoringRule(ABC):
     @classmethod
     @abstractmethod
     def from_dict(cls, data: Dict[str, Any]) -> "ScoringRule":
+        pass
+
     def score_round(self, people: List["Person"], game_scoring: "GameScoring") -> tuple[Dict[str, float], Dict[str, Any]]:
         """Returns a tuple of (scores dict mapping person names to their scores, metadata dict with 'interest' and/or 'host')"""
         pass

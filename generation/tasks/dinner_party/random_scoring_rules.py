@@ -33,14 +33,14 @@ from typing import List, Dict, Optional, Any
 class ScoringRule(ABC):
     def __init__(self, dinner_party: "DinnerParty"):
         pass
-    
-    @abstractmethod
+
     def to_dict(self) -> Dict[str, Any]:
         """Convert the scoring rule to a dictionary for JSON serialization."""
         data = super().to_dict()
         # Add any specific attributes for this rule if needed
         return data
 
+    @abstractmethod
     def score_round(self, people: List["Person"], game_scoring: "GameScoring") -> tuple[Dict[str, float], Dict[str, Any]]:
         """Returns a tuple of (scores dict mapping person names to their scores, metadata dict with 'interest' and/or 'host')"""
         pass

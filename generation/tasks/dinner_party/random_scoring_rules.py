@@ -36,12 +36,6 @@ class ScoringRule(ABC):
     def __init__(self, dinner_party: "DinnerParty"):
         pass
 
-    def to_dict(self) -> Dict[str, Any]:
-        """Convert the scoring rule to a dictionary for JSON serialization."""
-        data = super().to_dict()
-        # Add any specific attributes for this rule if needed
-        return data
-
     @abstractmethod
     def score_round(self, people: List["Person"], game_scoring: "GameScoring") -> tuple[Dict[str, float], Dict[str, Any]]:
         """Returns a tuple of (scores dict mapping person names to their scores, metadata dict with 'interest' and/or 'host')"""
@@ -136,7 +130,7 @@ class FewestInterestsLargestValueRule(ScoringRule):
         super().__init__(dinner_party)
 
     def to_dict(self) -> Dict[str, Any]:
-        data = super().to_dict()
+        data = {}
         # Add any specific attributes for this rule if needed
         return data
     
@@ -171,7 +165,7 @@ class FewestInterestsHostRule(ScoringRule):
         self.points_per_interest = random.randint(2, 5)  # Both inclusive
 
     def to_dict(self) -> Dict[str, Any]:
-        data = super().to_dict()
+        data = {}
         data.update({
             "points_per_interest": self.points_per_interest
         })
@@ -224,7 +218,7 @@ class NicheInterestsRule(ScoringRule):
         self.bonus_points = random.randint(3, 7)  # Random bonus points per niche interest
 
     def to_dict(self) -> Dict[str, Any]:
-        data = super().to_dict()
+        data = {}
         data.update({
             "bonus_points": self.bonus_points
         })
@@ -422,7 +416,7 @@ class SingleInterestRule(ScoringRule):
         self.interest = random.choice(dinner_party.all_interests)
 
     def to_dict(self) -> Dict[str, Any]:
-        data = super().to_dict()
+        data = {}
         data.update({
             "interest": self.interest
         })
@@ -449,7 +443,7 @@ class MostCommonInterestRule(ScoringRule):
         self.ignore_previous_interests = False
 
     def to_dict(self) -> Dict[str, Any]:
-        data = super().to_dict()
+        data = {}
         data.update({
             "ignore_previous_interests": self.ignore_previous_interests
         })
@@ -492,7 +486,7 @@ class MostCommonInterestExceptPrevious(MostCommonInterestRule):
         self.ignore_previous_interests = True
 
     def to_dict(self) -> Dict[str, Any]:
-        data = super().to_dict()
+        data = {}
         data.update({
             "ignore_previous_interests": self.ignore_previous_interests
         })

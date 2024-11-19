@@ -1,6 +1,7 @@
 import os
 import random
 from dataclasses import dataclass, field
+from inspect import signature
 from typing import Dict, List, Optional
 
 import scipy.stats as stats
@@ -90,8 +91,15 @@ class DinnerParty(TaskSpecification):
     def __post_init__(self):
         super().__init__(self.task_description, [person.name for person in self.people], self.set_size)
         self.options = [person.name for person in self.people]
+
+        # Recalculate all_interests based on people, if it's empty
+        if not self.all_interests or len(self.all_interests) == 0:
+            self.all_interests = list(set(interest for person in self.people for interest in person.interests.keys()))
+
+        # Do this after setting all interests
         if self.random_scoring_rules is None:
             self.random_scoring_rules = random_scoring_rules(self.scoring_complexity, self)
+
         # Do this after setting the random scoring rules
         self._calculate_target_score(100)
 
@@ -369,40 +377,6 @@ class DinnerParty(TaskSpecification):
         if 'scoring_rules' in data and data['scoring_rules'] is not None:
             dinner_party.random_scoring_rules = GameScoring.from_dict(data["scoring_rules"], dinner_party=dinner_party)
 
-        return dinner_party
-        """
-        Create a DinnerParty instance from a dictionary.
-
-        Args:
-        data (Dict): A dictionary containing the DinnerParty data.
-
-        Returns:
-        DinnerParty: A new DinnerParty instance.
-        """
-        people = [Person(name=p['name'], interests=p['interests']) for p in data['people']]
-        dinner_party = cls(
-            task_description=data['task_description'],
-            people=people,
-            set_size=data['set_size'],
-        )
-        
-        # Set additional attributes if they exist in the data
-        if 'stored_scores' in data:
-            dinner_party.stored_scores = data['stored_scores']
-        if 'target_score' in data:
-            dinner_party.target_score = data['target_score']
-        
-        # If parameters are provided, store them as an attribute
-        if 'parameters' in data:
-            dinner_party.parameters = data['parameters']
-        
-        
-        # Load scoring rules if they exist in the data
-        if 'scoring_rules' in data and data['scoring_rules'] is not None:
-            print(data['scoring_rules'])
-            dinner_party.random_scoring_rules = GameScoring.from_dict(data["scoring_rules"], dinner_party=dinner_party)
-            # print(f"Loaded scoring rules: {dinner_party.random_scoring_rules}")
-        
         return dinner_party
 
 def main():

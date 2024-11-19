@@ -588,19 +588,13 @@ class GameScoring:
                 f"doesn't match target ({self.target_complexity})"
             )
 
-    @classmethod
-    def from_dict(cls, data: Dict[str, Any], dinner_party: "DinnerParty") -> "GameScoring":
-        """Create a GameScoring instance from a dictionary."""
-        rules = [scoring_rule_from_dict(rule_data, dinner_party=dinner_party) for rule_data in data['rules']]
-        return cls(
-            target_complexity=data['target_complexity'],
-            rules=rules,
-            discussed_interests=data.get('discussed_interests', []),
-            previous_hosts=data.get('previous_hosts', []),
-            current_round=data.get('current_round', 0),
-            scores=data.get('scores', {})
-        )
-    
+    def reset(self):
+        """Reset the scoring state to allow for a new round of scoring."""
+        self.discussed_interests = []
+        self.previous_hosts = []
+        self.scores = {}
+        self.current_round = 0
+
     def score_all_rounds(self, people: List["Person"], verbose: bool = False) -> float:
         """Score all rounds and return final scores"""
         self.reset()
@@ -671,6 +665,19 @@ class GameScoring:
             "current_round": self.current_round,
             "scores": self.scores,
         }
+
+    @classmethod
+    def from_dict(cls, data: Dict[str, Any], dinner_party: "DinnerParty") -> "GameScoring":
+        """Create a GameScoring instance from a dictionary."""
+        rules = [scoring_rule_from_dict(rule_data, dinner_party=dinner_party) for rule_data in data['rules']]
+        return cls(
+            target_complexity=data['target_complexity'],
+            rules=rules,
+            discussed_interests=data.get('discussed_interests', []),
+            previous_hosts=data.get('previous_hosts', []),
+            current_round=data.get('current_round', 0),
+            scores=data.get('scores', {})
+        )
 
 
 ALL_RULES: List[type[ScoringRule]] = [

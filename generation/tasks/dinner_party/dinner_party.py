@@ -5,7 +5,7 @@ from typing import Dict, List, Optional
 
 import scipy.stats as stats
 
-from generation.tasks.dinner_party.random_scoring_rules import GameScoring, default_scoring_rules, random_scoring_rules
+from generation.tasks.dinner_party.random_scoring_rules import GameScoring, default_scoring_rules, random_scoring_rules, scoring_rule_from_dict
 
 try:
     from openai import OpenAI
@@ -373,9 +373,11 @@ class DinnerParty(TaskSpecification):
         
         # Load scoring rules if they exist in the data
         if 'scoring_rules' in data and data['scoring_rules'] is not None:
-            from generation.tasks.dinner_party.random_scoring_rules import scoring_rule_from_dict
+            print("Attempting to load scoring rules")
+            print(data['scoring_rules'])
             rules = [scoring_rule_from_dict(rule_data) for rule_data in data['scoring_rules']]
             dinner_party.random_scoring_rules = GameScoring(target_complexity=len(rules), rules=rules)
+            print(f"Loaded scoring rules: {dinner_party.random_scoring_rules}")
         
         return dinner_party
 

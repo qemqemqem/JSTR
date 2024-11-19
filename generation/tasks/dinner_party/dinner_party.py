@@ -91,9 +91,10 @@ class DinnerParty(TaskSpecification):
         super().__init__(self.task_description, [person.name for person in self.people], self.set_size)
         self.options = [person.name for person in self.people]
         if self.random_scoring_rules is None:
-            self.random_scoring_rules = random_scoring_rules(self.target_complexity_points, self)
+            # self.random_scoring_rules = random_scoring_rules(self.target_complexity_points, self)
+            self.random_scoring_rules = default_scoring_rules(self.target_complexity_points)
         # Do this after setting the random scoring rules
-        self._calculate_target_score()
+        self._calculate_target_score(100)
 
     def _calculate_target_score(self, num_samples: int = 100, kth: int = 3) -> None:
         """
@@ -104,7 +105,7 @@ class DinnerParty(TaskSpecification):
         kth (int): The position of the score to set as the target (e.g., 3 for the 3rd highest score).
         """
         self.stored_scores = []
-        for _ in range(num_samples):
+        for i in range(num_samples):
             random_set = self.get_random_set()
             score = self.score_set(random_set)
             self.stored_scores.append(score)

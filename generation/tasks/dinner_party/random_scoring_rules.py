@@ -25,9 +25,9 @@ Here are some examples of scoring rules:
 
 import random
 from abc import ABC, abstractmethod
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import List, Dict, Optional, Any
-# from generation.tasks.dinner_party.dinner_party import Person, DinnerParty  # This causesa  circular import error
+# from generation.tasks.dinner_party.dinner_party import Person, DinnerParty  # DO NOT UNCOMMENT. This causes a circular import error
 
 
 class ScoringRule(ABC):
@@ -449,6 +449,8 @@ class GameScoring:
     rules: List[ScoringRule]
     discussed_interests: List[str] = None
     previous_hosts: List[str] = None
+    current_round: int = 0
+    scores: Dict[str, float] = field(default_factory=dict)
 
     def __str__(self) -> str:
         header = f"GameScoring (Total Complexity: CR{sum(rule.get_cr() for rule in self.rules)})"
@@ -468,19 +470,17 @@ class GameScoring:
                 f"Rules complexity ({total_complexity}) "
                 f"doesn't match target ({self.target_complexity})"
             )
-        self.current_round = 0
-        self.scores: Dict[str, float] = {}
 
     def reset(self):
         """Reset the scoring state to allow for a new round of scoring."""
         self.discussed_interests = []
         self.previous_hosts = []
         self.scores = {}
+        self.current_round = 0
     
-    def score_all_rounds(self, people: List["Person"], verbose: bool = True) -> float:
+    def score_all_rounds(self, people: List["Person"], verbose: bool = False) -> float:
         """Score all rounds and return final scores"""
-        self.discussed_interests = []
-        self.previous_hosts = []
+        self.reset()
         
         if verbose:
             print("\nScoring all rounds:")

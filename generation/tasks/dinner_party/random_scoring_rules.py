@@ -600,11 +600,6 @@ class GameScoring:
             current_round=data.get('current_round', 0),
             scores=data.get('scores', {})
         )
-        """Reset the scoring state to allow for a new round of scoring."""
-        self.discussed_interests = []
-        self.previous_hosts = []
-        self.scores = {}
-        self.current_round = 0
     
     def score_all_rounds(self, people: List["Person"], verbose: bool = False) -> float:
         """Score all rounds and return final scores"""

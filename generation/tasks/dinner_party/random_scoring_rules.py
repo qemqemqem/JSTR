@@ -588,7 +588,18 @@ class GameScoring:
                 f"doesn't match target ({self.target_complexity})"
             )
 
-    def reset(self):
+    @classmethod
+    def from_dict(cls, data: Dict[str, Any], dinner_party: "DinnerParty") -> "GameScoring":
+        """Create a GameScoring instance from a dictionary."""
+        rules = [scoring_rule_from_dict(rule_data, dinner_party=dinner_party) for rule_data in data['rules']]
+        return cls(
+            target_complexity=data['target_complexity'],
+            rules=rules,
+            discussed_interests=data.get('discussed_interests', []),
+            previous_hosts=data.get('previous_hosts', []),
+            current_round=data.get('current_round', 0),
+            scores=data.get('scores', {})
+        )
         """Reset the scoring state to allow for a new round of scoring."""
         self.discussed_interests = []
         self.previous_hosts = []

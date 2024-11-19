@@ -704,7 +704,6 @@ def scoring_rule_from_dict(data: Dict[str, Any], verbose: bool = False, dinner_p
         return MostCommonInterestExceptPrevious.from_dict(data)
     else:
         raise ValueError(f"Unknown rule type: {rule_type}")
-    """Generate random scoring rules totaling the given complexity points."""
 
 
 def random_scoring_rules(points: int, dinner_party: "DinnerParty", target_number_rules: int = 3,

@@ -321,7 +321,7 @@ class DinnerParty(TaskSpecification):
             pass  # Do not add any think-through commentary
         elif self.think_through == 0:
             # No step by step thinking through
-            prompt += "\n\nAnswer immediately with \"Answer: <person1>, <person2>, ... Done.\""
+            prompt += "\n\nDo not think through your answer. Answer immediately with \"Answer: <person1>, <person2>, ... Done.\""
         elif self.think_through == 1:
             # Think briefly
             prompt += "\n\nThink through your answer briefly, then answer with \"Answer: <person1>, <person2>, ... Done.\""

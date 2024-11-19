@@ -9,6 +9,7 @@ from datetime import datetime
 import shutil
 
 from generation.tasks.dinner_party.dinner_party import DinnerParty
+from generation.tasks.dinner_party.hello import hello
 
 
 def parse_range(arg: str) -> List[int]:

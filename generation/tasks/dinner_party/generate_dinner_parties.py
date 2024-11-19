@@ -97,6 +97,7 @@ def produce_and_save_dinner_parties(n: int, output_file: str, **kwargs):
                         "stored_scores": party.stored_scores,
                         "target_score": party.target_score,
                         "scoring_complexity": party.scoring_complexity,
+                        "scoring_rules": party.random_scoring_rules.__dict__ if party.random_scoring_rules is not None else None,
                     }
                 }
                 f.write(json.dumps(json_obj) + '\n')

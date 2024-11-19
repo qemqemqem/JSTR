@@ -57,13 +57,6 @@ class ScoringRule(ABC):
     def get_cr(cls) -> int:
         pass
 
-    def to_dict(self) -> Dict[str, Any]:
-        """Convert the scoring rule to a dictionary for JSON serialization."""
-        return {
-            "type": self.__class__.__name__,
-            "description": self.get_description(),
-        }
-
     def __str__(self) -> str:
         return f"CR{self.get_cr()}: {self.get_description()}"
 

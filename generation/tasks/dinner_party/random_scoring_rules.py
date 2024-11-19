@@ -680,7 +680,7 @@ ALL_RULES: List[type[ScoringRule]] = [
     NicheInterestsRule,
 ]
 
-def scoring_rule_from_dict(data: Dict[str, Any]) -> ScoringRule:
+def scoring_rule_from_dict(data: Dict[str, Any], verbose: bool = False, dinner_party: "DinnerParty" = None, points: int = 0, target_number_rules: int = 0, weighting_exponent: Optional[float] = None) -> ScoringRule:
     rule_type = data.get("type")
     if rule_type == "FewestInterestsLargestValueRule":
         return FewestInterestsLargestValueRule.from_dict(data)
@@ -704,7 +704,7 @@ def scoring_rule_from_dict(data: Dict[str, Any]) -> ScoringRule:
         return MostCommonInterestExceptPrevious.from_dict(data)
     else:
         raise ValueError(f"Unknown rule type: {rule_type}")
-    """Generate random scoring rules totaling the given complexity points"""
+    """Generate random scoring rules totaling the given complexity points."""
 
     if verbose:
         print("Possible Rules:")
@@ -720,7 +720,7 @@ def scoring_rule_from_dict(data: Dict[str, Any]) -> ScoringRule:
 
         # Get possible rules we could add
         possible_rules = [rule for rule in ALL_RULES if rule.get_cr() <= remaining_points]
-        if len(rules) == 0:
+        if len(rules) == 0 and dinner_party is not None:
             possible_rules = [rule for rule in possible_rules if rule not in [MostCommonInterestExceptPrevious]]
         
         if not possible_rules:

@@ -472,8 +472,10 @@ class GameScoring:
         self.scores: Dict[str, float] = {}
 
     def reset(self):
-        # Reset everything so that we can score a new round
-        ...
+        """Reset the scoring state to allow for a new round of scoring."""
+        self.discussed_interests = []
+        self.previous_hosts = []
+        self.scores = {}
     
     def score_all_rounds(self, people: List["Person"], verbose: bool = True) -> float:
         """Score all rounds and return final scores"""

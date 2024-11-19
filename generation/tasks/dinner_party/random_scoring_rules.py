@@ -35,6 +35,12 @@ class ScoringRule(ABC):
         pass
     
     @abstractmethod
+    def to_dict(self) -> Dict[str, Any]:
+        """Convert the scoring rule to a dictionary for JSON serialization."""
+        data = super().to_dict()
+        # Add any specific attributes for this rule if needed
+        return data
+
     def score_round(self, people: List["Person"], game_scoring: "GameScoring") -> tuple[Dict[str, float], Dict[str, Any]]:
         """Returns a tuple of (scores dict mapping person names to their scores, metadata dict with 'interest' and/or 'host')"""
         pass
@@ -48,6 +54,13 @@ class ScoringRule(ABC):
     @abstractmethod
     def get_cr(cls) -> int:
         pass
+
+    def to_dict(self) -> Dict[str, Any]:
+        """Convert the scoring rule to a dictionary for JSON serialization."""
+        return {
+            "type": self.__class__.__name__,
+            "description": self.get_description(),
+        }
 
     def __str__(self) -> str:
         return f"CR{self.get_cr()}: {self.get_description()}"

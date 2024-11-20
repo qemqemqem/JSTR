@@ -117,7 +117,7 @@ class DinnerParty(TaskSpecification):
         self.stored_scores = []
         for i in range(num_samples):
             random_set = self.get_random_set()
-            score = self.score_set(random_set, debug=True)
+            score = self.score_set(random_set, debug=False)
             self.stored_scores.append(score)
         self.stored_scores.sort(reverse=True)
 

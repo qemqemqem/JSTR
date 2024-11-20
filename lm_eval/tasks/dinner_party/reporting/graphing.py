@@ -37,8 +37,8 @@ def create_graph(results, param, y_value, args):
             print(f"  KeyError: {e}")
 
     x_data = list(param_values.keys())
-    
-    plt.figure(figsize=(14, 8))  # Larger figure to accommodate additional legend
+
+    plt.figure(figsize=(14, 8))
     
     # Create box plot
     box_plot = plt.boxplot([param_values[x] for x in x_data], patch_artist=True, medianprops={'color': "#D81B60"})

@@ -602,8 +602,6 @@ class GameScoring:
         
         if verbose:
             print("\nScoring all rounds:")
-            # Print the stack trace so we can see where this occurs
-            traceback.print_stack()
         for round_num, rule in enumerate(self.rules, 1):
             if verbose:
                 print(f"\nRound {round_num}:")

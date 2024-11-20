@@ -85,8 +85,11 @@ def create_graph(results, param, y_value, args):
         median_value = np.median(param_values[x])
         plt.text(i+1, plt.gca().get_ylim()[0] - 0.03 * (plt.gca().get_ylim()[1] - plt.gca().get_ylim()[0]),
                  f'Median: {median_value:.2f}', rotation=0, va='top', ha='center', fontsize=8)
+        # Check if median is nan
+        if np.isnan(median_value):
+            print(f"  Median is nan for {x}, all values: {param_values[x]}")
+
     plt.yticks(fontsize=9)
-    
     plt.grid(axis='y', linestyle='--', alpha=0.3)
     plt.gca().set_facecolor('#f9f9f9')  # Very light gray background
     

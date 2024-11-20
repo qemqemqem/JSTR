@@ -101,7 +101,10 @@ class DinnerParty(TaskSpecification):
             self.random_scoring_rules = random_scoring_rules(self.scoring_complexity, self)
 
         # Do this after setting the random scoring rules
-        self._calculate_target_score(100)
+        if not self.stored_scores or len(self.stored_scores) == 0:
+            self._calculate_target_score(100)
+        else:
+            assert self.target_score > 0, "Target score must be greater than 0."
 
     def _calculate_target_score(self, num_samples: int = 100, kth: int = 3) -> None:
         """
@@ -114,9 +117,13 @@ class DinnerParty(TaskSpecification):
         self.stored_scores = []
         for i in range(num_samples):
             random_set = self.get_random_set()
-            score = self.score_set(random_set)
+            score = self.score_set(random_set, debug=True)
             self.stored_scores.append(score)
         self.stored_scores.sort(reverse=True)
+
+        # Check if all the scores are 0
+        assert not all(score == 0 for score in self.stored_scores), "All scores are 0. This is likely a bug in the scoring function."
+
         self.target_score = self.stored_scores[kth - 1] if kth <= len(self.stored_scores) else min(self.stored_scores)
 
     def get_score_statistics(self, score: float) -> Dict[str, float]:
@@ -137,6 +144,8 @@ class DinnerParty(TaskSpecification):
 
         percentile = sum(1 for s in self.stored_scores if s <= score) / len(self.stored_scores)
         ranking = sum(1 for s in self.stored_scores if s > score) + 1
+        if ranking == 1 or ranking == len(self.stored_scores):
+            print(f"SUS ranking of {ranking} with Score: {score} out of these scores: {self.stored_scores}")
         max_score = max(self.stored_scores)
         percent_of_max = score / max_score if max_score > 0 else 1.0
         
@@ -170,8 +179,10 @@ class DinnerParty(TaskSpecification):
         """
         selected_people = [person for person in self.people if person.name in selected_set]
 
+        assert self.random_scoring_rules is not None, "Random scoring rules not initialized."
+
         if self.random_scoring_rules is not None:
-            return self.random_scoring_rules.score_all_rounds(selected_people)
+            return self.random_scoring_rules.score_all_rounds(selected_people, verbose=debug)
 
         all_interests = {}
         for person in selected_people:

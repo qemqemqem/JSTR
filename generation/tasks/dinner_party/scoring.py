@@ -43,13 +43,15 @@ def score_answer(question, answer):
     # print(f"SCORING GUIDE: {scoring_guide}")
     print(f"ANSWER: {answer_text}")
     dinner_party = DinnerParty.from_dict(scoring_guide)
+    # print(f"DINNER PARTY: {dinner_party.random_scoring_rules}")
 
     # Extract names from the answer
     names = re.findall(r'\b[A-Z][a-z]*\b', answer_text)
     selected_set = names[:dinner_party.set_size]  # Take only the required number of names
 
     # Score the selected set
-    score = dinner_party.score_set(selected_set, debug=True)
+    score = dinner_party.score_set(selected_set, debug=False)
+    print(f"Score: {score}, compared to {dinner_party.target_score} target score")
 
     # Get the score statistics
     score_stats = dinner_party.get_score_statistics(score)

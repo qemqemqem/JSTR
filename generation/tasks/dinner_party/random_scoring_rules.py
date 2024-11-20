@@ -24,6 +24,7 @@ Here are some examples of scoring rules:
 """
 
 import random
+import traceback
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from typing import List, Dict, Optional, Any
@@ -42,7 +43,7 @@ class ScoringRule(ABC):
 
     @classmethod
     @abstractmethod
-    def from_dict(cls, data: Dict[str, Any]) -> "ScoringRule":
+    def from_dict(cls, data: Dict[str, Any], dinner_party: "DinnerParty") -> "ScoringRule":
         pass
 
     def score_round(self, people: List["Person"], game_scoring: "GameScoring") -> tuple[Dict[str, float], Dict[str, Any]]:
@@ -144,9 +145,9 @@ class FewestInterestsLargestValueRule(ScoringRule):
         }
 
     @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> "FewestInterestsLargestValueRule":
+    def from_dict(cls, data: Dict[str, Any], dinner_party) -> "FewestInterestsLargestValueRule":
         # Extract attributes from data and create an instance
-        return cls(dinner_party=None)  # Replace with actual initialization logic
+        return cls(dinner_party=dinner_party)
     
     def score_round(self, people: List["Person"], game_scoring: "GameScoring") -> tuple[Dict[str, float], Dict[str, Any]]:
         # Select host with fewest interests
@@ -185,8 +186,8 @@ class FewestInterestsHostRule(ScoringRule):
         }
 
     @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> "FewestInterestsHostRule":
-        instance = cls(dinner_party=None)  # Replace with actual initialization logic
+    def from_dict(cls, data: Dict[str, Any], dinner_party) -> "FewestInterestsHostRule":
+        instance = cls(dinner_party=dinner_party)  # Replace with actual initialization logic
         instance.points_per_interest = data["points_per_interest"]
         return instance
     
@@ -243,8 +244,8 @@ class NicheInterestsRule(ScoringRule):
         }
 
     @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> "NicheInterestsRule":
-        instance = cls(dinner_party=None)  # Replace with actual initialization logic
+    def from_dict(cls, data: Dict[str, Any], dinner_party) -> "NicheInterestsRule":
+        instance = cls(dinner_party=dinner_party)  # Replace with actual initialization logic
         instance.bonus_points = data["bonus_points"]
         return instance
     
@@ -289,8 +290,8 @@ class WellRoundedInterestsRule(ScoringRule):
         }
 
     @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> "WellRoundedInterestsRule":
-        return cls(dinner_party=None)  # Replace with actual initialization logic
+    def from_dict(cls, data: Dict[str, Any], dinner_party) -> "WellRoundedInterestsRule":
+        return cls(dinner_party=dinner_party)
     
     def score_round(self, people: List["Person"], game_scoring: "GameScoring") -> tuple[Dict[str, float], Dict[str, Any]]:
         scores = {}
@@ -328,8 +329,8 @@ class AlphabeticHostInterestRule(ScoringRule):
         }
 
     @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> "AlphabeticHostInterestRule":
-        return cls(dinner_party=None)  # Replace with actual initialization logic
+    def from_dict(cls, data: Dict[str, Any], dinner_party) -> "AlphabeticHostInterestRule":
+        return cls(dinner_party=dinner_party)
     
     def score_round(self, people: List["Person"], game_scoring: "GameScoring") -> tuple[Dict[str, float], Dict[str, Any]]:
         # Initialize previous_hosts if needed
@@ -376,8 +377,8 @@ class LargestInterestValueRule(ScoringRule):
         }
 
     @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> "LargestInterestValueRule":
-        return cls(dinner_party=None)  # Replace with actual initialization logic
+    def from_dict(cls, data: Dict[str, Any], dinner_party) -> "LargestInterestValueRule":
+        return cls(dinner_party=dinner_party)
     
     def score_round(self, people: List["Person"], game_scoring: "GameScoring") -> tuple[Dict[str, float], Dict[str, Any]]:
         # Get all undiscussed interests
@@ -423,8 +424,8 @@ class EachPersonSpeaksRule(ScoringRule):
         }
 
     @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> "EachPersonSpeaksRule":
-        return cls(dinner_party=None)  # Replace with actual initialization logic
+    def from_dict(cls, data: Dict[str, Any], dinner_party) -> "EachPersonSpeaksRule":
+        return cls(dinner_party=dinner_party)
     
     def score_round(self, people: List["Person"], game_scoring: "GameScoring") -> tuple[Dict[str, float], Dict[str, Any]]:
         scores = {}
@@ -470,8 +471,8 @@ class SingleInterestRule(ScoringRule):
         }
 
     @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> "SingleInterestRule":
-        instance = cls(dinner_party=None)  # Replace with actual initialization logic
+    def from_dict(cls, data: Dict[str, Any], dinner_party) -> "SingleInterestRule":
+        instance = cls(dinner_party=dinner_party)  # Replace with actual initialization logic
         instance.interest = data["interest"]
         return instance
 
@@ -502,8 +503,8 @@ class MostCommonInterestRule(ScoringRule):
         }
 
     @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> "MostCommonInterestRule":
-        instance = cls(dinner_party=None)  # Replace with actual initialization logic
+    def from_dict(cls, data: Dict[str, Any], dinner_party) -> "MostCommonInterestRule":
+        instance = cls(dinner_party=dinner_party)  # Replace with actual initialization logic
         instance.ignore_previous_interests = data["ignore_previous_interests"]
         return instance
 
@@ -550,8 +551,8 @@ class MostCommonInterestExceptPrevious(MostCommonInterestRule):
         }
 
     @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> "MostCommonInterestExceptPrevious":
-        instance = cls(dinner_party=None)  # Replace with actual initialization logic
+    def from_dict(cls, data: Dict[str, Any], dinner_party) -> "MostCommonInterestExceptPrevious":
+        instance = cls(dinner_party=dinner_party)  # Replace with actual initialization logic
         instance.ignore_previous_interests = data["ignore_previous_interests"]
         return instance
 
@@ -601,6 +602,8 @@ class GameScoring:
         
         if verbose:
             print("\nScoring all rounds:")
+            # Print the stack trace so we can see where this occurs
+            traceback.print_stack()
         for round_num, rule in enumerate(self.rules, 1):
             if verbose:
                 print(f"\nRound {round_num}:")
@@ -638,8 +641,11 @@ class GameScoring:
                 print(f"  {name}: {score}")
             print(f"\nAll interests discussed: {', '.join(sorted(set(self.discussed_interests)))}")
             print(f"Total score: {sum(self.scores.values())}")
+
+        total_score = sum(self.scores.values())
+        self.reset()
         
-        return sum(self.scores.values())
+        return total_score
     
     def get_final_scores(self) -> Dict[str, float]:
         return self.scores.copy()
@@ -696,25 +702,25 @@ ALL_RULES: List[type[ScoringRule]] = [
 def scoring_rule_from_dict(data: Dict[str, Any], verbose: bool = False, dinner_party: "DinnerParty" = None, points: int = 0, target_number_rules: int = 0, weighting_exponent: Optional[float] = None) -> ScoringRule:
     rule_type = data.get("type")
     if rule_type == "FewestInterestsLargestValueRule":
-        return FewestInterestsLargestValueRule.from_dict(data)
+        return FewestInterestsLargestValueRule.from_dict(data, dinner_party)
     elif rule_type == "FewestInterestsHostRule":
-        return FewestInterestsHostRule.from_dict(data)
+        return FewestInterestsHostRule.from_dict(data, dinner_party)
     elif rule_type == "NicheInterestsRule":
-        return NicheInterestsRule.from_dict(data)
+        return NicheInterestsRule.from_dict(data, dinner_party)
     elif rule_type == "WellRoundedInterestsRule":
-        return WellRoundedInterestsRule.from_dict(data)
+        return WellRoundedInterestsRule.from_dict(data, dinner_party)
     elif rule_type == "AlphabeticHostInterestRule":
-        return AlphabeticHostInterestRule.from_dict(data)
+        return AlphabeticHostInterestRule.from_dict(data, dinner_party)
     elif rule_type == "LargestInterestValueRule":
-        return LargestInterestValueRule.from_dict(data)
+        return LargestInterestValueRule.from_dict(data, dinner_party)
     elif rule_type == "EachPersonSpeaksRule":
-        return EachPersonSpeaksRule.from_dict(data)
+        return EachPersonSpeaksRule.from_dict(data, dinner_party)
     elif rule_type == "SingleInterestRule":
-        return SingleInterestRule.from_dict(data)
+        return SingleInterestRule.from_dict(data, dinner_party)
     elif rule_type == "MostCommonInterestRule":
-        return MostCommonInterestRule.from_dict(data)
+        return MostCommonInterestRule.from_dict(data, dinner_party)
     elif rule_type == "MostCommonInterestExceptPrevious":
-        return MostCommonInterestExceptPrevious.from_dict(data)
+        return MostCommonInterestExceptPrevious.from_dict(data, dinner_party)
     else:
         raise ValueError(f"Unknown rule type: {rule_type}")
 

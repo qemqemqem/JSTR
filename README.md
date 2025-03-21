@@ -4,6 +4,8 @@
 
 The Joint Selection Theory of Reasoning suggests that reasoning is a matter of choosing multiple things at once. (More details to be filled out later.)
 
+⭐ **If you find this tool useful, please consider starring the repository on GitHub!** ⭐
+
 ## Project Purpose
 
 The purpose of this project is to create evaluations (evals) for Large Language Models (LLMs) based on the Joint Selection Theory of Reasoning. These evals will help assess how well LLMs perform on tasks that require selecting multiple elements simultaneously.
